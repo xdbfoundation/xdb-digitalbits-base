@@ -9,8 +9,8 @@
     "preversion": "gulp test",
     "version": "gulp build",
     "postversion": "git push && git push --tags",
-    "build": "gulp build",
-    "postinstall": "postinstall-build lib \"node ./node_modules/gulp/bin/gulp.js build --gulpfile ./gulpfile.js\""
+    "build:node": "gulp build:node",
+    "postinstall": "postinstall-build lib --script build:node"
   },
   "browser": {
     "ed25519": false
