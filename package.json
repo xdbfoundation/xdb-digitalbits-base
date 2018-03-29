@@ -10,7 +10,7 @@
     "version": "gulp build",
     "postversion": "git push && git push --tags",
     "build": "gulp build",
-    "postinstall": "postinstall-build lib"
+    "postinstall": "postinstall-build lib --script build"
   },
   "browser": {
     "ed25519": false
