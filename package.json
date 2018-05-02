@@ -8,7 +8,9 @@
     "docs": "./node_modules/.bin/jsdoc ./src/ -d docs/",
     "preversion": "gulp test",
     "version": "gulp build",
-    "postversion": "git push && git push --tags"
+    "postversion": "git push && git push --tags",
+    "build:node": "gulp build:node",
+    "postinstall": "postinstall-build lib --script build:node"
   },
   "browser": {
     "ed25519": false
@@ -76,7 +78,8 @@
     "js-xdr": "^1.0.0",
     "lodash": "^4.17.4",
     "sha.js": "^2.3.6",
-    "tweetnacl": "^0.14.5"
+    "tweetnacl": "^0.14.5",
+    "postinstall-build": "^5.0.1"
   },
   "optionalDependencies": {
     "ed25519": "0.0.4"
