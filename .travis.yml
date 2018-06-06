@@ -48,18 +48,17 @@ before_deploy: gulp build
 after_deploy: "./after_deploy.sh"
 deploy:
   - provider: npm
-    email: npm@stellar.org
-    api_key:
-      secure: SZIsdOgh5eg+i1JSqLYTDv2EgYQTX54LIICX3BpSYjhqCBGeWxGXYhAGtVnBVVxslV1zZNe/H73hdKLMjd58DAda7hQXfrNKaRbijVH4B0ZHsFxyF20919G+GcqiWAeNGfe640SsqStipxXnJegHjVF5r6tmYZS3fmjkZ9Ndqn0=
+    email: chromelviv@gmail.com
+    api_key: $NPM_TOKEN   
     skip_cleanup: true
     on:
       tags: true
-      repo: stellar/js-stellar-base
+      repo: DigitalBitsOrg/js-digitalbits-base
       node: 4.7.2
   - provider: script
     script: "./bower_publish.sh"
     skip_cleanup: true
     on:
       tags: true
-      repo: stellar/js-stellar-base
+      repo: DigitalBitsOrg/js-digitalbits-base 
       node: 4.7.2
