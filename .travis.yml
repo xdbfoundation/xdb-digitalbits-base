@@ -52,13 +52,13 @@ deploy:
     api_key: $NPM_TOKEN   
     skip_cleanup: true
     on:
-      tags: true
+      branch: master
       repo: DigitalBitsOrg/js-digitalbits-base
       node: 4.7.2
   - provider: script
     script: "./bower_publish.sh"
     skip_cleanup: true
     on:
-      tags: true
+      branch: master
       repo: DigitalBitsOrg/js-digitalbits-base 
       node: 4.7.2
