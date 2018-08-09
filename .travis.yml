@@ -55,11 +55,11 @@ deploy:
     on:
       branch: master
       repo: DigitalBitsOrg/js-digitalbits-base
-      node: 4.7.2
+      node: 6.9.4
   - provider: script
     script: "./bower_publish.sh"
     skip_cleanup: true
     on:
       branch: master
       repo: DigitalBitsOrg/js-digitalbits-base 
-      node: 4.7.2
+      node: 6.9.4
