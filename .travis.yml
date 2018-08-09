@@ -3,7 +3,7 @@ sudo: required
 dist: trusty
 matrix:
   include:
-  - node_js: 4.7.2
+#  - node_js: 4.7.2
   - node_js: 6.9.4
 # Skipping sauce for now
 #  - node_js: 6.9.4
