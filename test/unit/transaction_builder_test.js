@@ -8,14 +8,14 @@ describe('TransactionBuilder', function() {
         var transaction;
         var memo;
         beforeEach(function () {
-            source = new StellarBase.Account("GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ", "0");
+            source = new DigitalBitsBase.Account("GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ", "0");
             destination = "GDJJRRMBK4IWLEPJGIE6SXD2LP7REGZODU7WDC3I2D6MR37F4XSHBKX2";
             amount = "1000";
-            asset = StellarBase.Asset.native();
-            memo = StellarBase.Memo.id("100");
+            asset = DigitalBitsBase.Asset.native();
+            memo = DigitalBitsBase.Memo.id("100");
 
-            transaction = new StellarBase.TransactionBuilder(source)
-                .addOperation(StellarBase.Operation.payment({
+            transaction = new DigitalBitsBase.TransactionBuilder(source)
+                .addOperation(DigitalBitsBase.Operation.payment({
                     destination: destination,
                     asset: asset,
                     amount: amount
@@ -61,8 +61,8 @@ describe('TransactionBuilder', function() {
         var asset;
         var transaction;
         beforeEach(function () {
-            asset = StellarBase.Asset.native();
-            source = new StellarBase.Account("GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ", "0");
+            asset = DigitalBitsBase.Asset.native();
+            source = new DigitalBitsBase.Account("GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ", "0");
 
             destination1 = "GDJJRRMBK4IWLEPJGIE6SXD2LP7REGZODU7WDC3I2D6MR37F4XSHBKX2";
             amount1 = "1000";
@@ -70,13 +70,13 @@ describe('TransactionBuilder', function() {
             amount2 = "2000";
 
 
-            transaction = new StellarBase.TransactionBuilder(source)
-              .addOperation(StellarBase.Operation.payment({
+            transaction = new DigitalBitsBase.TransactionBuilder(source)
+              .addOperation(DigitalBitsBase.Operation.payment({
                   destination: destination1,
                   asset: asset,
                   amount: amount1
               }))
-              .addOperation(StellarBase.Operation.payment({
+              .addOperation(DigitalBitsBase.Operation.payment({
                   destination: destination2,
                   asset: asset,
                   amount: amount2
@@ -122,8 +122,8 @@ describe('TransactionBuilder', function() {
         var asset;
         var transaction;
         beforeEach(function () {
-            asset = StellarBase.Asset.native();
-            source = new StellarBase.Account("GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ", "0");
+            asset = DigitalBitsBase.Asset.native();
+            source = new DigitalBitsBase.Account("GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ", "0");
 
             destination1 = "GDJJRRMBK4IWLEPJGIE6SXD2LP7REGZODU7WDC3I2D6MR37F4XSHBKX2";
             amount1 = "1000";
@@ -131,13 +131,13 @@ describe('TransactionBuilder', function() {
             amount2 = "2000";
 
 
-            transaction = new StellarBase.TransactionBuilder(source, {fee: 1000})
-              .addOperation(StellarBase.Operation.payment({
+            transaction = new DigitalBitsBase.TransactionBuilder(source, {fee: 1000})
+              .addOperation(DigitalBitsBase.Operation.payment({
                   destination: destination1,
                   asset: asset,
                   amount: amount1
               }))
-              .addOperation(StellarBase.Operation.payment({
+              .addOperation(DigitalBitsBase.Operation.payment({
                   destination: destination2,
                   asset: asset,
                   amount: amount2
@@ -154,15 +154,15 @@ describe('TransactionBuilder', function() {
 
     describe("constructs a native payment transaction with timebounds", function() {
         it("should have have timebounds", function (done) {
-            let source = new StellarBase.Account("GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ", "0");
+            let source = new DigitalBitsBase.Account("GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ", "0");
             let timebounds = {
                 minTime: "1455287522",
                 maxTime: "1455297545"
             };
-            let transaction = new StellarBase.TransactionBuilder(source, {timebounds})
-              .addOperation(StellarBase.Operation.payment({
+            let transaction = new DigitalBitsBase.TransactionBuilder(source, {timebounds})
+              .addOperation(DigitalBitsBase.Operation.payment({
                   destination: "GDJJRRMBK4IWLEPJGIE6SXD2LP7REGZODU7WDC3I2D6MR37F4XSHBKX2",
-                  asset: StellarBase.Asset.native(),
+                  asset: DigitalBitsBase.Asset.native(),
                   amount: "1000"
               }))
               .build();

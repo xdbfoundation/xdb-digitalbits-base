@@ -1,4 +1,4 @@
-import {default as xdr} from "./generated/stellar-xdr_generated";
+import {default as xdr} from "./generated/digitalbits-xdr_generated";
 import {Keypair} from "./keypair";
 import {StrKey} from "./strkey";
 import clone from 'lodash/clone';
@@ -118,7 +118,7 @@ export class Asset {
    * * `credit_alphanum4`
    * * `credit_alphanum12`
    *
-   * @see [Assets concept](https://www.stellar.org/developers/learn/concepts/assets.html)
+   * @see [Assets concept](https://developer.digitalbits.io/learn/concepts/assets.html)
    * @returns {string}
    */
   getAssetType() {

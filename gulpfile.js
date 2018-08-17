@@ -48,7 +48,7 @@ gulp.task('build:node', ['lint:src'], function() {
 gulp.task('build:browser', ['lint:src'], function() {
   return gulp.src('src/browser.js')
     .pipe(plugins.webpack({
-      output: { library: 'StellarBase' },
+      output: { library: 'DigitalBitsBase' },
       module: {
         loaders: [
           { test: /\.js$/, exclude: /node_modules/, loader: 'babel-loader'}
@@ -59,14 +59,14 @@ gulp.task('build:browser', ['lint:src'], function() {
         new webpack.IgnorePlugin(/ed25519/)
       ]
     }))
-    .pipe(plugins.rename('stellar-base.js'))
+    .pipe(plugins.rename('digitalbits-base.js'))
     .pipe(gulp.dest('dist'))
     .pipe(plugins.uglify({
       output: {
         ascii_only: true
       }
     }))
-    .pipe(plugins.rename('stellar-base.min.js'))
+    .pipe(plugins.rename('digitalbits-base.min.js'))
     .pipe(gulp.dest('dist'));
 });
 

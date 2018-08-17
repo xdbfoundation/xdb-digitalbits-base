@@ -1,4 +1,4 @@
-//  This module provides the signing functionality used by the stellar network
+//  This module provides the signing functionality used by the DigitalBits network
 //  The code below may look a little strange... this is because we try to provide
 //  the most efficient signing method possible.  First, we try to load the 
 //  native ed25519 package for node.js environments, and if that fails we

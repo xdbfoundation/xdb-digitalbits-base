@@ -1,5 +1,5 @@
 
-import {default as xdr} from "./generated/stellar-xdr_generated";
+import {default as xdr} from "./generated/digitalbits-xdr_generated";
 
 export {xdr};
 export {hash} from "./hashing";

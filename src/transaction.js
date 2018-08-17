@@ -102,7 +102,7 @@ export class Transaction {
   /**
    * Returns the "signature base" of this transaction, which is the value
    * that, when hashed, should be signed to create a signature that
-   * validators on the Stellar Network will accept.
+   * validators on the DigitalBits Network will accept.
    *
    * It is composed of a 4 prefix bytes followed by the xdr-encoded form
    * of this transaction.

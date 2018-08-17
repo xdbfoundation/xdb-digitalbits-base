@@ -1,4 +1,4 @@
-import {default as xdr} from "./generated/stellar-xdr_generated";
+import {default as xdr} from "./generated/digitalbits-xdr_generated";
 import {UnsignedHyper} from "js-xdr";
 import {hash} from "./hashing";
 import {Keypair} from "./keypair";

@@ -1,7 +1,7 @@
 {
   "name": "digitalbits-base",
-  "version": "0.7.7",
-  "description": "Low level stellar support library",
+  "version": "0.7.8",
+  "description": "Low level DigitalBits support library",
   "main": "lib/index.js",
   "scripts": {
     "test": "babel-node ./node_modules/gulp/bin/gulp.js test:node",
@@ -20,12 +20,15 @@
     "url": "https://github.com/DigitalBitsOrg/js-digitalbits-base.git"
   },
   "keywords": [
-    "stellar"
+    "digitalbits"
   ],
   "engines": {
     "node": ">=6"
   },
-  "author": "Scott Fleckenstein <scott@stellar.org>",
+  "author": [
+    "Scott Fleckenstein <scott@stellar.org>",
+    "Thomas Madej <tmadej@digitalbits.io>"
+  ],
   "license": "Apache-2.0",
   "bugs": {
     "url": "https://github.com/DigitalBitsOrg/js-digitalbits-base/issues"

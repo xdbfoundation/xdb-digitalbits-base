@@ -1,12 +1,12 @@
-import * as StellarBase from "../src"
+import * as DigitalBitsBase from "../src"
 
-var keypair = StellarBase.Keypair.random();
+var keypair = DigitalBitsBase.Keypair.random();
 var data = 'data to sign';
-var signature = StellarBase.sign(data, keypair.rawSecretKey());
+var signature = DigitalBitsBase.sign(data, keypair.rawSecretKey());
 
 console.log('Signature: '+signature.toString('hex'));
 
-if (StellarBase.verify(data, signature, keypair.rawPublicKey())) {
+if (DigitalBitsBase.verify(data, signature, keypair.rawPublicKey())) {
   console.log('OK!');
 } else {
   console.log('Bad signature!');

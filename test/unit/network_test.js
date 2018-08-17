@@ -1,19 +1,19 @@
 describe("Network.current()", function() {
   it("defaults network is null", function() {
-    expect(StellarBase.Network.current()).to.be.null;
+    expect(DigitalBitsBase.Network.current()).to.be.null;
   });
 });
 
 describe("Network.useTestNetwork()", function() {
   it("switches to the test network", function() {
-    StellarBase.Network.useTestNetwork();
-    expect(StellarBase.Network.current().networkPassphrase()).to.equal(StellarBase.Networks.TESTNET)
+    DigitalBitsBase.Network.useTestNetwork();
+    expect(DigitalBitsBase.Network.current().networkPassphrase()).to.equal(DigitalBitsBase.Networks.TESTNET)
   });
 });
 
 describe("Network.usePublicNetwork()", function() {
   it("switches to the public network", function() {
-    StellarBase.Network.usePublicNetwork();
-    expect(StellarBase.Network.current().networkPassphrase()).to.equal(StellarBase.Networks.PUBLIC)
+    DigitalBitsBase.Network.usePublicNetwork();
+    expect(DigitalBitsBase.Network.current().networkPassphrase()).to.equal(DigitalBitsBase.Networks.PUBLIC)
   });
 });

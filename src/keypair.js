@@ -2,7 +2,7 @@ import {Network} from "./network";
 import {sign, verify} from "./signing";
 import * as base58 from "./base58";
 import {StrKey} from "./strkey";
-import {default as xdr} from "./generated/stellar-xdr_generated";
+import {default as xdr} from "./generated/digitalbits-xdr_generated";
 import nacl from "tweetnacl";
 
 /**
@@ -107,7 +107,7 @@ export class Keypair {
   static fromPublicKey(publicKey) {
     publicKey = StrKey.decodeEd25519PublicKey(publicKey);
     if (publicKey.length !== 32) {
-      throw new Error('Invalid Stellar public key');
+      throw new Error('Invalid DigitalBits public key');
     }
     return new this({type: 'ed25519', publicKey});
   }

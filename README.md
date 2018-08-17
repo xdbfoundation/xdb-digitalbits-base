@@ -13,7 +13,7 @@ This is an implementation in JavaScript that can be used on either Node.js or we
 
 > **Warning!** Node version of this package is using [`ed25519`](https://www.npmjs.com/package/ed25519) package, a native implementation of [Ed25519](https://ed25519.cr.yp.to/) in Node.js, as an [optional dependency](https://docs.npmjs.com/files/package.json#optionaldependencies). This means that if for any reason installation of this package fails, `digitalbits-base` will fallback to the much slower implementation contained in [`tweetnacl`](https://www.npmjs.com/package/tweetnacl).
 >
-> If you are using `digitalbits-base` in a browser you can ignore this. However, for production backend deployments you should definitely be using `ed25519`. If `ed25519` is successfully installed and working `StellarBase.FastSigning` variable will be equal `true`. Otherwise it will be `false`.
+> If you are using `digitalbits-base` in a browser you can ignore this. However, for production backend deployments you should definitely be using `ed25519`. If `ed25519` is successfully installed and working `DigitalBitsBase.FastSigning` variable will be equal `true`. Otherwise it will be `false`.
 
 ## Quick start
 
@@ -23,12 +23,12 @@ npm install --save digitalbits-base
 ```
 
 For browsers, [use Bower to install it](#to-use-in-the-browser). It exports a
-variable `StellarBase`. The example below assumes you have `digitalbits-base.js`
+variable `DigitalBitsBase`. The example below assumes you have `digitalbits-base.js`
 relative to your html file.
 
 ```html
 <script src="digitalbits-base.js"></script>
-<script>console.log(StellarBase);</script>
+<script>console.log(DigitalBitsBase);</script>
 ```
 
 ## Install
@@ -42,7 +42,7 @@ relative to your html file.
 2. require/import it in your JavaScript:
 
   ```js
-  var StellarBase = require('digitalbits-base');
+  var DigitalBitsBase = require('digitalbits-base');
   ```
 
 ### To self host for use in the browser
@@ -56,7 +56,7 @@ relative to your html file.
 
   ```html
   <script src="./bower_components/digitalbits-base/digitalbits-base.js"></script>
-  <script>console.log(StellarBase);</script>
+  <script>console.log(DigitalBitsBase);</script>
   ```
 
 If you don't want to use install Bower, you can copy built JS files from the [bower-js-digitalbits-base repo](https://github.com/digitalbitsorg/bower-js-digitalbits-base).
@@ -66,7 +66,7 @@ If you don't want to use install Bower, you can copy built JS files from the [bo
 
   ```html
   <script src="https://cdnjs.cloudflare.com/ajax/libs/digitalbits-base/{version}/digitalbits-base.js"></script>
-  <script>console.log(StellarBase);</script>
+  <script>console.log(DigitalBitsBase);</script>
   ```
 
 Note that this method relies using a third party to host the JS library. This may not be entirely secure.

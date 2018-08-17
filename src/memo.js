@@ -1,4 +1,4 @@
-import {default as xdr} from "./generated/stellar-xdr_generated";
+import {default as xdr} from "./generated/digitalbits-xdr_generated";
 import isUndefined from "lodash/isUndefined";
 import isNull from "lodash/isNull";
 import isString from "lodash/isString";
@@ -32,7 +32,7 @@ export const MemoReturn = "return";
  *
  * @param {string} type - `MemoNone`, `MemoID`, `MemoText`, `MemoHash` or `MemoReturn`
  * @param {*} value - `string` for `MemoID`, `MemoText`, buffer of hex string for `MemoHash` or `MemoReturn`
- * @see [Transactions concept](https://www.stellar.org/developers/learn/concepts/transactions.html)
+ * @see [Transactions concept](https://developer.digitalbits.io/learn/concepts/transactions.html)
  * @class Memo
  */
 export class Memo {
