@@ -5,10 +5,10 @@ title: Getting Started
 # Overview
 
 The js-digitalbits-base library is the lowest-level digitalbits helper library. It can be used in a browser or in node.js. It is mainly used to read, create and
-sign [transactions](https://developer.digitalbits.io/learn/concepts/transactions.html). This library is used and exposed by
+sign [transactions](https://developer.digitalbits.io/guide/concepts/transactions.html). This library is used and exposed by
 [js-digitalbits-sdk](https://github.com/digitalbitsorg/js-digitalbits-sdk) but you can use it by itself if you don't need to communicate with Horizon.
 
-* [Building and Installing](../README.md) js-digitalbits-base
+* [Building and Installing](../readme.md) js-digitalbits-base
 * [Building Transactions](./reference/building-transactions.md)
 * [Examples](./reference/base-examples.md)
 

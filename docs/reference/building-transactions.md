@@ -2,13 +2,13 @@
 title: Building Transactions
 ---
 
-[Transactions](https://developer.digitalbits.io/learn/concepts/transactions.html) are the commands that modify the state of the ledger.
+[Transactions](https://developer.digitalbits.io/guide/concepts/transactions.html) are the commands that modify the state of the ledger.
 They include sending payments, creating offers, making account configuration changes, etc.
 
-Every transaction has a source [account](https://developer.digitalbits.io/learn/concepts/accounts.html). This is the account
+Every transaction has a source [account](https://developer.digitalbits.io/guide/concepts/accounts.html). This is the account
 that pays the [fee](https://developer.digitalbits.io/learn/concepts/fees.html) and uses up a sequence number for the transaction.
 
-Transactions are made up of one or more [operations](https://developer.digitalbits.io/learn/concepts/operations.html). Each operation also has a source account, which defaults to the transaction's source account.
+Transactions are made up of one or more [operations](https://developer.digitalbits.io/guide/concepts/operations.html). Each operation also has a source account, which defaults to the transaction's source account.
 
 
 ## [TransactionBuilder](https://github.com/digitalbitsorg/js-digitalbits-base/blob/master/src/transaction_builder.js)
@@ -37,7 +37,7 @@ var transaction = new DigitalBitsBase.TransactionBuilder(account)
         .addOperation(DigitalBitsBase.Operation.payment({
                 destination: "GASOCNHNNLYFNMDJYQ3XFMI7BYHIOCFW3GJEOWRPEGK2TDPGTG2E5EDW",
                 asset: DigitalBitsBase.Asset.native(),
-                amount: "100.50"  // 100.50 XLM
+                amount: "100.50"  // 100.50 XDB
             }))
         // add a set options operation to the transaction
         .addOperation(DigitalBitsBase.Operation.setOptions({
@@ -145,7 +145,7 @@ var transaction = new DigitalBitsBase.TransactionBuilder(account)
         .addOperation(DigitalBitsBase.Operation.payment({
                 destination: "GASOCNHNNLYFNMDJYQ3XFMI7BYHIOCFW3GJEOWRPEGK2TDPGTG2E5EDW",
                 asset: DigitalBitsBase.Asset.native(),
-                amount: "2000"  // 2000 XLM
+                amount: "2000"  // 2000 XDB
             }))
         .build();
 
