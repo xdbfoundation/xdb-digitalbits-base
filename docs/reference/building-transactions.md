@@ -2,13 +2,13 @@
 title: Building Transactions
 ---
 
-[Transactions](https://developer.digitalbits.io/guide/concepts/transactions.html) are the commands that modify the state of the ledger.
+[Transactions](https://developer.digitalbits.io/guides/concepts/transactions.html) are the commands that modify the state of the ledger.
 They include sending payments, creating offers, making account configuration changes, etc.
 
-Every transaction has a source [account](https://developer.digitalbits.io/guide/concepts/accounts.html). This is the account
-that pays the [fee](https://developer.digitalbits.io/learn/concepts/fees.html) and uses up a sequence number for the transaction.
+Every transaction has a source [account](https://developer.digitalbits.io/guides/concepts/accounts.html). This is the account
+that pays the [fee](https://developer.digitalbits.io/guides/concepts/fees.html) and uses up a sequence number for the transaction.
 
-Transactions are made up of one or more [operations](https://developer.digitalbits.io/guide/concepts/operations.html). Each operation also has a source account, which defaults to the transaction's source account.
+Transactions are made up of one or more [operations](https://developer.digitalbits.io/guides/concepts/operations.html). Each operation also has a source account, which defaults to the transaction's source account.
 
 
 ## [TransactionBuilder](https://github.com/digitalbitsorg/js-digitalbits-base/blob/master/src/transaction_builder.js)
@@ -103,7 +103,7 @@ Most importantly, you can sign a transaction using `sign()` method. See below...
 ## Signing and Multi-sig
 Transactions require signatures for authorization, and generally they only require one.  However, you can exercise more
 control over authorization and set up complex schemes by increasing the number of signatures a transaction requires.  For
-more, please consult the [multi-sig documentation](https://developer.digitalbits.io/learn/concepts/multi-sig.html).
+more, please consult the [multi-sig documentation](https://developer.digitalbits.io/guides/concepts/multi-sig.html).
 
 You add signatures to a transaction with the `Transaction.sign()` function. You can chain multiple `sign()` calls together.
 
