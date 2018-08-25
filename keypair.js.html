@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Home - Documentation</title>
+    <title>keypair.js - Documentation</title>
 
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
@@ -29,86 +29,234 @@
 
 <div id="main">
     
+    <h1 class="page-title">keypair.js</h1>
+    
 
     
 
 
 
     
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import {Network} from "./network";
+import {sign, verify} from "./signing";
+import * as base58 from "./base58";
+import {StrKey} from "./strkey";
+import {default as xdr} from "./generated/digitalbits-xdr_generated";
+import nacl from "tweetnacl";
 
+/**
+ * `Keypair` represents public (and secret) keys of the account.
+ *
+ * Currently `Keypair` only supports ed25519 but in a future this class can be abstraction layer for other
+ * public-key signature systems.
+ *
+ * Use more convenient methods to create `Keypair` object:
+ * * `{@link Keypair.fromPublicKey}`
+ * * `{@link Keypair.fromSecret}`
+ * * `{@link Keypair.random}`
+ *
+ * @constructor
+ * @param {object} keys At least one of keys must be provided.
+ * @param {string} keys.type Public-key signature system name. (currently only `ed25519` keys are supported)
+ * @param {Buffer} [keys.publicKey] Raw public key
+ * @param {Buffer} [keys.secretKey] Raw secret key (32-byte secret seed in ed25519`)
+ */
+export class Keypair {
+  constructor(keys) {
+    if (keys.type != "ed25519") {
+      throw new Error("Invalid keys type");
+    }
 
+    this.type = keys.type;
 
+    if (keys.secretKey) {
+      keys.secretKey = new Buffer(keys.secretKey);
 
+      if (keys.secretKey.length != 32) {
+        throw new Error("secretKey length is invalid");
+      }
 
+      let secretKeyUint8 = new Uint8Array(keys.secretKey);
+      let naclKeys = nacl.sign.keyPair.fromSeed(secretKeyUint8);
 
+      this._secretSeed = keys.secretKey;
+      this._secretKey = new Buffer(naclKeys.secretKey);
+      this._publicKey = new Buffer(naclKeys.publicKey);
 
+      if (keys.publicKey &amp;&amp; !this._publicKey.equals(new Buffer(keys.publicKey))) {
+        throw new Error("secretKey does not match publicKey");
+      }
+    } else {
+      this._publicKey = new Buffer(keys.publicKey);
 
+      if (this._publicKey.length != 32) {
+        throw new Error("publicKey length is invalid");
+      }
+    }
+  }
 
-    
+  /**
+   * Creates a new `Keypair` instance from secret. This can either be secret key or secret seed depending
+   * on underlying public-key signature system. Currently `Keypair` only supports ed25519.
+   * @param {string} secret secret key (ex. `SDAKFNYEIAORZKKCYRILFQKLLOCNPL5SWJ3YY5NM3ZH6GJSZGXHZEPQS`)
+   * @returns {Keypair}
+   */
+  static fromSecret(secret) {
+    let rawSecret = StrKey.decodeEd25519SecretSeed(secret);
+    return this.fromRawEd25519Seed(rawSecret);
+  }
 
+  /**
+   * Base58 address encoding is **DEPRECATED**! Use this method only for transition to strkey encoding.
+   * @param {string} seed Base58 secret seed
+   * @deprecated Use {@link Keypair.fromSecret}
+   * @returns {Keypair}
+   */
+  static fromBase58Seed(seed) {
+    let rawSeed = base58.decodeBase58Check("seed", seed);
+    return this.fromRawEd25519Seed(rawSeed);
+  }
 
-    <section class="readme">
-        <article><h1>JS DigitalBits Base</h1><p><a href="https://travis-ci.org/digitalbitsorg/js-digitalbits-base"><img src="https://travis-ci.org/digitalbitsorg/js-digitalbits-base.svg" alt="Build Status"></a>
-<a href="https://codeclimate.com/github/digitalbitsorg/js-digitalbits-base"><img src="https://codeclimate.com/github/digitalbitsorg/js-digitalbits-base/badges/gpa.svg" alt="Code Climate"></a>
-<a href="https://coveralls.io/github/digitalbitsorg/js-digitalbits-base?branch=master"><img src="https://coveralls.io/repos/digitalbitsorg/js-digitalbits-base/badge.svg?branch=master&amp;service=github" alt="Coverage Status"></a>
-<a href="https://david-dm.org/digitalbits/js-digitalbits-base"><img src="https://david-dm.org/digitalbitsorg/js-digitalbits-base.svg" alt="Dependency Status"></a></p>
-<p>The digitalbits-base library is the lowest-level digitalbits helper library.  It consists of classes
-to read, write, hash, and sign the xdr structures that are used in <a href="https://github.com/DigitalBitsOrg/digitalbits-core">digitalbits-core</a>.
-This is an implementation in JavaScript that can be used on either Node.js or web browsers.</p>
-<ul>
-<li><strong><a href="https://digitalbits.github.io/js-digitalbits-base/">API Reference</a></strong></li>
-</ul>
-<blockquote>
-<p><strong>Warning!</strong> Node version of this package is using <a href="https://www.npmjs.com/package/ed25519"><code>ed25519</code></a> package, a native implementation of <a href="https://ed25519.cr.yp.to/">Ed25519</a> in Node.js, as an <a href="https://docs.npmjs.com/files/package.json#optionaldependencies">optional dependency</a>. This means that if for any reason installation of this package fails, <code>digitalbits-base</code> will fallback to the much slower implementation contained in <a href="https://www.npmjs.com/package/tweetnacl"><code>tweetnacl</code></a>.</p>
-<p>If you are using <code>digitalbits-base</code> in a browser you can ignore this. However, for production backend deployments you should definitely be using <code>ed25519</code>. If <code>ed25519</code> is successfully installed and working <code>DigitalBitsBase.FastSigning</code> variable will be equal <code>true</code>. Otherwise it will be <code>false</code>.</p>
-</blockquote>
-<h2>Quick start</h2><p>Using npm to include js-digitalbits-base in your own project:</p>
-<pre class="prettyprint source lang-shell"><code>npm install --save digitalbits-base</code></pre><p>For browsers, <a href="#to-use-in-the-browser">use Bower to install it</a>. It exports a
-variable <code>DigitalBitsBase</code>. The example below assumes you have <code>digitalbits-base.js</code>
-relative to your html file.</p>
-<pre class="prettyprint source lang-html"><code>&lt;script src=&quot;digitalbits-base.js&quot;>&lt;/script>
-&lt;script>console.log(DigitalBitsBase);&lt;/script></code></pre><h2>Install</h2><h3>To use as a module in a Node.js project</h3><ol>
-<li><p>Install it using npm:</p>
-<pre class="prettyprint source lang-shell"><code>npm install --save digitalbits-base</code></pre></li>
-<li><p>require/import it in your JavaScript:</p>
-<pre class="prettyprint source lang-js"><code>var DigitalBitsBase = require('digitalbits-base');</code></pre></li>
-</ol>
-<h3>To self host for use in the browser</h3><ol>
-<li><p>Install it using <a href="http://bower.io">bower</a>:</p>
-<pre class="prettyprint source lang-shell"><code>bower install digitalbits-base</code></pre></li>
-<li><p>Include it in the browser:</p>
-<pre class="prettyprint source lang-html"><code>&lt;script src=&quot;./bower_components/digitalbits-base/digitalbits-base.js&quot;>&lt;/script>
-&lt;script>console.log(DigitalBitsBase);&lt;/script></code></pre></li>
-</ol>
-<p>If you don't want to use install Bower, you can copy built JS files from the <a href="https://github.com/digitalbitsorg/bower-js-digitalbits-base">bower-js-digitalbits-base repo</a>.</p>
-<h3>To use the <a href="https://cdnjs.com/libraries/digitalbits-base">cdnjs</a> hosted script in the browser</h3><ol>
-<li><p>Instruct the browser to fetch the library from <a href="https://cdnjs.com/libraries/digitalbits-base">cdnjs</a>, a 3rd party service that hosts js libraries:</p>
-<pre class="prettyprint source lang-html"><code>&lt;script src=&quot;https://cdnjs.cloudflare.com/ajax/libs/digitalbits-base/{version}/digitalbits-base.js&quot;>&lt;/script>
-&lt;script>console.log(DigitalBitsBase);&lt;/script></code></pre></li>
-</ol>
-<p>Note that this method relies using a third party to host the JS library. This may not be entirely secure.</p>
-<p>Make sure that you are using the latest version number. They can be found on the <a href="https://github.com/digitalbitsorg/js-digitalbits-base/releases">releases page in Github</a>.</p>
-<h3>To develop and test js-digitalbits-base itself</h3><ol>
-<li><p>Clone the repo</p>
-<pre class="prettyprint source lang-shell"><code>git clone https://github.com/digitalbitsorg/js-digitalbits-base.git</code></pre></li>
-<li><p>Install dependencies inside js-digitalbits-base folder</p>
-<pre class="prettyprint source lang-shell"><code>cd js-digitalbits-base
-npm install</code></pre></li>
-</ol>
-<h2>Usage</h2><p>For information on how to use js-digitalbits-base, take a look at the docs in the <a href="./docs">docs folder</a>.</p>
-<h2>Testing</h2><p>To run all tests:</p>
-<pre class="prettyprint source lang-shell"><code>gulp test</code></pre><p>To run a specific set of tests:</p>
-<pre class="prettyprint source lang-shell"><code>gulp test:node
-gulp test:browser</code></pre><p>Tests are also run on the <a href="https://travis-ci.org/digitalbitsorg/js-digitalbits-base">Travis CI js-digitalbits-base project</a> automatically.</p>
-<h2>Documentation</h2><p>Documentation for this repo lives inside the <a href="./docs">docs folder</a>.</p>
-<h2>Contributing</h2><p>Please see the <a href="./CONTRIBUTING.md">CONTRIBUTING.md</a> for details on how to contribute to this project.</p>
-<h2>Publishing to npm</h2><pre class="prettyprint source"><code>npm version [&lt;newversion> | major | minor | patch | premajor | preminor | prepatch | prerelease]</code></pre><p>A new version will be published to npm <strong>and</strong> Bower by Travis CI.</p>
-<p>npm &gt;=2.13.0 required.
-Read more about <a href="https://docs.npmjs.com/cli/version">npm version</a>.</p>
-<h2>License</h2><p>js-digitalbits-base is licensed under an Apache-2.0 license. See the <a href="./LICENSE">LICENSE</a> file for details.</p></article>
+  /**
+   * Creates a new `Keypair` object from ed25519 secret key seed raw bytes.
+   *
+   * @param {Buffer} rawSeed Raw 32-byte ed25519 secret key seed
+   * @returns {Keypair}
+   */
+  static fromRawEd25519Seed(rawSeed) {
+    return new this({type: 'ed25519', secretKey: rawSeed});
+  }
+
+  /**
+   * Returns `Keypair` object representing network master key.
+   * @returns {Keypair}
+   */
+  static master() {
+    if (Network.current() === null) {
+      throw new Error("No network selected. Use `Network.use`, `Network.usePublicNetwork` or `Network.useTestNetwork` helper methods to select network.");
+    }
+    return this.fromRawEd25519Seed(Network.current().networkId());
+  }
+
+  /**
+   * Creates a new `Keypair` object from public key.
+   * @param {string} publicKey public key (ex. `GB3KJPLFUYN5VL6R3GU3EGCGVCKFDSD7BEDX42HWG5BWFKB3KQGJJRMA`)
+   * @returns {Keypair}
+   */
+  static fromPublicKey(publicKey) {
+    publicKey = StrKey.decodeEd25519PublicKey(publicKey);
+    if (publicKey.length !== 32) {
+      throw new Error('Invalid DigitalBits public key');
+    }
+    return new this({type: 'ed25519', publicKey});
+  }
+
+  /**
+   * Create a random `Keypair` object.
+   * @returns {Keypair}
+   */
+  static random() {
+    let secret = nacl.randomBytes(32);
+    return this.fromRawEd25519Seed(secret);
+  }
+
+  xdrAccountId() {
+    return new xdr.AccountId.publicKeyTypeEd25519(this._publicKey);
+  }
+
+  xdrPublicKey() {
+    return new xdr.PublicKey.publicKeyTypeEd25519(this._publicKey);
+  }
+
+  /**
+   * Returns raw public key
+   * @returns {Buffer}
+   */
+  rawPublicKey() {
+    return this._publicKey;
+  }
+
+  signatureHint() {
+    let a = this.xdrAccountId().toXDR();
+
+    return a.slice(a.length - 4);
+  }
+
+  /**
+   * Returns public key associated with this `Keypair` object.
+   * @returns {string}
+   */
+  publicKey() {
+    return StrKey.encodeEd25519PublicKey(this._publicKey);
+  }
+
+  /**
+   * Returns secret key associated with this `Keypair` object
+   * @returns {string}
+   */
+  secret() {
+    if (!this._secretSeed) {
+      throw new Error("no secret key available");
+    }
+
+    if (this.type == 'ed25519') {
+      return StrKey.encodeEd25519SecretSeed(this._secretSeed);
+    }
+
+    throw new Error("Invalid Keypair type");
+  }
+
+  /**
+   * Returns raw secret key.
+   * @returns {Buffer}
+   */
+  rawSecretKey() {
+    return this._secretSeed;
+  }
+
+  /**
+   * Returns `true` if this `Keypair` object contains secret key and can sign.
+   * @returns {boolean}
+   */
+  canSign() {
+    return !!this._secretKey;
+  }
+
+  /**
+   * Signs data.
+   * @param {Buffer} data Data to sign
+   * @returns {Buffer}
+   */
+  sign(data) {
+    if (!this.canSign()) {
+      throw new Error("cannot sign: no secret key available");
+    }
+
+    return sign(data, this._secretKey);
+  }
+
+  /**
+   * Verifies if `signature` for `data` is valid.
+   * @param {Buffer} data Signed data
+   * @param {Buffer} signature Signature
+   * @returns {boolean}
+   */
+  verify(data, signature) {
+    return verify(data, signature, this._publicKey);
+  }
+
+  signDecorated(data) {
+    let signature = this.sign(data);
+    let hint      = this.signatureHint();
+
+    return new xdr.DecoratedSignature({hint, signature});
+  }
+}
+</code></pre>
+        </article>
     </section>
-
-
 
 
 

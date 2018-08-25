@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Home - Documentation</title>
+    <title>Memo - Documentation</title>
 
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
@@ -29,86 +29,1353 @@
 
 <div id="main">
     
+    <h1 class="page-title">Memo</h1>
+    
 
     
 
 
 
+
+<section>
+
+<header>
+    
+        <h2>
+        Memo
+        </h2>
+        
+    
+</header>
+
+<article>
+    <div class="container-overview">
+    
+        
+<div class="section-method">
+
+    
+
+    <h4 class="name" id="Memo"><span class="type-signature"></span>new Memo<span class="signature">(type, value)</span><span class="type-signature"></span></h4>
+
     
 
 
 
+<div class="description">
+    <p><code>Memo</code> represents memos attached to transactions.</p>
+</div>
 
 
 
 
 
+<dl class="details">
 
     
 
+    
 
-    <section class="readme">
-        <article><h1>JS DigitalBits Base</h1><p><a href="https://travis-ci.org/digitalbitsorg/js-digitalbits-base"><img src="https://travis-ci.org/digitalbitsorg/js-digitalbits-base.svg" alt="Build Status"></a>
-<a href="https://codeclimate.com/github/digitalbitsorg/js-digitalbits-base"><img src="https://codeclimate.com/github/digitalbitsorg/js-digitalbits-base/badges/gpa.svg" alt="Code Climate"></a>
-<a href="https://coveralls.io/github/digitalbitsorg/js-digitalbits-base?branch=master"><img src="https://coveralls.io/repos/digitalbitsorg/js-digitalbits-base/badge.svg?branch=master&amp;service=github" alt="Coverage Status"></a>
-<a href="https://david-dm.org/digitalbits/js-digitalbits-base"><img src="https://david-dm.org/digitalbitsorg/js-digitalbits-base.svg" alt="Dependency Status"></a></p>
-<p>The digitalbits-base library is the lowest-level digitalbits helper library.  It consists of classes
-to read, write, hash, and sign the xdr structures that are used in <a href="https://github.com/DigitalBitsOrg/digitalbits-core">digitalbits-core</a>.
-This is an implementation in JavaScript that can be used on either Node.js or web browsers.</p>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="memo.js.html">memo.js</a>, <a href="memo.js.html#line30">line 30</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+    <dt class="tag-see">See:</dt>
+    <dd class="tag-see">
+        <ul>
+            <li><p><a href="https://developer.digitalbits.io/learn/concepts/transactions.html">Transactions concept</a></p></li>
+        </ul>
+    </dd>
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>type</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>string</code></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                <p><code>MemoNone</code>, <code>MemoID</code>, <code>MemoText</code>, <code>MemoHash</code> or <code>MemoReturn</code></p>
+                
+            </td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>value</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>*</code></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                <p><code>string</code> for <code>MemoID</code>, <code>MemoText</code>, buffer of hex string for <code>MemoHash</code> or <code>MemoReturn</code></p>
+                
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+    
+    </div>
+
+    
+
+    
+
+    
+
+     
+
+    
+
+    
+        <h3 class="subsection-title">Members</h3>
+
+        
+            
+<div class="section-members">
+<h4 class="name" id="type"><span class="type-signature"></span>type<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    <p>Contains memo type: <code>MemoNone</code>, <code>MemoID</code>, <code>MemoText</code>, <code>MemoHash</code> or <code>MemoReturn</code></p>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="memo.js.html">memo.js</a>, <a href="memo.js.html#line68">line 68</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+</div>
+
+        
+            
+<div class="section-members">
+<h4 class="name" id="value"><span class="type-signature"></span>value<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    <p>Contains memo value:</p>
 <ul>
-<li><strong><a href="https://digitalbits.github.io/js-digitalbits-base/">API Reference</a></strong></li>
+<li><code>null</code> for <code>MemoNone</code>,</li>
+<li><code>string</code> for <code>MemoID</code>, <code>MemoText</code>,</li>
+<li><code>Buffer</code> for <code>MemoHash</code>, <code>MemoReturn</code></li>
 </ul>
-<blockquote>
-<p><strong>Warning!</strong> Node version of this package is using <a href="https://www.npmjs.com/package/ed25519"><code>ed25519</code></a> package, a native implementation of <a href="https://ed25519.cr.yp.to/">Ed25519</a> in Node.js, as an <a href="https://docs.npmjs.com/files/package.json#optionaldependencies">optional dependency</a>. This means that if for any reason installation of this package fails, <code>digitalbits-base</code> will fallback to the much slower implementation contained in <a href="https://www.npmjs.com/package/tweetnacl"><code>tweetnacl</code></a>.</p>
-<p>If you are using <code>digitalbits-base</code> in a browser you can ignore this. However, for production backend deployments you should definitely be using <code>ed25519</code>. If <code>ed25519</code> is successfully installed and working <code>DigitalBitsBase.FastSigning</code> variable will be equal <code>true</code>. Otherwise it will be <code>false</code>.</p>
-</blockquote>
-<h2>Quick start</h2><p>Using npm to include js-digitalbits-base in your own project:</p>
-<pre class="prettyprint source lang-shell"><code>npm install --save digitalbits-base</code></pre><p>For browsers, <a href="#to-use-in-the-browser">use Bower to install it</a>. It exports a
-variable <code>DigitalBitsBase</code>. The example below assumes you have <code>digitalbits-base.js</code>
-relative to your html file.</p>
-<pre class="prettyprint source lang-html"><code>&lt;script src=&quot;digitalbits-base.js&quot;>&lt;/script>
-&lt;script>console.log(DigitalBitsBase);&lt;/script></code></pre><h2>Install</h2><h3>To use as a module in a Node.js project</h3><ol>
-<li><p>Install it using npm:</p>
-<pre class="prettyprint source lang-shell"><code>npm install --save digitalbits-base</code></pre></li>
-<li><p>require/import it in your JavaScript:</p>
-<pre class="prettyprint source lang-js"><code>var DigitalBitsBase = require('digitalbits-base');</code></pre></li>
-</ol>
-<h3>To self host for use in the browser</h3><ol>
-<li><p>Install it using <a href="http://bower.io">bower</a>:</p>
-<pre class="prettyprint source lang-shell"><code>bower install digitalbits-base</code></pre></li>
-<li><p>Include it in the browser:</p>
-<pre class="prettyprint source lang-html"><code>&lt;script src=&quot;./bower_components/digitalbits-base/digitalbits-base.js&quot;>&lt;/script>
-&lt;script>console.log(DigitalBitsBase);&lt;/script></code></pre></li>
-</ol>
-<p>If you don't want to use install Bower, you can copy built JS files from the <a href="https://github.com/digitalbitsorg/bower-js-digitalbits-base">bower-js-digitalbits-base repo</a>.</p>
-<h3>To use the <a href="https://cdnjs.com/libraries/digitalbits-base">cdnjs</a> hosted script in the browser</h3><ol>
-<li><p>Instruct the browser to fetch the library from <a href="https://cdnjs.com/libraries/digitalbits-base">cdnjs</a>, a 3rd party service that hosts js libraries:</p>
-<pre class="prettyprint source lang-html"><code>&lt;script src=&quot;https://cdnjs.cloudflare.com/ajax/libs/digitalbits-base/{version}/digitalbits-base.js&quot;>&lt;/script>
-&lt;script>console.log(DigitalBitsBase);&lt;/script></code></pre></li>
-</ol>
-<p>Note that this method relies using a third party to host the JS library. This may not be entirely secure.</p>
-<p>Make sure that you are using the latest version number. They can be found on the <a href="https://github.com/digitalbitsorg/js-digitalbits-base/releases">releases page in Github</a>.</p>
-<h3>To develop and test js-digitalbits-base itself</h3><ol>
-<li><p>Clone the repo</p>
-<pre class="prettyprint source lang-shell"><code>git clone https://github.com/digitalbitsorg/js-digitalbits-base.git</code></pre></li>
-<li><p>Install dependencies inside js-digitalbits-base folder</p>
-<pre class="prettyprint source lang-shell"><code>cd js-digitalbits-base
-npm install</code></pre></li>
-</ol>
-<h2>Usage</h2><p>For information on how to use js-digitalbits-base, take a look at the docs in the <a href="./docs">docs folder</a>.</p>
-<h2>Testing</h2><p>To run all tests:</p>
-<pre class="prettyprint source lang-shell"><code>gulp test</code></pre><p>To run a specific set of tests:</p>
-<pre class="prettyprint source lang-shell"><code>gulp test:node
-gulp test:browser</code></pre><p>Tests are also run on the <a href="https://travis-ci.org/digitalbitsorg/js-digitalbits-base">Travis CI js-digitalbits-base project</a> automatically.</p>
-<h2>Documentation</h2><p>Documentation for this repo lives inside the <a href="./docs">docs folder</a>.</p>
-<h2>Contributing</h2><p>Please see the <a href="./CONTRIBUTING.md">CONTRIBUTING.md</a> for details on how to contribute to this project.</p>
-<h2>Publishing to npm</h2><pre class="prettyprint source"><code>npm version [&lt;newversion> | major | minor | patch | premajor | preminor | prepatch | prerelease]</code></pre><p>A new version will be published to npm <strong>and</strong> Bower by Travis CI.</p>
-<p>npm &gt;=2.13.0 required.
-Read more about <a href="https://docs.npmjs.com/cli/version">npm version</a>.</p>
-<h2>License</h2><p>js-digitalbits-base is licensed under an Apache-2.0 license. See the <a href="./LICENSE">LICENSE</a> file for details.</p></article>
-    </section>
+</div>
 
 
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="memo.js.html">memo.js</a>, <a href="memo.js.html#line82">line 82</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+</div>
+
+        
+    
+
+    
+        <h3 class="subsection-title">Methods</h3>
+
+        
+            
+<div class="section-method">
+
+    
+
+    <h4 class="name" id=".fromXDRObject"><span class="type-signature">(static) </span>fromXDRObject<span class="signature">(object)</span><span class="type-signature"> &rarr; {<a href="Memo.html">Memo</a>}</span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>Returns <a href="Memo.html">Memo</a> from XDR memo object.</p>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="memo.js.html">memo.js</a>, <a href="memo.js.html#line227">line 227</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>object</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>xdr.Memo</code></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                
+                
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="section-returns">
+<h5>Returns:</h5>
+
+        
+
+<dl class="param-type">
+    <dt>
+        Type:
+    </dt>
+    <dd>
+        
+<span class="param-type"><code><a href="Memo.html">Memo</a></code></span>
+
+
+    </dd>
+</dl>
+
+
+    
+</div>
+
+
+
+</div>
+        
+            
+<div class="section-method">
+
+    
+
+    <h4 class="name" id=".hash"><span class="type-signature">(static) </span>hash<span class="signature">(hash)</span><span class="type-signature"> &rarr; {<a href="Memo.html">Memo</a>}</span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>Creates and returns a <code>MemoHash</code> memo.</p>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="memo.js.html">memo.js</a>, <a href="memo.js.html#line190">line 190</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>hash</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>array</code></span>
+|
+
+<span class="param-type"><code>string</code></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                <p>32 byte hash or hex encoded string</p>
+                
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="section-returns">
+<h5>Returns:</h5>
+
+        
+
+<dl class="param-type">
+    <dt>
+        Type:
+    </dt>
+    <dd>
+        
+<span class="param-type"><code><a href="Memo.html">Memo</a></code></span>
+
+
+    </dd>
+</dl>
+
+
+    
+</div>
+
+
+
+</div>
+        
+            
+<div class="section-method">
+
+    
+
+    <h4 class="name" id=".id"><span class="type-signature">(static) </span>id<span class="signature">(id)</span><span class="type-signature"> &rarr; {<a href="Memo.html">Memo</a>}</span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>Creates and returns a <code>MemoID</code> memo.</p>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="memo.js.html">memo.js</a>, <a href="memo.js.html#line181">line 181</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>id</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>string</code></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                <p>64-bit number represented as a string</p>
+                
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="section-returns">
+<h5>Returns:</h5>
+
+        
+
+<dl class="param-type">
+    <dt>
+        Type:
+    </dt>
+    <dd>
+        
+<span class="param-type"><code><a href="Memo.html">Memo</a></code></span>
+
+
+    </dd>
+</dl>
+
+
+    
+</div>
+
+
+
+</div>
+        
+            
+<div class="section-method">
+
+    
+
+    <h4 class="name" id=".none"><span class="type-signature">(static) </span>none<span class="signature">()</span><span class="type-signature"> &rarr; {<a href="Memo.html">Memo</a>}</span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>Returns an empty memo (<code>MemoNone</code>).</p>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="memo.js.html">memo.js</a>, <a href="memo.js.html#line163">line 163</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="section-returns">
+<h5>Returns:</h5>
+
+        
+
+<dl class="param-type">
+    <dt>
+        Type:
+    </dt>
+    <dd>
+        
+<span class="param-type"><code><a href="Memo.html">Memo</a></code></span>
+
+
+    </dd>
+</dl>
+
+
+    
+</div>
+
+
+
+</div>
+        
+            
+<div class="section-method">
+
+    
+
+    <h4 class="name" id=".return"><span class="type-signature">(static) </span>return<span class="signature">(hash)</span><span class="type-signature"> &rarr; {<a href="Memo.html">Memo</a>}</span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>Creates and returns a <code>MemoReturn</code> memo.</p>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="memo.js.html">memo.js</a>, <a href="memo.js.html#line199">line 199</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>hash</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>array</code></span>
+|
+
+<span class="param-type"><code>string</code></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                <p>32 byte hash or hex encoded string</p>
+                
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="section-returns">
+<h5>Returns:</h5>
+
+        
+
+<dl class="param-type">
+    <dt>
+        Type:
+    </dt>
+    <dd>
+        
+<span class="param-type"><code><a href="Memo.html">Memo</a></code></span>
+
+
+    </dd>
+</dl>
+
+
+    
+</div>
+
+
+
+</div>
+        
+            
+<div class="section-method">
+
+    
+
+    <h4 class="name" id=".text"><span class="type-signature">(static) </span>text<span class="signature">(text)</span><span class="type-signature"> &rarr; {<a href="Memo.html">Memo</a>}</span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>Creates and returns a <code>MemoText</code> memo.</p>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="memo.js.html">memo.js</a>, <a href="memo.js.html#line172">line 172</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>text</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>string</code></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                <p>memo text</p>
+                
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="section-returns">
+<h5>Returns:</h5>
+
+        
+
+<dl class="param-type">
+    <dt>
+        Type:
+    </dt>
+    <dd>
+        
+<span class="param-type"><code><a href="Memo.html">Memo</a></code></span>
+
+
+    </dd>
+</dl>
+
+
+    
+</div>
+
+
+
+</div>
+        
+            
+<div class="section-method">
+
+    
+
+    <h4 class="name" id="toXDRObject"><span class="type-signature"></span>toXDRObject<span class="signature">()</span><span class="type-signature"> &rarr; {xdr.Memo}</span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>Returns XDR memo object.</p>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="memo.js.html">memo.js</a>, <a href="memo.js.html#line207">line 207</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="section-returns">
+<h5>Returns:</h5>
+
+        
+
+<dl class="param-type">
+    <dt>
+        Type:
+    </dt>
+    <dd>
+        
+<span class="param-type"><code>xdr.Memo</code></span>
+
+
+    </dd>
+</dl>
+
+
+    
+</div>
+
+
+
+</div>
+        
+    
+
+    
+
+    
+</article>
+
+</section>
 
 
 
