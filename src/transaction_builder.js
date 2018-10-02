@@ -68,7 +68,7 @@ export class TransactionBuilder {
     this.timebounds = clone(opts.timebounds);
     this.memo       = opts.memo || Memo.none();
 
-    // the signed base64 form of the transaction to be sent to Horizon
+    // the signed base64 form of the transaction to be sent to Frontier
     this.blob = null;
   }
 

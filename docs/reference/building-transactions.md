@@ -151,7 +151,7 @@ var transaction = new DigitalBitsBase.TransactionBuilder(account)
 
 transaction.sign(key1);
 transaction.sign(key2);
-// submit tx to Horizon...
+// submit tx to Frontier...
 ```
 
 
