@@ -3,41 +3,36 @@ sudo: required
 dist: trusty
 matrix:
   include:
-#  - node_js: 4.7.2
   - node_js: 6.9.4
   - node_js: 7.10.1
   - node_js: 8.11.4
   - node_js: 10.9.0
-# Skipping sauce for now
-#  - node_js: 6.9.4
-#    env: SAUCE=true
 before_install:
-- npm install -g npm@'>=2.13.5'
-
-# echo "machine github.com login db-devops password $GITHUB_TOKEN" >~/.netrc
+  - npm install -g npm@'>=2.13.5'
 script:
-- |
-  git config --global user.name "Travis CI"
-  git config --global user.email "devops@digitalbits.io"
-  if [ "${SAUCE}" = "true" ]; then
-    if [ "${TRAVIS_PULL_REQUEST}" = "false" ]; then
-      gulp test:sauce
+  - |
+    git config --global user.name "Travis CI"
+    git config --global user.email "devops@digitalbits.io"
+    if [ "${SAUCE}" = "true" ]; then
+      if [ "${TRAVIS_PULL_REQUEST}" = "false" ]; then
+        gulp test:sauce
+      else
+        echo "Pull request - skip Sauce Labs testing..."
+      fi
     else
-      echo "Pull request - skip Sauce Labs testing..."
+      # Ugly but it's the only way to make istanbul generate coverage report
+      babel-node ./node_modules/gulp/bin/gulp.js test:node
     fi
-  else
-    # Ugly but it's the only way to make istanbul generate coverage report
-    babel-node ./node_modules/gulp/bin/gulp.js test:node
-  fi
 after_success:
-- |
-  # Send report to coveralls but only once
-  if [ -z "${SAUCE}" ] && [ "${TRAVIS_NODE_VERSION}" = "4.7.2" ] && [ "${TRAVIS_BRANCH}" = "master" ]; then
-    gulp submit-coverage
-  fi
+  - |
+    # Send report to coveralls but only once
+    if [ -z "${SAUCE}" ] && [ "${TRAVIS_NODE_VERSION}" = "4.7.2" ] && [ "${TRAVIS_BRANCH}" = "master" ]; then
+      gulp submit-coverage
+    fi
 notifications:
+  email: false
   slack:
-    secure: CgXxNEQrQ82EatyF/wSdF0P5rXcWPL+fFZ1lb1aBb8RbVt5gwddJ6xWVD/nYSr6tIJvIYHYhoYsIDPENwezIPsesG7kWXerQhydsEcA34JKxzsStd/TmU6Moxuwy6KTN7yzmL6586nSvoAw9TNPgvRkJFkH07asjGIc9Rlaq7/Y=
+    secure: Fg81fPsg9vVMuLRk8qFAq3PdYNWSV3KWl0Gssp2Psatfv12NUoso209c+RNOUaUFbmeJbZvTniOK2e2ucyoPwMYAmW5yp6HhcZ0C/K4NZx9SyaksT0nd/s3Xe/Qs9V3IdhXjpNC642L0pKFmdxzWtur3j/Of8gB6kxhttYcN+q4CgS5cJf6CzOMIkVR+YhKnwvVaFWGXbIt1WiThMQGPCw6Hd9aKtDRppW9XpE35gMSB3j0CTnoVH/Cd4RRzZzRQXzpRxETqHk5CGVxC+QH77r9j9dntYcw2PH+8pkLIJ8odFKiITGZ/KNEH8LojEY3BiHBUzgBg0C7VX1CtUKoFgcguZn4q816ZBIzBmgWWMaR0yBk103EUCo9CcdARQpxzCwtVdwa912RBnNL2hi/A2cmMT8U2kmgwiRen9U1qkc3ef71i6OhSo7x9ESX8VNsmQOUoKnSdrTi+OOTMXLZB8Z8GF8ZWGaIUcPcQG0kz4m2HvuQX/m+FxWIjdbvdK6CS11wqag9RJIOcMpzFPULh7KgmMs63+X24NfPKtax9pmVayekpJhjabnmEI3/s/x1H27YdiOyPBDexIy2/YGc4/87XnZ6iSiD+ae0K6GL5mYyX9CLYU8pA1RfbDy5BfZ6IGvDK8b9W5G1r0K/fzdTddX89s5PMWnXFlhz4MrfLFGA=
 env:
   global:
   - secure: UfHc1SSKsUx8j2Z/S9WoJA+Qd9T9tWQZEGZVzmAmkGQ+V4iQsYwp2AwWJLH+e0JSKcVz9tiGicPfv8RlVS4YAQ2EeW2kC2W0ULrX4FYwNuuD/tjfHl47Vsoze4QlBuaZd897upt8r30GpUhqLonAkKr3700lZjr9Id3woWrSNfA=
@@ -54,7 +49,7 @@ after_deploy: "./after_deploy.sh"
 deploy:
   - provider: npm
     email: devops@digitalbits.io
-    api_key: $NPM_TOKEN   
+    api_key: "$NPM_TOKEN"
     skip_cleanup: true
     on:
       tags: true
@@ -65,5 +60,5 @@ deploy:
     skip_cleanup: true
     on:
       tags: true
-      repo: DigitalBitsOrg/js-digitalbits-base 
+      repo: DigitalBitsOrg/js-digitalbits-base
       node: 6.9.4
