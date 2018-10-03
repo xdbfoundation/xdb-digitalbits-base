@@ -200,6 +200,7 @@ describe('Operation', function() {
             var xdr = op.toXDR("hex");
             var operation = DigitalBitsBase.xdr.Operation.fromXDR(new Buffer(xdr, "hex"));
             var obj = DigitalBitsBase.Operation.fromXDRObject(operation);
+
             expect(obj.type).to.be.equal("allowTrust");
             expect(obj.trustor).to.be.equal(trustor);
             expect(obj.assetCode).to.be.equal(assetCode);
