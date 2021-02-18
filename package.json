@@ -17,7 +17,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/DigitalBitsOrg/js-digitalbits-base.git"
+    "url": "https://github.com/xdbfoundation/js-digitalbits-base.git"
   },
   "keywords": [
     "digitalbits"
@@ -31,9 +31,9 @@
   ],
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/DigitalBitsOrg/js-digitalbits-base/issues"
+    "url": "https://github.com/xdbfoundation/js-digitalbits-base/issues"
   },
-  "homepage": "https://github.com/DigitalBitsOrg/js-digitalbits-base",
+  "homepage": "https://github.com/xdbfoundation/js-digitalbits-base",
   "devDependencies": {
     "babel": "~5.8.23",
     "babel-core": "~5.8.25",
