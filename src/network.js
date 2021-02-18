@@ -7,8 +7,8 @@ import {hash} from "./hashing";
  * @type {{PUBLIC: string, TESTNET: string}}
  */
 export const Networks = {
-	PUBLIC: "Live DigitalBits Network ; March 2018",
-	TESTNET: "Test DigitalBits Network ; December 2017"
+	PUBLIC: "LiveNet Global DigitalBits Network ; February 2021",
+	TESTNET: "TestNet Global DigitalBits Network ; December 2020"
 };
 
 var current = null;
