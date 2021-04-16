@@ -1,5 +1,5 @@
 import isUndefined from 'lodash/isUndefined';
-import xdr from '../generated/stellar-xdr_generated';
+import xdr from '../generated/digitalbits-xdr_generated';
 
 /**
  * Returns a XDR CreatePasiveSellOfferOp. A "create passive offer" operation creates an

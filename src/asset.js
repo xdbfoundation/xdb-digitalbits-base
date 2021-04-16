@@ -1,7 +1,7 @@
 import clone from 'lodash/clone';
 import padEnd from 'lodash/padEnd';
 import trimEnd from 'lodash/trimEnd';
-import xdr from './generated/stellar-xdr_generated';
+import xdr from './generated/digitalbits-xdr_generated';
 import { Keypair } from './keypair';
 import { StrKey } from './strkey';
 
@@ -114,7 +114,6 @@ export class Asset {
   }
 
   /**
-   * @see [Assets concept](https://www.stellar.org/developers/guides/concepts/assets.html)
    * @returns {string} Asset type. Can be one of following types:
    *
    * * `native`

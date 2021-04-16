@@ -1,5 +1,4 @@
 // The type definitions inside the namespace xdr were automatically generated on 2021-03-19T18:40:30Z
-// using https://github.com/stellar/dts-xdr.
 // DO NOT EDIT definitions inside the xdr namespace or your changes may be overwritten
 
 import { Operation } from './index';
@@ -402,14 +401,14 @@ export namespace xdr {
     static envelopeTypeOpId(): EnvelopeType;
   }
 
-  class StellarValueType {
-    readonly name: 'stellarValueBasic' | 'stellarValueSigned';
+  class DigitalbitsValueType {
+    readonly name: 'digitalbitsValueBasic' | 'digitalbitsValueSigned';
 
     readonly value: 0 | 1;
 
-    static stellarValueBasic(): StellarValueType;
+    static digitalbitsValueBasic(): DigitalbitsValueType;
 
-    static stellarValueSigned(): StellarValueType;
+    static digitalbitsValueSigned(): DigitalbitsValueType;
   }
 
   class LedgerUpgradeType {
@@ -2297,12 +2296,12 @@ export namespace xdr {
     static validateXDR(input: string, format: 'hex' | 'base64'): boolean;
   }
 
-  class StellarValue {
+  class DigitalbitsValue {
     constructor(attributes: {
       txSetHash: Buffer;
       closeTime: TimePoint;
       upgrades: Buffer[];
-      ext: StellarValueExt;
+      ext: DigitalbitsValueExt;
     });
 
     txSetHash(value?: Buffer): Buffer;
@@ -2311,23 +2310,23 @@ export namespace xdr {
 
     upgrades(value?: Buffer[]): Buffer[];
 
-    ext(value?: StellarValueExt): StellarValueExt;
+    ext(value?: DigitalbitsValueExt): DigitalbitsValueExt;
 
     toXDR(format?: 'raw'): Buffer;
 
     toXDR(format: 'hex' | 'base64'): string;
 
-    static read(io: Buffer): StellarValue;
+    static read(io: Buffer): DigitalbitsValue;
 
-    static write(value: StellarValue, io: Buffer): void;
+    static write(value: DigitalbitsValue, io: Buffer): void;
 
-    static isValid(value: StellarValue): boolean;
+    static isValid(value: DigitalbitsValue): boolean;
 
-    static toXDR(value: StellarValue): Buffer;
+    static toXDR(value: DigitalbitsValue): Buffer;
 
-    static fromXDR(input: Buffer, format?: 'raw'): StellarValue;
+    static fromXDR(input: Buffer, format?: 'raw'): DigitalbitsValue;
 
-    static fromXDR(input: string, format: 'hex' | 'base64'): StellarValue;
+    static fromXDR(input: string, format: 'hex' | 'base64'): DigitalbitsValue;
 
     static validateXDR(input: Buffer, format?: 'raw'): boolean;
 
@@ -2338,7 +2337,7 @@ export namespace xdr {
     constructor(attributes: {
       ledgerVersion: number;
       previousLedgerHash: Buffer;
-      scpValue: StellarValue;
+      scpValue: DigitalbitsValue;
       txSetResultHash: Buffer;
       bucketListHash: Buffer;
       ledgerSeq: number;
@@ -2357,7 +2356,7 @@ export namespace xdr {
 
     previousLedgerHash(value?: Buffer): Buffer;
 
-    scpValue(value?: StellarValue): StellarValue;
+    scpValue(value?: DigitalbitsValue): DigitalbitsValue;
 
     txSetResultHash(value?: Buffer): Buffer;
 
@@ -3369,13 +3368,13 @@ export namespace xdr {
   class AuthenticatedMessageV0 {
     constructor(attributes: {
       sequence: Uint64;
-      message: StellarMessage;
+      message: DigitalbitsMessage;
       mac: HmacSha256Mac;
     });
 
     sequence(value?: Uint64): Uint64;
 
-    message(value?: StellarMessage): StellarMessage;
+    message(value?: DigitalbitsMessage): DigitalbitsMessage;
 
     mac(value?: HmacSha256Mac): HmacSha256Mac;
 
@@ -5820,18 +5819,18 @@ export namespace xdr {
     static validateXDR(input: string, format: 'hex' | 'base64'): boolean;
   }
 
-  class StellarValueExt {
-    switch(): StellarValueType;
+  class DigitalbitsValueExt {
+    switch(): DigitalbitsValueType;
 
     lcValueSignature(
       value?: LedgerCloseValueSignature
     ): LedgerCloseValueSignature;
 
-    static stellarValueBasic(): StellarValueExt;
+    static digitalbitsValueBasic(): DigitalbitsValueExt;
 
-    static stellarValueSigned(
+    static digitalbitsValueSigned(
       value: LedgerCloseValueSignature
-    ): StellarValueExt;
+    ): DigitalbitsValueExt;
 
     value(): LedgerCloseValueSignature | void;
 
@@ -5839,17 +5838,17 @@ export namespace xdr {
 
     toXDR(format: 'hex' | 'base64'): string;
 
-    static read(io: Buffer): StellarValueExt;
+    static read(io: Buffer): DigitalbitsValueExt;
 
-    static write(value: StellarValueExt, io: Buffer): void;
+    static write(value: DigitalbitsValueExt, io: Buffer): void;
 
-    static isValid(value: StellarValueExt): boolean;
+    static isValid(value: DigitalbitsValueExt): boolean;
 
-    static toXDR(value: StellarValueExt): Buffer;
+    static toXDR(value: DigitalbitsValueExt): Buffer;
 
-    static fromXDR(input: Buffer, format?: 'raw'): StellarValueExt;
+    static fromXDR(input: Buffer, format?: 'raw'): DigitalbitsValueExt;
 
-    static fromXDR(input: string, format: 'hex' | 'base64'): StellarValueExt;
+    static fromXDR(input: string, format: 'hex' | 'base64'): DigitalbitsValueExt;
 
     static validateXDR(input: Buffer, format?: 'raw'): boolean;
 
@@ -6294,7 +6293,7 @@ export namespace xdr {
     static validateXDR(input: string, format: 'hex' | 'base64'): boolean;
   }
 
-  class StellarMessage {
+  class DigitalbitsMessage {
     switch(): MessageType;
 
     error(value?: Error): Error;
@@ -6329,35 +6328,35 @@ export namespace xdr {
 
     getScpLedgerSeq(value?: number): number;
 
-    static errorMsg(value: Error): StellarMessage;
+    static errorMsg(value: Error): DigitalbitsMessage;
 
-    static hello(value: Hello): StellarMessage;
+    static hello(value: Hello): DigitalbitsMessage;
 
-    static auth(value: Auth): StellarMessage;
+    static auth(value: Auth): DigitalbitsMessage;
 
-    static dontHave(value: DontHave): StellarMessage;
+    static dontHave(value: DontHave): DigitalbitsMessage;
 
-    static getPeers(): StellarMessage;
+    static getPeers(): DigitalbitsMessage;
 
-    static peers(value: PeerAddress[]): StellarMessage;
+    static peers(value: PeerAddress[]): DigitalbitsMessage;
 
-    static getTxSet(value: Buffer): StellarMessage;
+    static getTxSet(value: Buffer): DigitalbitsMessage;
 
-    static txSet(value: TransactionSet): StellarMessage;
+    static txSet(value: TransactionSet): DigitalbitsMessage;
 
-    static transaction(value: TransactionEnvelope): StellarMessage;
+    static transaction(value: TransactionEnvelope): DigitalbitsMessage;
 
-    static surveyRequest(value: SignedSurveyRequestMessage): StellarMessage;
+    static surveyRequest(value: SignedSurveyRequestMessage): DigitalbitsMessage;
 
-    static surveyResponse(value: SignedSurveyResponseMessage): StellarMessage;
+    static surveyResponse(value: SignedSurveyResponseMessage): DigitalbitsMessage;
 
-    static getScpQuorumset(value: Buffer): StellarMessage;
+    static getScpQuorumset(value: Buffer): DigitalbitsMessage;
 
-    static scpQuorumset(value: ScpQuorumSet): StellarMessage;
+    static scpQuorumset(value: ScpQuorumSet): DigitalbitsMessage;
 
-    static scpMessage(value: ScpEnvelope): StellarMessage;
+    static scpMessage(value: ScpEnvelope): DigitalbitsMessage;
 
-    static getScpState(value: number): StellarMessage;
+    static getScpState(value: number): DigitalbitsMessage;
 
     value():
       | Error
@@ -6380,17 +6379,17 @@ export namespace xdr {
 
     toXDR(format: 'hex' | 'base64'): string;
 
-    static read(io: Buffer): StellarMessage;
+    static read(io: Buffer): DigitalbitsMessage;
 
-    static write(value: StellarMessage, io: Buffer): void;
+    static write(value: DigitalbitsMessage, io: Buffer): void;
 
-    static isValid(value: StellarMessage): boolean;
+    static isValid(value: DigitalbitsMessage): boolean;
 
-    static toXDR(value: StellarMessage): Buffer;
+    static toXDR(value: DigitalbitsMessage): Buffer;
 
-    static fromXDR(input: Buffer, format?: 'raw'): StellarMessage;
+    static fromXDR(input: Buffer, format?: 'raw'): DigitalbitsMessage;
 
-    static fromXDR(input: string, format: 'hex' | 'base64'): StellarMessage;
+    static fromXDR(input: string, format: 'hex' | 'base64'): DigitalbitsMessage;
 
     static validateXDR(input: Buffer, format?: 'raw'): boolean;
 

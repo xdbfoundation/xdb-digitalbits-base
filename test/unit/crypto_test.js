@@ -22,7 +22,7 @@ it('new hashing function behaves like crypto', () => {
     .update(input)
     .digest();
 
-  const newHash = StellarBase.hash(input);
+  const newHash = DigitalbitsBase.hash(input);
 
   expectBuffersToBeEqual(cryptoHash, newHash);
 });

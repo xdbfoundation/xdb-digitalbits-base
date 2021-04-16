@@ -7,7 +7,7 @@ module.exports = function(config) {
     frameworks: ['mocha', 'sinon-chai'],
     browsers: ['Firefox'],
 
-    files: ['dist/stellar-base.js', 'test/unit/**/*.js'],
+    files: ['dist/digitalbits-base.js', 'test/unit/**/*.js'],
 
     preprocessors: {
       'test/unit/**/*.js': ['webpack']

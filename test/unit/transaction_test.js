@@ -2,37 +2,37 @@ import randomBytes from 'randombytes';
 
 describe('Transaction', function() {
   it('constructs Transaction object from a TransactionEnvelope', function(done) {
-    let source = new StellarBase.Account(
+    let source = new DigitalbitsBase.Account(
       'GBBM6BKZPEHWYO3E3YKREDPQXMS4VK35YLNU7NFBRI26RAN7GI5POFBB',
       '0'
     );
     let destination =
       'GDJJRRMBK4IWLEPJGIE6SXD2LP7REGZODU7WDC3I2D6MR37F4XSHBKX2';
-    let asset = StellarBase.Asset.native();
+    let asset = DigitalbitsBase.Asset.native();
     let amount = '2000.0000000';
 
-    let input = new StellarBase.TransactionBuilder(source, {
+    let input = new DigitalbitsBase.TransactionBuilder(source, {
       fee: 100,
-      networkPassphrase: StellarBase.Networks.TESTNET
+      networkPassphrase: DigitalbitsBase.Networks.TESTNET
     })
       .addOperation(
-        StellarBase.Operation.payment({ destination, asset, amount })
+        DigitalbitsBase.Operation.payment({ destination, asset, amount })
       )
-      .addMemo(StellarBase.Memo.text('Happy birthday!'))
-      .setTimeout(StellarBase.TimeoutInfinite)
+      .addMemo(DigitalbitsBase.Memo.text('Happy birthday!'))
+      .setTimeout(DigitalbitsBase.TimeoutInfinite)
       .build()
       .toEnvelope()
       .toXDR('base64');
 
-    var transaction = new StellarBase.Transaction(
+    var transaction = new DigitalbitsBase.Transaction(
       input,
-      StellarBase.Networks.TESTNET
+      DigitalbitsBase.Networks.TESTNET
     );
     var operation = transaction.operations[0];
 
     expect(transaction.source).to.be.equal(source.accountId());
     expect(transaction.fee).to.be.equal('100');
-    expect(transaction.memo.type).to.be.equal(StellarBase.MemoText);
+    expect(transaction.memo.type).to.be.equal(DigitalbitsBase.MemoText);
     expect(transaction.memo.value.toString('ascii')).to.be.equal(
       'Happy birthday!'
     );
@@ -45,24 +45,24 @@ describe('Transaction', function() {
 
   describe('toEnvelope', function() {
     beforeEach(function() {
-      let source = new StellarBase.Account(
+      let source = new DigitalbitsBase.Account(
         'GBBM6BKZPEHWYO3E3YKREDPQXMS4VK35YLNU7NFBRI26RAN7GI5POFBB',
         '0'
       );
       let destination =
         'GDJJRRMBK4IWLEPJGIE6SXD2LP7REGZODU7WDC3I2D6MR37F4XSHBKX2';
-      let asset = StellarBase.Asset.native();
+      let asset = DigitalbitsBase.Asset.native();
       let amount = '2000.0000000';
 
-      this.transaction = new StellarBase.TransactionBuilder(source, {
+      this.transaction = new DigitalbitsBase.TransactionBuilder(source, {
         fee: 100,
-        networkPassphrase: StellarBase.Networks.TESTNET
+        networkPassphrase: DigitalbitsBase.Networks.TESTNET
       })
         .addOperation(
-          StellarBase.Operation.payment({ destination, asset, amount })
+          DigitalbitsBase.Operation.payment({ destination, asset, amount })
         )
-        .addMemo(StellarBase.Memo.text('Happy birthday!'))
-        .setTimeout(StellarBase.TimeoutInfinite)
+        .addMemo(DigitalbitsBase.Memo.text('Happy birthday!'))
+        .setTimeout(DigitalbitsBase.TimeoutInfinite)
         .build();
     });
 
@@ -76,113 +76,115 @@ describe('Transaction', function() {
     it('does not return a reference to the source transaction', function() {
       const transaction = this.transaction;
       const envelope = transaction.toEnvelope().value();
-      envelope.tx().fee(StellarBase.xdr.Int64.fromString('300'));
+      envelope.tx().fee(DigitalbitsBase.xdr.Int64.fromString('300'));
 
       expect(transaction.tx.fee().toString()).to.equal('100');
     });
   });
 
   it('throws when a garbage Network is selected', () => {
-    let source = new StellarBase.Account(
+    let source = new DigitalbitsBase.Account(
       'GBBM6BKZPEHWYO3E3YKREDPQXMS4VK35YLNU7NFBRI26RAN7GI5POFBB',
       '0'
     );
     let destination =
       'GDJJRRMBK4IWLEPJGIE6SXD2LP7REGZODU7WDC3I2D6MR37F4XSHBKX2';
-    let asset = StellarBase.Asset.native();
+    let asset = DigitalbitsBase.Asset.native();
     let amount = '2000.0000000';
 
-    let input = new StellarBase.TransactionBuilder(source, {
+    let input = new DigitalbitsBase.TransactionBuilder(source, {
       fee: 100,
-      networkPassphrase: StellarBase.Networks.TESTNET
+      networkPassphrase: DigitalbitsBase.Networks.TESTNET
     })
       .addOperation(
-        StellarBase.Operation.payment({ destination, asset, amount })
+        DigitalbitsBase.Operation.payment({ destination, asset, amount })
       )
-      .addMemo(StellarBase.Memo.text('Happy birthday!'))
-      .setTimeout(StellarBase.TimeoutInfinite)
+      .addMemo(DigitalbitsBase.Memo.text('Happy birthday!'))
+      .setTimeout(DigitalbitsBase.TimeoutInfinite)
       .build()
       .toEnvelope()
       .toXDR('base64');
 
     expect(() => {
-      new StellarBase.Transaction(input, { garbage: 'yes' });
+      new DigitalbitsBase.Transaction(input, { garbage: 'yes' });
     }).to.throw(/expected a string/);
 
     expect(() => {
-      new StellarBase.Transaction(input, 1234);
+      new DigitalbitsBase.Transaction(input, 1234);
     }).to.throw(/expected a string/);
   });
 
   it('throws when a Network is not passed', () => {
-    let source = new StellarBase.Account(
+    let source = new DigitalbitsBase.Account(
       'GBBM6BKZPEHWYO3E3YKREDPQXMS4VK35YLNU7NFBRI26RAN7GI5POFBB',
       '0'
     );
     let destination =
       'GDJJRRMBK4IWLEPJGIE6SXD2LP7REGZODU7WDC3I2D6MR37F4XSHBKX2';
-    let asset = StellarBase.Asset.native();
+    let asset = DigitalbitsBase.Asset.native();
     let amount = '2000.0000000';
 
-    let input = new StellarBase.TransactionBuilder(source, {
+    let input = new DigitalbitsBase.TransactionBuilder(source, {
       fee: 100,
-      networkPassphrase: StellarBase.Networks.TESTNET
+      networkPassphrase: DigitalbitsBase.Networks.TESTNET
     })
       .addOperation(
-        StellarBase.Operation.payment({ destination, asset, amount })
+        DigitalbitsBase.Operation.payment({ destination, asset, amount })
       )
-      .addMemo(StellarBase.Memo.text('Happy birthday!'))
-      .setTimeout(StellarBase.TimeoutInfinite)
+      .addMemo(DigitalbitsBase.Memo.text('Happy birthday!'))
+      .setTimeout(DigitalbitsBase.TimeoutInfinite)
       .build()
       .toEnvelope()
       .toXDR('base64');
 
     expect(() => {
-      new StellarBase.Transaction(input);
+      new DigitalbitsBase.Transaction(input);
     }).to.throw(/expected a string/);
   });
 
   it('throws when no fee is provided', function() {
-    let source = new StellarBase.Account(
+    let source = new DigitalbitsBase.Account(
       'GBBM6BKZPEHWYO3E3YKREDPQXMS4VK35YLNU7NFBRI26RAN7GI5POFBB',
       '0'
     );
     let destination =
       'GDJJRRMBK4IWLEPJGIE6SXD2LP7REGZODU7WDC3I2D6MR37F4XSHBKX2';
-    let asset = StellarBase.Asset.native();
+    let asset = DigitalbitsBase.Asset.native();
     let amount = '2000';
 
     expect(() =>
-      new StellarBase.TransactionBuilder(source, {
-        networkPassphrase: StellarBase.Networks.TESTNET
+      new DigitalbitsBase.TransactionBuilder(source, {
+        networkPassphrase: DigitalbitsBase.Networks.TESTNET
       })
         .addOperation(
-          StellarBase.Operation.payment({ destination, asset, amount })
+          DigitalbitsBase.Operation.payment({ destination, asset, amount })
         )
-        .setTimeout(StellarBase.TimeoutInfinite)
+        .setTimeout(DigitalbitsBase.TimeoutInfinite)
         .build()
     ).to.throw(/must specify fee/);
   });
 
   it('signs correctly', function() {
-    let source = new StellarBase.Account(
+    let source = new DigitalbitsBase.Account(
       'GBBM6BKZPEHWYO3E3YKREDPQXMS4VK35YLNU7NFBRI26RAN7GI5POFBB',
       '0'
     );
     let destination =
       'GDJJRRMBK4IWLEPJGIE6SXD2LP7REGZODU7WDC3I2D6MR37F4XSHBKX2';
-    let asset = StellarBase.Asset.native();
+    let asset = DigitalbitsBase.Asset.native();
     let amount = '2000';
-    let signer = StellarBase.Keypair.master(StellarBase.Networks.TESTNET);
+    let signer = DigitalbitsBase.Keypair.master(
+      DigitalbitsBase.Networks.TESTNET
+    );
 
-    let tx = new StellarBase.TransactionBuilder(source, {
+    let tx = new DigitalbitsBase.TransactionBuilder(source, {
       fee: 100,
-      networkPassphrase: StellarBase.Networks.TESTNET
+      networkPassphrase: DigitalbitsBase.Networks.TESTNET
     })
       .addOperation(
-        StellarBase.Operation.payment({ destination, asset, amount })
+        DigitalbitsBase.Operation.payment({ destination, asset, amount })
       )
-      .setTimeout(StellarBase.TimeoutInfinite)
+      .setTimeout(DigitalbitsBase.TimeoutInfinite)
       .build();
     tx.sign(signer);
 
@@ -194,26 +196,26 @@ describe('Transaction', function() {
   });
 
   it('signs using hash preimage', function() {
-    let source = new StellarBase.Account(
+    let source = new DigitalbitsBase.Account(
       'GBBM6BKZPEHWYO3E3YKREDPQXMS4VK35YLNU7NFBRI26RAN7GI5POFBB',
       '0'
     );
     let destination =
       'GDJJRRMBK4IWLEPJGIE6SXD2LP7REGZODU7WDC3I2D6MR37F4XSHBKX2';
-    let asset = StellarBase.Asset.native();
+    let asset = DigitalbitsBase.Asset.native();
     let amount = '2000';
 
     let preimage = randomBytes(64);
-    let hash = StellarBase.hash(preimage);
+    let hash = DigitalbitsBase.hash(preimage);
 
-    let tx = new StellarBase.TransactionBuilder(source, {
+    let tx = new DigitalbitsBase.TransactionBuilder(source, {
       fee: 100,
-      networkPassphrase: StellarBase.Networks.TESTNET
+      networkPassphrase: DigitalbitsBase.Networks.TESTNET
     })
       .addOperation(
-        StellarBase.Operation.payment({ destination, asset, amount })
+        DigitalbitsBase.Operation.payment({ destination, asset, amount })
       )
-      .setTimeout(StellarBase.TimeoutInfinite)
+      .setTimeout(DigitalbitsBase.TimeoutInfinite)
       .build();
     tx.signHashX(preimage);
 
@@ -226,25 +228,25 @@ describe('Transaction', function() {
   });
 
   it('returns error when signing using hash preimage that is too long', function() {
-    let source = new StellarBase.Account(
+    let source = new DigitalbitsBase.Account(
       'GBBM6BKZPEHWYO3E3YKREDPQXMS4VK35YLNU7NFBRI26RAN7GI5POFBB',
       '0'
     );
     let destination =
       'GDJJRRMBK4IWLEPJGIE6SXD2LP7REGZODU7WDC3I2D6MR37F4XSHBKX2';
-    let asset = StellarBase.Asset.native();
+    let asset = DigitalbitsBase.Asset.native();
     let amount = '2000';
 
     let preimage = randomBytes(2 * 64);
 
-    let tx = new StellarBase.TransactionBuilder(source, {
+    let tx = new DigitalbitsBase.TransactionBuilder(source, {
       fee: 100,
-      networkPassphrase: StellarBase.Networks.TESTNET
+      networkPassphrase: DigitalbitsBase.Networks.TESTNET
     })
       .addOperation(
-        StellarBase.Operation.payment({ destination, asset, amount })
+        DigitalbitsBase.Operation.payment({ destination, asset, amount })
       )
-      .setTimeout(StellarBase.TimeoutInfinite)
+      .setTimeout(DigitalbitsBase.TimeoutInfinite)
       .build();
 
     expect(() => tx.signHashX(preimage)).to.throw(
@@ -256,24 +258,26 @@ describe('Transaction', function() {
     const sourceKey =
       'GBBM6BKZPEHWYO3E3YKREDPQXMS4VK35YLNU7NFBRI26RAN7GI5POFBB';
     // make two sources so they have the same seq number
-    const signedSource = new StellarBase.Account(sourceKey, '20');
-    const addedSignatureSource = new StellarBase.Account(sourceKey, '20');
+    const signedSource = new DigitalbitsBase.Account(sourceKey, '20');
+    const addedSignatureSource = new DigitalbitsBase.Account(sourceKey, '20');
     const destination =
       'GDJJRRMBK4IWLEPJGIE6SXD2LP7REGZODU7WDC3I2D6MR37F4XSHBKX2';
-    const asset = StellarBase.Asset.native();
+    const asset = DigitalbitsBase.Asset.native();
     const amount = '2000';
-    const signer = StellarBase.Keypair.master(StellarBase.Networks.TESTNET);
+    const signer = DigitalbitsBase.Keypair.master(
+      DigitalbitsBase.Networks.TESTNET
+    );
 
-    const signedTx = new StellarBase.TransactionBuilder(signedSource, {
+    const signedTx = new DigitalbitsBase.TransactionBuilder(signedSource, {
       timebounds: {
         minTime: 0,
         maxTime: 1739392569
       },
       fee: 100,
-      networkPassphrase: StellarBase.Networks.TESTNET
+      networkPassphrase: DigitalbitsBase.Networks.TESTNET
     })
       .addOperation(
-        StellarBase.Operation.payment({ destination, asset, amount })
+        DigitalbitsBase.Operation.payment({ destination, asset, amount })
       )
       .build();
 
@@ -282,7 +286,7 @@ describe('Transaction', function() {
 
     const envelopeSigned = signedTx.toEnvelope().value();
 
-    const addedSignatureTx = new StellarBase.TransactionBuilder(
+    const addedSignatureTx = new DigitalbitsBase.TransactionBuilder(
       addedSignatureSource,
       {
         timebounds: {
@@ -290,11 +294,11 @@ describe('Transaction', function() {
           maxTime: 1739392569
         },
         fee: 100,
-        networkPassphrase: StellarBase.Networks.TESTNET
+        networkPassphrase: DigitalbitsBase.Networks.TESTNET
       }
     )
       .addOperation(
-        StellarBase.Operation.payment({ destination, asset, amount })
+        DigitalbitsBase.Operation.payment({ destination, asset, amount })
       )
       .build();
 
@@ -328,24 +332,26 @@ describe('Transaction', function() {
     const sourceKey =
       'GBBM6BKZPEHWYO3E3YKREDPQXMS4VK35YLNU7NFBRI26RAN7GI5POFBB';
     // make two sources so they have the same seq number
-    const signedSource = new StellarBase.Account(sourceKey, '20');
-    const addedSignatureSource = new StellarBase.Account(sourceKey, '20');
+    const signedSource = new DigitalbitsBase.Account(sourceKey, '20');
+    const addedSignatureSource = new DigitalbitsBase.Account(sourceKey, '20');
     const destination =
       'GDJJRRMBK4IWLEPJGIE6SXD2LP7REGZODU7WDC3I2D6MR37F4XSHBKX2';
-    const asset = StellarBase.Asset.native();
+    const asset = DigitalbitsBase.Asset.native();
     const amount = '2000';
-    const signer = StellarBase.Keypair.master(StellarBase.Networks.TESTNET);
+    const signer = DigitalbitsBase.Keypair.master(
+      DigitalbitsBase.Networks.TESTNET
+    );
 
-    const signedTx = new StellarBase.TransactionBuilder(signedSource, {
+    const signedTx = new DigitalbitsBase.TransactionBuilder(signedSource, {
       timebounds: {
         minTime: 0,
         maxTime: 1739392569
       },
       fee: 100,
-      networkPassphrase: StellarBase.Networks.TESTNET
+      networkPassphrase: DigitalbitsBase.Networks.TESTNET
     })
       .addOperation(
-        StellarBase.Operation.payment({ destination, asset, amount })
+        DigitalbitsBase.Operation.payment({ destination, asset, amount })
       )
       .build();
 
@@ -354,14 +360,14 @@ describe('Transaction', function() {
 
     const envelopeSigned = signedTx.toEnvelope().value();
 
-    const signature = new StellarBase.Transaction(
+    const signature = new DigitalbitsBase.Transaction(
       signedTx.toXDR(),
-      StellarBase.Networks.TESTNET
+      DigitalbitsBase.Networks.TESTNET
     ).getKeypairSignature(signer);
 
     expect(signer.sign(presignHash).toString('base64')).to.equal(signature);
 
-    const addedSignatureTx = new StellarBase.TransactionBuilder(
+    const addedSignatureTx = new DigitalbitsBase.TransactionBuilder(
       addedSignatureSource,
       {
         timebounds: {
@@ -369,11 +375,11 @@ describe('Transaction', function() {
           maxTime: 1739392569
         },
         fee: 100,
-        networkPassphrase: StellarBase.Networks.TESTNET
+        networkPassphrase: DigitalbitsBase.Networks.TESTNET
       }
     )
       .addOperation(
-        StellarBase.Operation.payment({ destination, asset, amount })
+        DigitalbitsBase.Operation.payment({ destination, asset, amount })
       )
       .build();
 
@@ -405,25 +411,27 @@ describe('Transaction', function() {
     const sourceKey =
       'GBBM6BKZPEHWYO3E3YKREDPQXMS4VK35YLNU7NFBRI26RAN7GI5POFBB';
     // make two sources so they have the same seq number
-    const source = new StellarBase.Account(sourceKey, '20');
-    const sourceCopy = new StellarBase.Account(sourceKey, '20');
+    const source = new DigitalbitsBase.Account(sourceKey, '20');
+    const sourceCopy = new DigitalbitsBase.Account(sourceKey, '20');
     const destination =
       'GDJJRRMBK4IWLEPJGIE6SXD2LP7REGZODU7WDC3I2D6MR37F4XSHBKX2';
-    const asset = StellarBase.Asset.native();
+    const asset = DigitalbitsBase.Asset.native();
     const originalAmount = '2000';
     const alteredAmount = '1000';
-    const signer = StellarBase.Keypair.master(StellarBase.Networks.TESTNET);
+    const signer = DigitalbitsBase.Keypair.master(
+      DigitalbitsBase.Networks.TESTNET
+    );
 
-    const originalTx = new StellarBase.TransactionBuilder(source, {
+    const originalTx = new DigitalbitsBase.TransactionBuilder(source, {
       timebounds: {
         minTime: 0,
         maxTime: 1739392569
       },
       fee: 100,
-      networkPassphrase: StellarBase.Networks.TESTNET
+      networkPassphrase: DigitalbitsBase.Networks.TESTNET
     })
       .addOperation(
-        StellarBase.Operation.payment({
+        DigitalbitsBase.Operation.payment({
           destination,
           asset,
           amount: originalAmount
@@ -431,21 +439,21 @@ describe('Transaction', function() {
       )
       .build();
 
-    const signature = new StellarBase.Transaction(
+    const signature = new DigitalbitsBase.Transaction(
       originalTx.toXDR(),
-      StellarBase.Networks.TESTNET
+      DigitalbitsBase.Networks.TESTNET
     ).getKeypairSignature(signer);
 
-    const alteredTx = new StellarBase.TransactionBuilder(sourceCopy, {
+    const alteredTx = new DigitalbitsBase.TransactionBuilder(sourceCopy, {
       timebounds: {
         minTime: 0,
         maxTime: 1739392569
       },
       fee: 100,
-      networkPassphrase: StellarBase.Networks.TESTNET
+      networkPassphrase: DigitalbitsBase.Networks.TESTNET
     })
       .addOperation(
-        StellarBase.Operation.payment({
+        DigitalbitsBase.Operation.payment({
           destination,
           asset,
           amount: alteredAmount
@@ -460,31 +468,31 @@ describe('Transaction', function() {
   });
 
   it('accepts 0 as a valid transaction fee', function(done) {
-    let source = new StellarBase.Account(
+    let source = new DigitalbitsBase.Account(
       'GBBM6BKZPEHWYO3E3YKREDPQXMS4VK35YLNU7NFBRI26RAN7GI5POFBB',
       '0'
     );
     let destination =
       'GDJJRRMBK4IWLEPJGIE6SXD2LP7REGZODU7WDC3I2D6MR37F4XSHBKX2';
-    let asset = StellarBase.Asset.native();
+    let asset = DigitalbitsBase.Asset.native();
     let amount = '2000';
 
-    let input = new StellarBase.TransactionBuilder(source, {
+    let input = new DigitalbitsBase.TransactionBuilder(source, {
       fee: 0,
-      networkPassphrase: StellarBase.Networks.TESTNET
+      networkPassphrase: DigitalbitsBase.Networks.TESTNET
     })
       .addOperation(
-        StellarBase.Operation.payment({ destination, asset, amount })
+        DigitalbitsBase.Operation.payment({ destination, asset, amount })
       )
-      .addMemo(StellarBase.Memo.text('Happy birthday!'))
-      .setTimeout(StellarBase.TimeoutInfinite)
+      .addMemo(DigitalbitsBase.Memo.text('Happy birthday!'))
+      .setTimeout(DigitalbitsBase.TimeoutInfinite)
       .build()
       .toEnvelope()
       .toXDR('base64');
 
-    var transaction = new StellarBase.Transaction(
+    var transaction = new DigitalbitsBase.Transaction(
       input,
-      StellarBase.Networks.TESTNET
+      DigitalbitsBase.Networks.TESTNET
     );
     var operation = transaction.operations[0];
 
@@ -496,9 +504,9 @@ describe('Transaction', function() {
   it('outputs xdr as a string', () => {
     const xdrString =
       'AAAAAAW8Dk9idFR5Le+xi0/h/tU47bgC1YWjtPH1vIVO3BklAAAAZACoKlYAAAABAAAAAAAAAAEAAAALdmlhIGtleWJhc2UAAAAAAQAAAAAAAAAIAAAAAN7aGcXNPO36J1I8MR8S4QFhO79T5JGG2ZeS5Ka1m4mJAAAAAAAAAAFO3BklAAAAQP0ccCoeHdm3S7bOhMjXRMn3EbmETJ9glxpKUZjPSPIxpqZ7EkyTgl3FruieqpZd9LYOzdJrNik1GNBLhgTh/AU=';
-    const transaction = new StellarBase.Transaction(
+    const transaction = new DigitalbitsBase.Transaction(
       xdrString,
-      StellarBase.Networks.TESTNET
+      DigitalbitsBase.Networks.TESTNET
     );
     expect(typeof transaction).to.be.equal('object');
     expect(typeof transaction.toXDR).to.be.equal('function');
@@ -509,13 +517,13 @@ describe('Transaction', function() {
     it('handles muxed accounts', function() {
       let baseFee = '100';
       const networkPassphrase = 'Standalone Network ; February 2017';
-      const source = StellarBase.Keypair.master(networkPassphrase);
-      const account = new StellarBase.Account(source.publicKey(), '7');
+      const source = DigitalbitsBase.Keypair.master(networkPassphrase);
+      const account = new DigitalbitsBase.Account(source.publicKey(), '7');
       const destination =
         'GDQERENWDDSQZS7R7WKHZI3BSOYMV3FSWR7TFUYFTKQ447PIX6NREOJM';
       const amount = '2000.0000000';
-      const asset = StellarBase.Asset.native();
-      let tx = new StellarBase.TransactionBuilder(account, {
+      const asset = DigitalbitsBase.Asset.native();
+      let tx = new DigitalbitsBase.TransactionBuilder(account, {
         fee: '100',
         networkPassphrase: networkPassphrase,
         timebounds: {
@@ -524,19 +532,19 @@ describe('Transaction', function() {
         }
       })
         .addOperation(
-          StellarBase.Operation.payment({
+          DigitalbitsBase.Operation.payment({
             destination,
             asset,
             amount
           })
         )
-        .addMemo(StellarBase.Memo.text('Happy birthday!'))
+        .addMemo(DigitalbitsBase.Memo.text('Happy birthday!'))
         .build();
-      let med25519 = new StellarBase.xdr.MuxedAccountMed25519({
-        id: StellarBase.xdr.Uint64.fromString('0'),
+      let med25519 = new DigitalbitsBase.xdr.MuxedAccountMed25519({
+        id: DigitalbitsBase.xdr.Uint64.fromString('0'),
         ed25519: source.rawPublicKey()
       });
-      let muxedAccount = StellarBase.xdr.MuxedAccount.keyTypeMuxedEd25519(
+      let muxedAccount = DigitalbitsBase.xdr.MuxedAccount.keyTypeMuxedEd25519(
         med25519
       );
       const envelope = tx.toEnvelope();
@@ -545,11 +553,11 @@ describe('Transaction', function() {
         .tx()
         .sourceAccount(muxedAccount);
 
-      let destMed25519 = new StellarBase.xdr.MuxedAccountMed25519({
-        id: StellarBase.xdr.Uint64.fromString('0'),
-        ed25519: StellarBase.StrKey.decodeEd25519PublicKey(destination)
+      let destMed25519 = new DigitalbitsBase.xdr.MuxedAccountMed25519({
+        id: DigitalbitsBase.xdr.Uint64.fromString('0'),
+        ed25519: DigitalbitsBase.StrKey.decodeEd25519PublicKey(destination)
       });
-      let destMuxedAccount = StellarBase.xdr.MuxedAccount.keyTypeMuxedEd25519(
+      let destMuxedAccount = DigitalbitsBase.xdr.MuxedAccount.keyTypeMuxedEd25519(
         destMed25519
       );
       envelope
@@ -560,7 +568,7 @@ describe('Transaction', function() {
         .value()
         .destination(destMuxedAccount);
 
-      const txWithMuxedAccount = new StellarBase.Transaction(
+      const txWithMuxedAccount = new DigitalbitsBase.Transaction(
         envelope,
         networkPassphrase
       );

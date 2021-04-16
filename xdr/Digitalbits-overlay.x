@@ -1,10 +1,10 @@
-// Copyright 2015 Stellar Development Foundation and contributors. Licensed
+// Copyright 2015 Digitalbits Development Foundation and contributors. Licensed
 // under the Apache License, Version 2.0. See the COPYING file at the root
 // of this distribution or at http://www.apache.org/licenses/LICENSE-2.0
 
-%#include "xdr/Stellar-ledger.h"
+%#include "xdr/Digitalbits-ledger.h"
 
-namespace stellar
+namespace digitalbits
 {
 
 enum ErrorCode
@@ -176,7 +176,7 @@ case SURVEY_TOPOLOGY:
     TopologyResponseBody topologyResponseBody;
 };
 
-union StellarMessage switch (MessageType type)
+union DigitalbitsMessage switch (MessageType type)
 {
 case ERROR_MSG:
     Error error;
@@ -222,7 +222,7 @@ case 0:
     struct
     {
         uint64 sequence;
-        StellarMessage message;
+        DigitalbitsMessage message;
         HmacSha256Mac mac;
     } v0;
 };

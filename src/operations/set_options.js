@@ -3,7 +3,7 @@
 import isUndefined from 'lodash/isUndefined';
 import isString from 'lodash/isString';
 
-import xdr from '../generated/stellar-xdr_generated';
+import xdr from '../generated/digitalbits-xdr_generated';
 import { Keypair } from '../keypair';
 import { StrKey } from '../strkey';
 
@@ -42,7 +42,6 @@ function weightCheckFunction(value, name) {
  * @param {string} [opts.homeDomain] - sets the home domain used for reverse federation lookup.
  * @param {string} [opts.source] - The source account (defaults to transaction source).
  * @returns {xdr.SetOptionsOp}  XDR operation
- * @see [Account flags](https://www.stellar.org/developers/guides/concepts/accounts.html#flags)
  */
 export function setOptions(opts) {
   const attributes = {};

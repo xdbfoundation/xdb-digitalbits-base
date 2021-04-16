@@ -1,5 +1,5 @@
 import isString from 'lodash/isString';
-import xdr from '../generated/stellar-xdr_generated';
+import xdr from '../generated/digitalbits-xdr_generated';
 import { StrKey } from '../strkey';
 import { Keypair } from '../keypair';
 import { Asset } from '../asset';
@@ -52,7 +52,7 @@ export function revokeAccountSponsorship(opts = {}) {
  * @example
  * const op = Operation.revokeTrustlineSponsorship({
  *   account: 'GDGU5OAPHNPU5UCLE5RDJHG7PXZFQYWKCFOEXSXNMR6KRQRI5T6XXCD7
- *   asset: new StellarBase.Asset(
+ *   asset: new DigitalbitsBase.Asset(
  *     'USDUSD',
  *     'GDGU5OAPHNPU5UCLE5RDJHG7PXZFQYWKCFOEXSXNMR6KRQRI5T6XXCD7'
  *   )

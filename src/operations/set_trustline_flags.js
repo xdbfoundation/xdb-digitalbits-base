@@ -1,4 +1,4 @@
-import xdr from '../generated/stellar-xdr_generated';
+import xdr from '../generated/digitalbits-xdr_generated';
 import { Keypair } from '../keypair';
 
 /**
@@ -35,8 +35,6 @@ import { Keypair } from '../keypair';
  *
  * @link xdr.AccountFlags
  * @link xdr.TrustLineFlags
- * @see https://github.com/stellar/stellar-protocol/blob/master/core/cap-0035.md#set-trustline-flags-operation
- * @see https://developers.stellar.org/docs/start/list-of-operations/#set-options
  */
 export function setTrustLineFlags(opts = {}) {
   const attributes = {};

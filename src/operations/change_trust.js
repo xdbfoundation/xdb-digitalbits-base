@@ -1,7 +1,7 @@
 import isUndefined from 'lodash/isUndefined';
 import { Hyper } from 'js-xdr';
 import BigNumber from 'bignumber.js';
-import xdr from '../generated/stellar-xdr_generated';
+import xdr from '../generated/digitalbits-xdr_generated';
 
 const MAX_INT64 = '9223372036854775807';
 

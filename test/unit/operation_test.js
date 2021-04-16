@@ -8,15 +8,15 @@ describe('Operation', function() {
       var destination =
         'GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ';
       var startingBalance = '1000.0000000';
-      let op = StellarBase.Operation.createAccount({
+      let op = DigitalbitsBase.Operation.createAccount({
         destination,
         startingBalance
       });
       var xdr = op.toXDR('hex');
-      var operation = StellarBase.xdr.Operation.fromXDR(
+      var operation = DigitalbitsBase.xdr.Operation.fromXDR(
         Buffer.from(xdr, 'hex')
       );
-      var obj = StellarBase.Operation.fromXDRObject(operation);
+      var obj = DigitalbitsBase.Operation.fromXDRObject(operation);
       expect(obj.type).to.be.equal('createAccount');
       expect(obj.destination).to.be.equal(destination);
       expect(
@@ -34,7 +34,7 @@ describe('Operation', function() {
         startingBalance: '20',
         source: 'GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ'
       };
-      expect(() => StellarBase.Operation.createAccount(opts)).to.throw(
+      expect(() => DigitalbitsBase.Operation.createAccount(opts)).to.throw(
         /destination is invalid/
       );
     });
@@ -45,7 +45,7 @@ describe('Operation', function() {
         startingBalance: '0',
         source: 'GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ'
       };
-      expect(() => StellarBase.Operation.createAccount(opts)).not.to.throw(
+      expect(() => DigitalbitsBase.Operation.createAccount(opts)).not.to.throw(
         /startingBalance must be of type String, represent a non-negative number and have at most 7 digits after the decimal/
       );
     });
@@ -56,7 +56,7 @@ describe('Operation', function() {
         startingBalance: 20,
         source: 'GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ'
       };
-      expect(() => StellarBase.Operation.createAccount(opts)).to.throw(
+      expect(() => DigitalbitsBase.Operation.createAccount(opts)).to.throw(
         /startingBalance must be of type String, represent a non-negative number and have at most 7 digits after the decimal/
       );
     });
@@ -67,7 +67,7 @@ describe('Operation', function() {
         startingBalance: '20',
         source: 'GCEZ'
       };
-      expect(() => StellarBase.Operation.createAccount(opts)).to.throw(
+      expect(() => DigitalbitsBase.Operation.createAccount(opts)).to.throw(
         /Source address is invalid/
       );
     });
@@ -78,16 +78,20 @@ describe('Operation', function() {
       var destination =
         'GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ';
       var amount = '1000.0000000';
-      var asset = new StellarBase.Asset(
+      var asset = new DigitalbitsBase.Asset(
         'USDUSD',
         'GDGU5OAPHNPU5UCLE5RDJHG7PXZFQYWKCFOEXSXNMR6KRQRI5T6XXCD7'
       );
-      let op = StellarBase.Operation.payment({ destination, asset, amount });
+      let op = DigitalbitsBase.Operation.payment({
+        destination,
+        asset,
+        amount
+      });
       var xdr = op.toXDR('hex');
-      var operation = StellarBase.xdr.Operation.fromXDR(
+      var operation = DigitalbitsBase.xdr.Operation.fromXDR(
         Buffer.from(xdr, 'hex')
       );
-      var obj = StellarBase.Operation.fromXDRObject(operation);
+      var obj = DigitalbitsBase.Operation.fromXDRObject(operation);
       expect(obj.type).to.be.equal('payment');
       expect(obj.destination).to.be.equal(destination);
     });
@@ -95,7 +99,7 @@ describe('Operation', function() {
       var destination =
         'MAAAAAAAAAAAAAB7BQ2L7E5NBWMXDUCMZSIPOBKRDSBYVLMXGSSKF6YNPIB7Y77ITLVL6';
       var amount = '1000.0000000';
-      var asset = new StellarBase.Asset(
+      var asset = new DigitalbitsBase.Asset(
         'USDUSD',
         'GDGU5OAPHNPU5UCLE5RDJHG7PXZFQYWKCFOEXSXNMR6KRQRI5T6XXCD7'
       );
@@ -103,7 +107,7 @@ describe('Operation', function() {
         'MAAAAAAAAAAAAAB7BQ2L7E5NBWMXDUCMZSIPOBKRDSBYVLMXGSSKF6YNPIB7Y77ITLVL6';
 
       expect(() => {
-        StellarBase.Operation.payment({
+        DigitalbitsBase.Operation.payment({
           destination,
           asset,
           amount,
@@ -115,10 +119,10 @@ describe('Operation', function() {
     it('fails to create payment operation with an invalid destination address', function() {
       let opts = {
         destination: 'GCEZW',
-        asset: StellarBase.Asset.native(),
+        asset: DigitalbitsBase.Asset.native(),
         amount: '20'
       };
-      expect(() => StellarBase.Operation.payment(opts)).to.throw(
+      expect(() => DigitalbitsBase.Operation.payment(opts)).to.throw(
         /destination is invalid/
       );
     });
@@ -126,10 +130,10 @@ describe('Operation', function() {
     it('fails to create payment operation with an invalid amount', function() {
       let opts = {
         destination: 'GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ',
-        asset: StellarBase.Asset.native(),
+        asset: DigitalbitsBase.Asset.native(),
         amount: 20
       };
-      expect(() => StellarBase.Operation.payment(opts)).to.throw(
+      expect(() => DigitalbitsBase.Operation.payment(opts)).to.throw(
         /amount argument must be of type String/
       );
     });
@@ -137,29 +141,29 @@ describe('Operation', function() {
 
   describe('.pathPaymentStrictReceive()', function() {
     it('creates a pathPaymentStrictReceiveOp', function() {
-      var sendAsset = new StellarBase.Asset(
+      var sendAsset = new DigitalbitsBase.Asset(
         'USD',
         'GDGU5OAPHNPU5UCLE5RDJHG7PXZFQYWKCFOEXSXNMR6KRQRI5T6XXCD7'
       );
       var sendMax = '3.0070000';
       var destination =
         'GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ';
-      var destAsset = new StellarBase.Asset(
+      var destAsset = new DigitalbitsBase.Asset(
         'USD',
         'GDGU5OAPHNPU5UCLE5RDJHG7PXZFQYWKCFOEXSXNMR6KRQRI5T6XXCD7'
       );
       var destAmount = '3.1415000';
       var path = [
-        new StellarBase.Asset(
+        new DigitalbitsBase.Asset(
           'USD',
           'GBBM6BKZPEHWYO3E3YKREDPQXMS4VK35YLNU7NFBRI26RAN7GI5POFBB'
         ),
-        new StellarBase.Asset(
+        new DigitalbitsBase.Asset(
           'EUR',
           'GDTNXRLOJD2YEBPKK7KCMR7J33AAG5VZXHAJTHIG736D6LVEFLLLKPDL'
         )
       ];
-      let op = StellarBase.Operation.pathPaymentStrictReceive({
+      let op = DigitalbitsBase.Operation.pathPaymentStrictReceive({
         sendAsset,
         sendMax,
         destination,
@@ -168,10 +172,10 @@ describe('Operation', function() {
         path
       });
       var xdr = op.toXDR('hex');
-      var operation = StellarBase.xdr.Operation.fromXDR(
+      var operation = DigitalbitsBase.xdr.Operation.fromXDR(
         Buffer.from(xdr, 'hex')
       );
-      var obj = StellarBase.Operation.fromXDRObject(operation);
+      var obj = DigitalbitsBase.Operation.fromXDRObject(operation);
       expect(obj.type).to.be.equal('pathPaymentStrictReceive');
       expect(obj.sendAsset.equals(sendAsset)).to.be.true;
       expect(
@@ -202,7 +206,7 @@ describe('Operation', function() {
       );
     });
     it('does not support muxed accounts', function() {
-      var sendAsset = new StellarBase.Asset(
+      var sendAsset = new DigitalbitsBase.Asset(
         'USD',
         'GDGU5OAPHNPU5UCLE5RDJHG7PXZFQYWKCFOEXSXNMR6KRQRI5T6XXCD7'
       );
@@ -211,23 +215,23 @@ describe('Operation', function() {
         'MAAAAAAAAAAAAAB7BQ2L7E5NBWMXDUCMZSIPOBKRDSBYVLMXGSSKF6YNPIB7Y77ITLVL6';
       var source =
         'MAAAAAAAAAAAAAB7BQ2L7E5NBWMXDUCMZSIPOBKRDSBYVLMXGSSKF6YNPIB7Y77ITLVL6';
-      var destAsset = new StellarBase.Asset(
+      var destAsset = new DigitalbitsBase.Asset(
         'USD',
         'GDGU5OAPHNPU5UCLE5RDJHG7PXZFQYWKCFOEXSXNMR6KRQRI5T6XXCD7'
       );
       var destAmount = '3.1415000';
       var path = [
-        new StellarBase.Asset(
+        new DigitalbitsBase.Asset(
           'USD',
           'GBBM6BKZPEHWYO3E3YKREDPQXMS4VK35YLNU7NFBRI26RAN7GI5POFBB'
         ),
-        new StellarBase.Asset(
+        new DigitalbitsBase.Asset(
           'EUR',
           'GDTNXRLOJD2YEBPKK7KCMR7J33AAG5VZXHAJTHIG736D6LVEFLLLKPDL'
         )
       ];
       expect(() => {
-        StellarBase.Operation.pathPaymentStrictReceive({
+        DigitalbitsBase.Operation.pathPaymentStrictReceive({
           sendAsset,
           sendMax,
           destination,
@@ -243,14 +247,14 @@ describe('Operation', function() {
         destination: 'GCEZW',
         sendMax: '20',
         destAmount: '50',
-        sendAsset: StellarBase.Asset.native(),
-        destAsset: new StellarBase.Asset(
+        sendAsset: DigitalbitsBase.Asset.native(),
+        destAsset: new DigitalbitsBase.Asset(
           'USD',
           'GDGU5OAPHNPU5UCLE5RDJHG7PXZFQYWKCFOEXSXNMR6KRQRI5T6XXCD7'
         )
       };
       expect(() =>
-        StellarBase.Operation.pathPaymentStrictReceive(opts)
+        DigitalbitsBase.Operation.pathPaymentStrictReceive(opts)
       ).to.throw(/destination is invalid/);
     });
 
@@ -259,14 +263,14 @@ describe('Operation', function() {
         destination: 'GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ',
         sendMax: 20,
         destAmount: '50',
-        sendAsset: StellarBase.Asset.native(),
-        destAsset: new StellarBase.Asset(
+        sendAsset: DigitalbitsBase.Asset.native(),
+        destAsset: new DigitalbitsBase.Asset(
           'USD',
           'GDGU5OAPHNPU5UCLE5RDJHG7PXZFQYWKCFOEXSXNMR6KRQRI5T6XXCD7'
         )
       };
       expect(() =>
-        StellarBase.Operation.pathPaymentStrictReceive(opts)
+        DigitalbitsBase.Operation.pathPaymentStrictReceive(opts)
       ).to.throw(/sendMax argument must be of type String/);
     });
 
@@ -275,43 +279,43 @@ describe('Operation', function() {
         destination: 'GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ',
         sendMax: '20',
         destAmount: 50,
-        sendAsset: StellarBase.Asset.native(),
-        destAsset: new StellarBase.Asset(
+        sendAsset: DigitalbitsBase.Asset.native(),
+        destAsset: new DigitalbitsBase.Asset(
           'USD',
           'GDGU5OAPHNPU5UCLE5RDJHG7PXZFQYWKCFOEXSXNMR6KRQRI5T6XXCD7'
         )
       };
       expect(() =>
-        StellarBase.Operation.pathPaymentStrictReceive(opts)
+        DigitalbitsBase.Operation.pathPaymentStrictReceive(opts)
       ).to.throw(/destAmount argument must be of type String/);
     });
   });
 
   describe('.pathPaymentStrictSend()', function() {
     it('creates a pathPaymentStrictSendOp', function() {
-      var sendAsset = new StellarBase.Asset(
+      var sendAsset = new DigitalbitsBase.Asset(
         'USD',
         'GDGU5OAPHNPU5UCLE5RDJHG7PXZFQYWKCFOEXSXNMR6KRQRI5T6XXCD7'
       );
       var sendAmount = '3.0070000';
       var destination =
         'GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ';
-      var destAsset = new StellarBase.Asset(
+      var destAsset = new DigitalbitsBase.Asset(
         'USD',
         'GDGU5OAPHNPU5UCLE5RDJHG7PXZFQYWKCFOEXSXNMR6KRQRI5T6XXCD7'
       );
       var destMin = '3.1415000';
       var path = [
-        new StellarBase.Asset(
+        new DigitalbitsBase.Asset(
           'USD',
           'GBBM6BKZPEHWYO3E3YKREDPQXMS4VK35YLNU7NFBRI26RAN7GI5POFBB'
         ),
-        new StellarBase.Asset(
+        new DigitalbitsBase.Asset(
           'EUR',
           'GDTNXRLOJD2YEBPKK7KCMR7J33AAG5VZXHAJTHIG736D6LVEFLLLKPDL'
         )
       ];
-      let op = StellarBase.Operation.pathPaymentStrictSend({
+      let op = DigitalbitsBase.Operation.pathPaymentStrictSend({
         sendAsset,
         sendAmount,
         destination,
@@ -320,10 +324,10 @@ describe('Operation', function() {
         path
       });
       var xdr = op.toXDR('hex');
-      var operation = StellarBase.xdr.Operation.fromXDR(
+      var operation = DigitalbitsBase.xdr.Operation.fromXDR(
         Buffer.from(xdr, 'hex')
       );
-      var obj = StellarBase.Operation.fromXDRObject(operation);
+      var obj = DigitalbitsBase.Operation.fromXDRObject(operation);
       expect(obj.type).to.be.equal('pathPaymentStrictSend');
       expect(obj.sendAsset.equals(sendAsset)).to.be.true;
       expect(
@@ -354,7 +358,7 @@ describe('Operation', function() {
       );
     });
     it('does not support muxed accounts', function() {
-      var sendAsset = new StellarBase.Asset(
+      var sendAsset = new DigitalbitsBase.Asset(
         'USD',
         'GDGU5OAPHNPU5UCLE5RDJHG7PXZFQYWKCFOEXSXNMR6KRQRI5T6XXCD7'
       );
@@ -363,19 +367,19 @@ describe('Operation', function() {
         'MAAAAAAAAAAAAAB7BQ2L7E5NBWMXDUCMZSIPOBKRDSBYVLMXGSSKF6YNPIB7Y77ITLVL6';
       var source =
         'MAAAAAAAAAAAAAB7BQ2L7E5NBWMXDUCMZSIPOBKRDSBYVLMXGSSKF6YNPIB7Y77ITLVL6';
-      var destAsset = new StellarBase.Asset(
+      var destAsset = new DigitalbitsBase.Asset(
         'USD',
         'GDGU5OAPHNPU5UCLE5RDJHG7PXZFQYWKCFOEXSXNMR6KRQRI5T6XXCD7'
       );
       var destMin = '3.1415000';
       var path = [
-        new StellarBase.Asset(
+        new DigitalbitsBase.Asset(
           'USD',
           'GBBM6BKZPEHWYO3E3YKREDPQXMS4VK35YLNU7NFBRI26RAN7GI5POFBB'
         )
       ];
       expect(() => {
-        StellarBase.Operation.pathPaymentStrictSend({
+        DigitalbitsBase.Operation.pathPaymentStrictSend({
           sendAsset,
           sendAmount,
           destination,
@@ -391,15 +395,15 @@ describe('Operation', function() {
         destination: 'GCEZW',
         sendAmount: '20',
         destMin: '50',
-        sendAsset: StellarBase.Asset.native(),
-        destAsset: new StellarBase.Asset(
+        sendAsset: DigitalbitsBase.Asset.native(),
+        destAsset: new DigitalbitsBase.Asset(
           'USD',
           'GDGU5OAPHNPU5UCLE5RDJHG7PXZFQYWKCFOEXSXNMR6KRQRI5T6XXCD7'
         )
       };
-      expect(() => StellarBase.Operation.pathPaymentStrictSend(opts)).to.throw(
-        /destination is invalid/
-      );
+      expect(() =>
+        DigitalbitsBase.Operation.pathPaymentStrictSend(opts)
+      ).to.throw(/destination is invalid/);
     });
 
     it('fails to create path payment operation with an invalid sendAmount', function() {
@@ -407,15 +411,15 @@ describe('Operation', function() {
         destination: 'GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ',
         sendAmount: 20,
         destMin: '50',
-        sendAsset: StellarBase.Asset.native(),
-        destAsset: new StellarBase.Asset(
+        sendAsset: DigitalbitsBase.Asset.native(),
+        destAsset: new DigitalbitsBase.Asset(
           'USD',
           'GDGU5OAPHNPU5UCLE5RDJHG7PXZFQYWKCFOEXSXNMR6KRQRI5T6XXCD7'
         )
       };
-      expect(() => StellarBase.Operation.pathPaymentStrictSend(opts)).to.throw(
-        /sendAmount argument must be of type String/
-      );
+      expect(() =>
+        DigitalbitsBase.Operation.pathPaymentStrictSend(opts)
+      ).to.throw(/sendAmount argument must be of type String/);
     });
 
     it('fails to create path payment operation with an invalid destMin', function() {
@@ -423,30 +427,30 @@ describe('Operation', function() {
         destination: 'GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ',
         sendAmount: '20',
         destMin: 50,
-        sendAsset: StellarBase.Asset.native(),
-        destAsset: new StellarBase.Asset(
+        sendAsset: DigitalbitsBase.Asset.native(),
+        destAsset: new DigitalbitsBase.Asset(
           'USD',
           'GDGU5OAPHNPU5UCLE5RDJHG7PXZFQYWKCFOEXSXNMR6KRQRI5T6XXCD7'
         )
       };
-      expect(() => StellarBase.Operation.pathPaymentStrictSend(opts)).to.throw(
-        /destMin argument must be of type String/
-      );
+      expect(() =>
+        DigitalbitsBase.Operation.pathPaymentStrictSend(opts)
+      ).to.throw(/destMin argument must be of type String/);
     });
   });
 
   describe('.changeTrust()', function() {
     it('creates a changeTrustOp', function() {
-      let asset = new StellarBase.Asset(
+      let asset = new DigitalbitsBase.Asset(
         'USD',
         'GDGU5OAPHNPU5UCLE5RDJHG7PXZFQYWKCFOEXSXNMR6KRQRI5T6XXCD7'
       );
-      let op = StellarBase.Operation.changeTrust({ asset: asset });
+      let op = DigitalbitsBase.Operation.changeTrust({ asset: asset });
       var xdr = op.toXDR('hex');
-      var operation = StellarBase.xdr.Operation.fromXDR(
+      var operation = DigitalbitsBase.xdr.Operation.fromXDR(
         Buffer.from(xdr, 'hex')
       );
-      var obj = StellarBase.Operation.fromXDRObject(operation);
+      var obj = DigitalbitsBase.Operation.fromXDRObject(operation);
       expect(obj.type).to.be.equal('changeTrust');
       expect(obj.line).to.be.deep.equal(asset);
       expect(
@@ -460,19 +464,19 @@ describe('Operation', function() {
     });
 
     it('creates a changeTrustOp with limit', function() {
-      let asset = new StellarBase.Asset(
+      let asset = new DigitalbitsBase.Asset(
         'USD',
         'GDGU5OAPHNPU5UCLE5RDJHG7PXZFQYWKCFOEXSXNMR6KRQRI5T6XXCD7'
       );
-      let op = StellarBase.Operation.changeTrust({
+      let op = DigitalbitsBase.Operation.changeTrust({
         asset: asset,
         limit: '50.0000000'
       });
       var xdr = op.toXDR('hex');
-      var operation = StellarBase.xdr.Operation.fromXDR(
+      var operation = DigitalbitsBase.xdr.Operation.fromXDR(
         Buffer.from(xdr, 'hex')
       );
-      var obj = StellarBase.Operation.fromXDRObject(operation);
+      var obj = DigitalbitsBase.Operation.fromXDRObject(operation);
       expect(obj.type).to.be.equal('changeTrust');
       expect(obj.line).to.be.deep.equal(asset);
       expect(
@@ -486,31 +490,31 @@ describe('Operation', function() {
     });
 
     it('deletes a trustline', function() {
-      let asset = new StellarBase.Asset(
+      let asset = new DigitalbitsBase.Asset(
         'USD',
         'GDGU5OAPHNPU5UCLE5RDJHG7PXZFQYWKCFOEXSXNMR6KRQRI5T6XXCD7'
       );
-      let op = StellarBase.Operation.changeTrust({
+      let op = DigitalbitsBase.Operation.changeTrust({
         asset: asset,
         limit: '0.0000000'
       });
       var xdr = op.toXDR('hex');
-      var operation = StellarBase.xdr.Operation.fromXDR(
+      var operation = DigitalbitsBase.xdr.Operation.fromXDR(
         Buffer.from(xdr, 'hex')
       );
-      var obj = StellarBase.Operation.fromXDRObject(operation);
+      var obj = DigitalbitsBase.Operation.fromXDRObject(operation);
       expect(obj.type).to.be.equal('changeTrust');
       expect(obj.line).to.be.deep.equal(asset);
       expect(obj.limit).to.be.equal('0.0000000');
     });
 
     it('throws TypeError for incorrect limit argument', function() {
-      let asset = new StellarBase.Asset(
+      let asset = new DigitalbitsBase.Asset(
         'USD',
         'GDGU5OAPHNPU5UCLE5RDJHG7PXZFQYWKCFOEXSXNMR6KRQRI5T6XXCD7'
       );
       let changeTrust = () =>
-        StellarBase.Operation.changeTrust({ asset: asset, limit: 0 });
+        DigitalbitsBase.Operation.changeTrust({ asset: asset, limit: 0 });
       expect(changeTrust).to.throw(TypeError);
     });
   });
@@ -520,16 +524,16 @@ describe('Operation', function() {
       let trustor = 'GDGU5OAPHNPU5UCLE5RDJHG7PXZFQYWKCFOEXSXNMR6KRQRI5T6XXCD7';
       let assetCode = 'USD';
       let authorize = true;
-      let op = StellarBase.Operation.allowTrust({
+      let op = DigitalbitsBase.Operation.allowTrust({
         trustor: trustor,
         assetCode: assetCode,
         authorize: authorize
       });
       var xdr = op.toXDR('hex');
-      var operation = StellarBase.xdr.Operation.fromXDR(
+      var operation = DigitalbitsBase.xdr.Operation.fromXDR(
         Buffer.from(xdr, 'hex')
       );
-      var obj = StellarBase.Operation.fromXDRObject(operation);
+      var obj = DigitalbitsBase.Operation.fromXDRObject(operation);
       expect(obj.type).to.be.equal('allowTrust');
       expect(obj.trustor).to.be.equal(trustor);
       expect(obj.assetCode).to.be.equal(assetCode);
@@ -540,7 +544,7 @@ describe('Operation', function() {
       let opts = {
         trustor: 'GCEZW'
       };
-      expect(() => StellarBase.Operation.allowTrust(opts)).to.throw(
+      expect(() => DigitalbitsBase.Operation.allowTrust(opts)).to.throw(
         /trustor is invalid/
       );
     });
@@ -548,9 +552,9 @@ describe('Operation', function() {
 
   describe('.setOptions()', function() {
     it('auth flags are set correctly', function() {
-      expect(StellarBase.AuthRequiredFlag).to.be.equal(1);
-      expect(StellarBase.AuthRevocableFlag).to.be.equal(2);
-      expect(StellarBase.AuthImmutableFlag).to.be.equal(4);
+      expect(DigitalbitsBase.AuthRequiredFlag).to.be.equal(1);
+      expect(DigitalbitsBase.AuthRevocableFlag).to.be.equal(2);
+      expect(DigitalbitsBase.AuthImmutableFlag).to.be.equal(4);
     });
 
     it('creates a setOptionsOp', function() {
@@ -558,8 +562,8 @@ describe('Operation', function() {
       opts.inflationDest =
         'GDGU5OAPHNPU5UCLE5RDJHG7PXZFQYWKCFOEXSXNMR6KRQRI5T6XXCD7';
       opts.clearFlags =
-        StellarBase.AuthRevocableFlag | StellarBase.AuthImmutableFlag;
-      opts.setFlags = StellarBase.AuthRequiredFlag;
+        DigitalbitsBase.AuthRevocableFlag | DigitalbitsBase.AuthImmutableFlag;
+      opts.setFlags = DigitalbitsBase.AuthRequiredFlag;
       opts.masterWeight = 0;
       opts.lowThreshold = 1;
       opts.medThreshold = 2;
@@ -571,12 +575,12 @@ describe('Operation', function() {
         weight: 1
       };
       opts.homeDomain = 'www.example.com';
-      let op = StellarBase.Operation.setOptions(opts);
+      let op = DigitalbitsBase.Operation.setOptions(opts);
       var xdr = op.toXDR('hex');
-      var operation = StellarBase.xdr.Operation.fromXDR(
+      var operation = DigitalbitsBase.xdr.Operation.fromXDR(
         Buffer.from(xdr, 'hex')
       );
-      var obj = StellarBase.Operation.fromXDRObject(operation);
+      var obj = DigitalbitsBase.Operation.fromXDRObject(operation);
 
       expect(obj.type).to.be.equal('setOptions');
       expect(obj.inflationDest).to.be.equal(opts.inflationDest);
@@ -597,19 +601,19 @@ describe('Operation', function() {
     it('creates a setOptionsOp with preAuthTx signer', function() {
       var opts = {};
 
-      var hash = StellarBase.hash('Tx hash');
+      var hash = DigitalbitsBase.hash('Tx hash');
 
       opts.signer = {
         preAuthTx: hash,
         weight: 10
       };
 
-      let op = StellarBase.Operation.setOptions(opts);
+      let op = DigitalbitsBase.Operation.setOptions(opts);
       var xdr = op.toXDR('hex');
-      var operation = StellarBase.xdr.Operation.fromXDR(
+      var operation = DigitalbitsBase.xdr.Operation.fromXDR(
         Buffer.from(xdr, 'hex')
       );
-      var obj = StellarBase.Operation.fromXDRObject(operation);
+      var obj = DigitalbitsBase.Operation.fromXDRObject(operation);
 
       expectBuffersToBeEqual(obj.signer.preAuthTx, hash);
       expect(obj.signer.weight).to.be.equal(opts.signer.weight);
@@ -618,7 +622,7 @@ describe('Operation', function() {
     it('creates a setOptionsOp with preAuthTx signer from a hex string', function() {
       var opts = {};
 
-      var hash = StellarBase.hash('Tx hash').toString('hex');
+      var hash = DigitalbitsBase.hash('Tx hash').toString('hex');
       expect(isString(hash)).to.be.true;
 
       opts.signer = {
@@ -626,12 +630,12 @@ describe('Operation', function() {
         weight: 10
       };
 
-      let op = StellarBase.Operation.setOptions(opts);
+      let op = DigitalbitsBase.Operation.setOptions(opts);
       var xdr = op.toXDR('hex');
-      var operation = StellarBase.xdr.Operation.fromXDR(
+      var operation = DigitalbitsBase.xdr.Operation.fromXDR(
         Buffer.from(xdr, 'hex')
       );
-      var obj = StellarBase.Operation.fromXDRObject(operation);
+      var obj = DigitalbitsBase.Operation.fromXDRObject(operation);
 
       expectBuffersToBeEqual(obj.signer.preAuthTx, hash);
       expect(obj.signer.weight).to.be.equal(opts.signer.weight);
@@ -640,19 +644,19 @@ describe('Operation', function() {
     it('creates a setOptionsOp with hash signer', function() {
       var opts = {};
 
-      var hash = StellarBase.hash('Hash Preimage');
+      var hash = DigitalbitsBase.hash('Hash Preimage');
 
       opts.signer = {
         sha256Hash: hash,
         weight: 10
       };
 
-      let op = StellarBase.Operation.setOptions(opts);
+      let op = DigitalbitsBase.Operation.setOptions(opts);
       var xdr = op.toXDR('hex');
-      var operation = StellarBase.xdr.Operation.fromXDR(
+      var operation = DigitalbitsBase.xdr.Operation.fromXDR(
         Buffer.from(xdr, 'hex')
       );
-      var obj = StellarBase.Operation.fromXDRObject(operation);
+      var obj = DigitalbitsBase.Operation.fromXDRObject(operation);
 
       expectBuffersToBeEqual(obj.signer.sha256Hash, hash);
       expect(obj.signer.weight).to.be.equal(opts.signer.weight);
@@ -661,7 +665,7 @@ describe('Operation', function() {
     it('creates a setOptionsOp with hash signer from a hex string', function() {
       var opts = {};
 
-      var hash = StellarBase.hash('Hash Preimage').toString('hex');
+      var hash = DigitalbitsBase.hash('Hash Preimage').toString('hex');
       expect(isString(hash)).to.be.true;
 
       opts.signer = {
@@ -669,37 +673,37 @@ describe('Operation', function() {
         weight: 10
       };
 
-      let op = StellarBase.Operation.setOptions(opts);
+      let op = DigitalbitsBase.Operation.setOptions(opts);
       var xdr = op.toXDR('hex');
-      var operation = StellarBase.xdr.Operation.fromXDR(
+      var operation = DigitalbitsBase.xdr.Operation.fromXDR(
         Buffer.from(xdr, 'hex')
       );
-      var obj = StellarBase.Operation.fromXDRObject(operation);
+      var obj = DigitalbitsBase.Operation.fromXDRObject(operation);
 
       expectBuffersToBeEqual(obj.signer.sha256Hash, hash);
       expect(obj.signer.weight).to.be.equal(opts.signer.weight);
     });
 
     it('empty homeDomain is decoded correctly', function() {
-      const keypair = StellarBase.Keypair.random();
-      const account = new StellarBase.Account(keypair.publicKey(), '0');
+      const keypair = DigitalbitsBase.Keypair.random();
+      const account = new DigitalbitsBase.Account(keypair.publicKey(), '0');
 
       // First operation do nothing.
-      const tx1 = new StellarBase.TransactionBuilder(account, {
+      const tx1 = new DigitalbitsBase.TransactionBuilder(account, {
         fee: 100,
         networkPassphrase: 'Some Network'
       })
-        .addOperation(StellarBase.Operation.setOptions({}))
-        .setTimeout(StellarBase.TimeoutInfinite)
+        .addOperation(DigitalbitsBase.Operation.setOptions({}))
+        .setTimeout(DigitalbitsBase.TimeoutInfinite)
         .build();
 
       // Second operation unset homeDomain
-      const tx2 = new StellarBase.TransactionBuilder(account, {
+      const tx2 = new DigitalbitsBase.TransactionBuilder(account, {
         fee: 100,
         networkPassphrase: 'Some Network'
       })
-        .addOperation(StellarBase.Operation.setOptions({ homeDomain: '' }))
-        .setTimeout(StellarBase.TimeoutInfinite)
+        .addOperation(DigitalbitsBase.Operation.setOptions({ homeDomain: '' }))
+        .setTimeout(DigitalbitsBase.TimeoutInfinite)
         .build();
 
       expect(tx1.operations[0].homeDomain).to.be.undefined;
@@ -710,12 +714,12 @@ describe('Operation', function() {
       let opts = {
         setFlags: '4'
       };
-      let op = StellarBase.Operation.setOptions(opts);
+      let op = DigitalbitsBase.Operation.setOptions(opts);
       var xdr = op.toXDR('hex');
-      var operation = StellarBase.xdr.Operation.fromXDR(
+      var operation = DigitalbitsBase.xdr.Operation.fromXDR(
         Buffer.from(xdr, 'hex')
       );
-      var obj = StellarBase.Operation.fromXDRObject(operation);
+      var obj = DigitalbitsBase.Operation.fromXDRObject(operation);
 
       expect(obj.type).to.be.equal('setOptions');
       expect(obj.setFlags).to.be.equal(4);
@@ -725,19 +729,19 @@ describe('Operation', function() {
       let opts = {
         setFlags: {}
       };
-      expect(() => StellarBase.Operation.setOptions(opts)).to.throw();
+      expect(() => DigitalbitsBase.Operation.setOptions(opts)).to.throw();
     });
 
     it('string clearFlags', function() {
       let opts = {
         clearFlags: '4'
       };
-      let op = StellarBase.Operation.setOptions(opts);
+      let op = DigitalbitsBase.Operation.setOptions(opts);
       var xdr = op.toXDR('hex');
-      var operation = StellarBase.xdr.Operation.fromXDR(
+      var operation = DigitalbitsBase.xdr.Operation.fromXDR(
         Buffer.from(xdr, 'hex')
       );
-      var obj = StellarBase.Operation.fromXDRObject(operation);
+      var obj = DigitalbitsBase.Operation.fromXDRObject(operation);
 
       expect(obj.type).to.be.equal('setOptions');
       expect(obj.clearFlags).to.be.equal(4);
@@ -747,14 +751,14 @@ describe('Operation', function() {
       let opts = {
         clearFlags: {}
       };
-      expect(() => StellarBase.Operation.setOptions(opts)).to.throw();
+      expect(() => DigitalbitsBase.Operation.setOptions(opts)).to.throw();
     });
 
     it('fails to create setOptions operation with an invalid inflationDest address', function() {
       let opts = {
         inflationDest: 'GCEZW'
       };
-      expect(() => StellarBase.Operation.setOptions(opts)).to.throw(
+      expect(() => DigitalbitsBase.Operation.setOptions(opts)).to.throw(
         /inflationDest is invalid/
       );
     });
@@ -766,7 +770,7 @@ describe('Operation', function() {
           weight: 1
         }
       };
-      expect(() => StellarBase.Operation.setOptions(opts)).to.throw(
+      expect(() => DigitalbitsBase.Operation.setOptions(opts)).to.throw(
         /signer.ed25519PublicKey is invalid/
       );
     });
@@ -780,7 +784,7 @@ describe('Operation', function() {
           weight: 1
         }
       };
-      expect(() => StellarBase.Operation.setOptions(opts)).to.throw(
+      expect(() => DigitalbitsBase.Operation.setOptions(opts)).to.throw(
         /Signer object must contain exactly one/
       );
     });
@@ -789,7 +793,7 @@ describe('Operation', function() {
       let opts = {
         masterWeight: 400
       };
-      expect(() => StellarBase.Operation.setOptions(opts)).to.throw(
+      expect(() => DigitalbitsBase.Operation.setOptions(opts)).to.throw(
         /masterWeight value must be between 0 and 255/
       );
     });
@@ -798,7 +802,7 @@ describe('Operation', function() {
       let opts = {
         lowThreshold: 400
       };
-      expect(() => StellarBase.Operation.setOptions(opts)).to.throw(
+      expect(() => DigitalbitsBase.Operation.setOptions(opts)).to.throw(
         /lowThreshold value must be between 0 and 255/
       );
     });
@@ -807,7 +811,7 @@ describe('Operation', function() {
       let opts = {
         medThreshold: 400
       };
-      expect(() => StellarBase.Operation.setOptions(opts)).to.throw(
+      expect(() => DigitalbitsBase.Operation.setOptions(opts)).to.throw(
         /medThreshold value must be between 0 and 255/
       );
     });
@@ -816,7 +820,7 @@ describe('Operation', function() {
       let opts = {
         highThreshold: 400
       };
-      expect(() => StellarBase.Operation.setOptions(opts)).to.throw(
+      expect(() => DigitalbitsBase.Operation.setOptions(opts)).to.throw(
         /highThreshold value must be between 0 and 255/
       );
     });
@@ -825,7 +829,7 @@ describe('Operation', function() {
       let opts = {
         homeDomain: 67238
       };
-      expect(() => StellarBase.Operation.setOptions(opts)).to.throw(
+      expect(() => DigitalbitsBase.Operation.setOptions(opts)).to.throw(
         /homeDomain argument must be of type String/
       );
     });
@@ -834,23 +838,23 @@ describe('Operation', function() {
   describe('.manageSellOffer', function() {
     it('creates a manageSellOfferOp (string price)', function() {
       var opts = {};
-      opts.selling = new StellarBase.Asset(
+      opts.selling = new DigitalbitsBase.Asset(
         'USD',
         'GDGU5OAPHNPU5UCLE5RDJHG7PXZFQYWKCFOEXSXNMR6KRQRI5T6XXCD7'
       );
-      opts.buying = new StellarBase.Asset(
+      opts.buying = new DigitalbitsBase.Asset(
         'USD',
         'GDGU5OAPHNPU5UCLE5RDJHG7PXZFQYWKCFOEXSXNMR6KRQRI5T6XXCD7'
       );
       opts.amount = '3.1234560';
       opts.price = '8.141592';
       opts.offerId = '1';
-      let op = StellarBase.Operation.manageSellOffer(opts);
+      let op = DigitalbitsBase.Operation.manageSellOffer(opts);
       var xdr = op.toXDR('hex');
-      var operation = StellarBase.xdr.Operation.fromXDR(
+      var operation = DigitalbitsBase.xdr.Operation.fromXDR(
         Buffer.from(xdr, 'hex')
       );
-      var obj = StellarBase.Operation.fromXDRObject(operation);
+      var obj = DigitalbitsBase.Operation.fromXDRObject(operation);
       expect(obj.type).to.be.equal('manageSellOffer');
       expect(obj.selling.equals(opts.selling)).to.be.true;
       expect(obj.buying.equals(opts.buying)).to.be.true;
@@ -868,11 +872,11 @@ describe('Operation', function() {
 
     it('creates a manageSellOfferOp (price fraction)', function() {
       var opts = {};
-      opts.selling = new StellarBase.Asset(
+      opts.selling = new DigitalbitsBase.Asset(
         'USD',
         'GDGU5OAPHNPU5UCLE5RDJHG7PXZFQYWKCFOEXSXNMR6KRQRI5T6XXCD7'
       );
-      opts.buying = new StellarBase.Asset(
+      opts.buying = new DigitalbitsBase.Asset(
         'USD',
         'GDGU5OAPHNPU5UCLE5RDJHG7PXZFQYWKCFOEXSXNMR6KRQRI5T6XXCD7'
       );
@@ -882,12 +886,12 @@ describe('Operation', function() {
         d: 10
       };
       opts.offerId = '1';
-      let op = StellarBase.Operation.manageSellOffer(opts);
+      let op = DigitalbitsBase.Operation.manageSellOffer(opts);
       var xdr = op.toXDR('hex');
-      var operation = StellarBase.xdr.Operation.fromXDR(
+      var operation = DigitalbitsBase.xdr.Operation.fromXDR(
         Buffer.from(xdr, 'hex')
       );
-      var obj = StellarBase.Operation.fromXDRObject(operation);
+      var obj = DigitalbitsBase.Operation.fromXDRObject(operation);
       expect(obj.price).to.be.equal(
         new BigNumber(opts.price.n).div(opts.price.d).toString()
       );
@@ -895,11 +899,11 @@ describe('Operation', function() {
 
     it('creates an invalid manageSellOfferOp (price fraction)', function() {
       var opts = {};
-      opts.selling = new StellarBase.Asset(
+      opts.selling = new DigitalbitsBase.Asset(
         'USD',
         'GDGU5OAPHNPU5UCLE5RDJHG7PXZFQYWKCFOEXSXNMR6KRQRI5T6XXCD7'
       );
-      opts.buying = new StellarBase.Asset(
+      opts.buying = new DigitalbitsBase.Asset(
         'USD',
         'GDGU5OAPHNPU5UCLE5RDJHG7PXZFQYWKCFOEXSXNMR6KRQRI5T6XXCD7'
       );
@@ -909,75 +913,75 @@ describe('Operation', function() {
         d: -1
       };
       opts.offerId = '1';
-      expect(() => StellarBase.Operation.manageSellOffer(opts)).to.throw(
+      expect(() => DigitalbitsBase.Operation.manageSellOffer(opts)).to.throw(
         /price must be positive/
       );
     });
 
     it('creates a manageSellOfferOp (number price)', function() {
       var opts = {};
-      opts.selling = new StellarBase.Asset(
+      opts.selling = new DigitalbitsBase.Asset(
         'USD',
         'GDGU5OAPHNPU5UCLE5RDJHG7PXZFQYWKCFOEXSXNMR6KRQRI5T6XXCD7'
       );
-      opts.buying = new StellarBase.Asset(
+      opts.buying = new DigitalbitsBase.Asset(
         'USD',
         'GDGU5OAPHNPU5UCLE5RDJHG7PXZFQYWKCFOEXSXNMR6KRQRI5T6XXCD7'
       );
       opts.amount = '3.123456';
       opts.price = 3.07;
       opts.offerId = '1';
-      let op = StellarBase.Operation.manageSellOffer(opts);
+      let op = DigitalbitsBase.Operation.manageSellOffer(opts);
       var xdr = op.toXDR('hex');
-      var operation = StellarBase.xdr.Operation.fromXDR(
+      var operation = DigitalbitsBase.xdr.Operation.fromXDR(
         Buffer.from(xdr, 'hex')
       );
-      var obj = StellarBase.Operation.fromXDRObject(operation);
+      var obj = DigitalbitsBase.Operation.fromXDRObject(operation);
       expect(obj.type).to.be.equal('manageSellOffer');
       expect(obj.price).to.be.equal(opts.price.toString());
     });
 
     it('creates a manageSellOfferOp (BigNumber price)', function() {
       var opts = {};
-      opts.selling = new StellarBase.Asset(
+      opts.selling = new DigitalbitsBase.Asset(
         'USD',
         'GDGU5OAPHNPU5UCLE5RDJHG7PXZFQYWKCFOEXSXNMR6KRQRI5T6XXCD7'
       );
-      opts.buying = new StellarBase.Asset(
+      opts.buying = new DigitalbitsBase.Asset(
         'USD',
         'GDGU5OAPHNPU5UCLE5RDJHG7PXZFQYWKCFOEXSXNMR6KRQRI5T6XXCD7'
       );
       opts.amount = '3.123456';
       opts.price = new BigNumber(5).dividedBy(4);
       opts.offerId = '1';
-      let op = StellarBase.Operation.manageSellOffer(opts);
+      let op = DigitalbitsBase.Operation.manageSellOffer(opts);
       var xdr = op.toXDR('hex');
-      var operation = StellarBase.xdr.Operation.fromXDR(
+      var operation = DigitalbitsBase.xdr.Operation.fromXDR(
         Buffer.from(xdr, 'hex')
       );
-      var obj = StellarBase.Operation.fromXDRObject(operation);
+      var obj = DigitalbitsBase.Operation.fromXDRObject(operation);
       expect(obj.type).to.be.equal('manageSellOffer');
       expect(obj.price).to.be.equal('1.25');
     });
 
     it('creates a manageSellOfferOp with no offerId', function() {
       var opts = {};
-      opts.selling = new StellarBase.Asset(
+      opts.selling = new DigitalbitsBase.Asset(
         'USD',
         'GDGU5OAPHNPU5UCLE5RDJHG7PXZFQYWKCFOEXSXNMR6KRQRI5T6XXCD7'
       );
-      opts.buying = new StellarBase.Asset(
+      opts.buying = new DigitalbitsBase.Asset(
         'USD',
         'GDGU5OAPHNPU5UCLE5RDJHG7PXZFQYWKCFOEXSXNMR6KRQRI5T6XXCD7'
       );
       opts.amount = '1000.0000000';
       opts.price = '3.141592';
-      let op = StellarBase.Operation.manageSellOffer(opts);
+      let op = DigitalbitsBase.Operation.manageSellOffer(opts);
       var xdr = op.toXDR('hex');
-      var operation = StellarBase.xdr.Operation.fromXDR(
+      var operation = DigitalbitsBase.xdr.Operation.fromXDR(
         Buffer.from(xdr, 'hex')
       );
-      var obj = StellarBase.Operation.fromXDRObject(operation);
+      var obj = DigitalbitsBase.Operation.fromXDRObject(operation);
       expect(obj.type).to.be.equal('manageSellOffer');
       expect(obj.selling.equals(opts.selling)).to.be.true;
       expect(obj.buying.equals(opts.buying)).to.be.true;
@@ -995,23 +999,23 @@ describe('Operation', function() {
 
     it('cancels offer', function() {
       var opts = {};
-      opts.selling = new StellarBase.Asset(
+      opts.selling = new DigitalbitsBase.Asset(
         'USD',
         'GDGU5OAPHNPU5UCLE5RDJHG7PXZFQYWKCFOEXSXNMR6KRQRI5T6XXCD7'
       );
-      opts.buying = new StellarBase.Asset(
+      opts.buying = new DigitalbitsBase.Asset(
         'USD',
         'GDGU5OAPHNPU5UCLE5RDJHG7PXZFQYWKCFOEXSXNMR6KRQRI5T6XXCD7'
       );
       opts.amount = '0.0000000';
       opts.price = '3.141592';
       opts.offerId = '1';
-      let op = StellarBase.Operation.manageSellOffer(opts);
+      let op = DigitalbitsBase.Operation.manageSellOffer(opts);
       var xdr = op.toXDR('hex');
-      var operation = StellarBase.xdr.Operation.fromXDR(
+      var operation = DigitalbitsBase.xdr.Operation.fromXDR(
         Buffer.from(xdr, 'hex')
       );
-      var obj = StellarBase.Operation.fromXDRObject(operation);
+      var obj = DigitalbitsBase.Operation.fromXDRObject(operation);
       expect(obj.type).to.be.equal('manageSellOffer');
       expect(obj.selling.equals(opts.selling)).to.be.true;
       expect(obj.buying.equals(opts.buying)).to.be.true;
@@ -1031,16 +1035,16 @@ describe('Operation', function() {
       let opts = {
         amount: 20,
         price: '10',
-        selling: new StellarBase.Asset(
+        selling: new DigitalbitsBase.Asset(
           'USD',
           'GDGU5OAPHNPU5UCLE5RDJHG7PXZFQYWKCFOEXSXNMR6KRQRI5T6XXCD7'
         ),
-        buying: new StellarBase.Asset(
+        buying: new DigitalbitsBase.Asset(
           'USD',
           'GDGU5OAPHNPU5UCLE5RDJHG7PXZFQYWKCFOEXSXNMR6KRQRI5T6XXCD7'
         )
       };
-      expect(() => StellarBase.Operation.manageSellOffer(opts)).to.throw(
+      expect(() => DigitalbitsBase.Operation.manageSellOffer(opts)).to.throw(
         /amount argument must be of type String/
       );
     });
@@ -1048,16 +1052,16 @@ describe('Operation', function() {
     it('fails to create manageSellOffer operation with missing price', function() {
       let opts = {
         amount: '20',
-        selling: new StellarBase.Asset(
+        selling: new DigitalbitsBase.Asset(
           'USD',
           'GDGU5OAPHNPU5UCLE5RDJHG7PXZFQYWKCFOEXSXNMR6KRQRI5T6XXCD7'
         ),
-        buying: new StellarBase.Asset(
+        buying: new DigitalbitsBase.Asset(
           'USD',
           'GDGU5OAPHNPU5UCLE5RDJHG7PXZFQYWKCFOEXSXNMR6KRQRI5T6XXCD7'
         )
       };
-      expect(() => StellarBase.Operation.manageSellOffer(opts)).to.throw(
+      expect(() => DigitalbitsBase.Operation.manageSellOffer(opts)).to.throw(
         /price argument is required/
       );
     });
@@ -1066,16 +1070,16 @@ describe('Operation', function() {
       let opts = {
         amount: '20',
         price: '-1',
-        selling: new StellarBase.Asset(
+        selling: new DigitalbitsBase.Asset(
           'USD',
           'GDGU5OAPHNPU5UCLE5RDJHG7PXZFQYWKCFOEXSXNMR6KRQRI5T6XXCD7'
         ),
-        buying: new StellarBase.Asset(
+        buying: new DigitalbitsBase.Asset(
           'USD',
           'GDGU5OAPHNPU5UCLE5RDJHG7PXZFQYWKCFOEXSXNMR6KRQRI5T6XXCD7'
         )
       };
-      expect(() => StellarBase.Operation.manageSellOffer(opts)).to.throw(
+      expect(() => DigitalbitsBase.Operation.manageSellOffer(opts)).to.throw(
         /price must be positive/
       );
     });
@@ -1084,16 +1088,16 @@ describe('Operation', function() {
       let opts = {
         amount: '20',
         price: 'test',
-        selling: new StellarBase.Asset(
+        selling: new DigitalbitsBase.Asset(
           'USD',
           'GDGU5OAPHNPU5UCLE5RDJHG7PXZFQYWKCFOEXSXNMR6KRQRI5T6XXCD7'
         ),
-        buying: new StellarBase.Asset(
+        buying: new DigitalbitsBase.Asset(
           'USD',
           'GDGU5OAPHNPU5UCLE5RDJHG7PXZFQYWKCFOEXSXNMR6KRQRI5T6XXCD7'
         )
       };
-      expect(() => StellarBase.Operation.manageSellOffer(opts)).to.throw(
+      expect(() => DigitalbitsBase.Operation.manageSellOffer(opts)).to.throw(
         /not a number/
       );
     });
@@ -1102,23 +1106,23 @@ describe('Operation', function() {
   describe('.manageBuyOffer', function() {
     it('creates a manageBuyOfferOp (string price)', function() {
       var opts = {};
-      opts.selling = new StellarBase.Asset(
+      opts.selling = new DigitalbitsBase.Asset(
         'USD',
         'GDGU5OAPHNPU5UCLE5RDJHG7PXZFQYWKCFOEXSXNMR6KRQRI5T6XXCD7'
       );
-      opts.buying = new StellarBase.Asset(
+      opts.buying = new DigitalbitsBase.Asset(
         'USD',
         'GDGU5OAPHNPU5UCLE5RDJHG7PXZFQYWKCFOEXSXNMR6KRQRI5T6XXCD7'
       );
       opts.buyAmount = '3.1234560';
       opts.price = '8.141592';
       opts.offerId = '1';
-      let op = StellarBase.Operation.manageBuyOffer(opts);
+      let op = DigitalbitsBase.Operation.manageBuyOffer(opts);
       var xdr = op.toXDR('hex');
-      var operation = StellarBase.xdr.Operation.fromXDR(
+      var operation = DigitalbitsBase.xdr.Operation.fromXDR(
         Buffer.from(xdr, 'hex')
       );
-      var obj = StellarBase.Operation.fromXDRObject(operation);
+      var obj = DigitalbitsBase.Operation.fromXDRObject(operation);
       expect(obj.type).to.be.equal('manageBuyOffer');
       expect(obj.selling.equals(opts.selling)).to.be.true;
       expect(obj.buying.equals(opts.buying)).to.be.true;
@@ -1136,11 +1140,11 @@ describe('Operation', function() {
 
     it('creates a manageBuyOfferOp (price fraction)', function() {
       var opts = {};
-      opts.selling = new StellarBase.Asset(
+      opts.selling = new DigitalbitsBase.Asset(
         'USD',
         'GDGU5OAPHNPU5UCLE5RDJHG7PXZFQYWKCFOEXSXNMR6KRQRI5T6XXCD7'
       );
-      opts.buying = new StellarBase.Asset(
+      opts.buying = new DigitalbitsBase.Asset(
         'USD',
         'GDGU5OAPHNPU5UCLE5RDJHG7PXZFQYWKCFOEXSXNMR6KRQRI5T6XXCD7'
       );
@@ -1150,12 +1154,12 @@ describe('Operation', function() {
         d: 10
       };
       opts.offerId = '1';
-      let op = StellarBase.Operation.manageBuyOffer(opts);
+      let op = DigitalbitsBase.Operation.manageBuyOffer(opts);
       var xdr = op.toXDR('hex');
-      var operation = StellarBase.xdr.Operation.fromXDR(
+      var operation = DigitalbitsBase.xdr.Operation.fromXDR(
         Buffer.from(xdr, 'hex')
       );
-      var obj = StellarBase.Operation.fromXDRObject(operation);
+      var obj = DigitalbitsBase.Operation.fromXDRObject(operation);
       expect(obj.price).to.be.equal(
         new BigNumber(opts.price.n).div(opts.price.d).toString()
       );
@@ -1163,11 +1167,11 @@ describe('Operation', function() {
 
     it('creates an invalid manageBuyOfferOp (price fraction)', function() {
       var opts = {};
-      opts.selling = new StellarBase.Asset(
+      opts.selling = new DigitalbitsBase.Asset(
         'USD',
         'GDGU5OAPHNPU5UCLE5RDJHG7PXZFQYWKCFOEXSXNMR6KRQRI5T6XXCD7'
       );
-      opts.buying = new StellarBase.Asset(
+      opts.buying = new DigitalbitsBase.Asset(
         'USD',
         'GDGU5OAPHNPU5UCLE5RDJHG7PXZFQYWKCFOEXSXNMR6KRQRI5T6XXCD7'
       );
@@ -1177,75 +1181,75 @@ describe('Operation', function() {
         d: -1
       };
       opts.offerId = '1';
-      expect(() => StellarBase.Operation.manageBuyOffer(opts)).to.throw(
+      expect(() => DigitalbitsBase.Operation.manageBuyOffer(opts)).to.throw(
         /price must be positive/
       );
     });
 
     it('creates a manageBuyOfferOp (number price)', function() {
       var opts = {};
-      opts.selling = new StellarBase.Asset(
+      opts.selling = new DigitalbitsBase.Asset(
         'USD',
         'GDGU5OAPHNPU5UCLE5RDJHG7PXZFQYWKCFOEXSXNMR6KRQRI5T6XXCD7'
       );
-      opts.buying = new StellarBase.Asset(
+      opts.buying = new DigitalbitsBase.Asset(
         'USD',
         'GDGU5OAPHNPU5UCLE5RDJHG7PXZFQYWKCFOEXSXNMR6KRQRI5T6XXCD7'
       );
       opts.buyAmount = '3.123456';
       opts.price = 3.07;
       opts.offerId = '1';
-      let op = StellarBase.Operation.manageBuyOffer(opts);
+      let op = DigitalbitsBase.Operation.manageBuyOffer(opts);
       var xdr = op.toXDR('hex');
-      var operation = StellarBase.xdr.Operation.fromXDR(
+      var operation = DigitalbitsBase.xdr.Operation.fromXDR(
         Buffer.from(xdr, 'hex')
       );
-      var obj = StellarBase.Operation.fromXDRObject(operation);
+      var obj = DigitalbitsBase.Operation.fromXDRObject(operation);
       expect(obj.type).to.be.equal('manageBuyOffer');
       expect(obj.price).to.be.equal(opts.price.toString());
     });
 
     it('creates a manageBuyOfferOp (BigNumber price)', function() {
       var opts = {};
-      opts.selling = new StellarBase.Asset(
+      opts.selling = new DigitalbitsBase.Asset(
         'USD',
         'GDGU5OAPHNPU5UCLE5RDJHG7PXZFQYWKCFOEXSXNMR6KRQRI5T6XXCD7'
       );
-      opts.buying = new StellarBase.Asset(
+      opts.buying = new DigitalbitsBase.Asset(
         'USD',
         'GDGU5OAPHNPU5UCLE5RDJHG7PXZFQYWKCFOEXSXNMR6KRQRI5T6XXCD7'
       );
       opts.buyAmount = '3.123456';
       opts.price = new BigNumber(5).dividedBy(4);
       opts.offerId = '1';
-      let op = StellarBase.Operation.manageBuyOffer(opts);
+      let op = DigitalbitsBase.Operation.manageBuyOffer(opts);
       var xdr = op.toXDR('hex');
-      var operation = StellarBase.xdr.Operation.fromXDR(
+      var operation = DigitalbitsBase.xdr.Operation.fromXDR(
         Buffer.from(xdr, 'hex')
       );
-      var obj = StellarBase.Operation.fromXDRObject(operation);
+      var obj = DigitalbitsBase.Operation.fromXDRObject(operation);
       expect(obj.type).to.be.equal('manageBuyOffer');
       expect(obj.price).to.be.equal('1.25');
     });
 
     it('creates a manageBuyOfferOp with no offerId', function() {
       var opts = {};
-      opts.selling = new StellarBase.Asset(
+      opts.selling = new DigitalbitsBase.Asset(
         'USD',
         'GDGU5OAPHNPU5UCLE5RDJHG7PXZFQYWKCFOEXSXNMR6KRQRI5T6XXCD7'
       );
-      opts.buying = new StellarBase.Asset(
+      opts.buying = new DigitalbitsBase.Asset(
         'USD',
         'GDGU5OAPHNPU5UCLE5RDJHG7PXZFQYWKCFOEXSXNMR6KRQRI5T6XXCD7'
       );
       opts.buyAmount = '1000.0000000';
       opts.price = '3.141592';
-      let op = StellarBase.Operation.manageBuyOffer(opts);
+      let op = DigitalbitsBase.Operation.manageBuyOffer(opts);
       var xdr = op.toXDR('hex');
-      var operation = StellarBase.xdr.Operation.fromXDR(
+      var operation = DigitalbitsBase.xdr.Operation.fromXDR(
         Buffer.from(xdr, 'hex')
       );
-      var obj = StellarBase.Operation.fromXDRObject(operation);
+      var obj = DigitalbitsBase.Operation.fromXDRObject(operation);
       expect(obj.type).to.be.equal('manageBuyOffer');
       expect(obj.selling.equals(opts.selling)).to.be.true;
       expect(obj.buying.equals(opts.buying)).to.be.true;
@@ -1263,23 +1267,23 @@ describe('Operation', function() {
 
     it('cancels offer', function() {
       var opts = {};
-      opts.selling = new StellarBase.Asset(
+      opts.selling = new DigitalbitsBase.Asset(
         'USD',
         'GDGU5OAPHNPU5UCLE5RDJHG7PXZFQYWKCFOEXSXNMR6KRQRI5T6XXCD7'
       );
-      opts.buying = new StellarBase.Asset(
+      opts.buying = new DigitalbitsBase.Asset(
         'USD',
         'GDGU5OAPHNPU5UCLE5RDJHG7PXZFQYWKCFOEXSXNMR6KRQRI5T6XXCD7'
       );
       opts.buyAmount = '0.0000000';
       opts.price = '3.141592';
       opts.offerId = '1';
-      let op = StellarBase.Operation.manageBuyOffer(opts);
+      let op = DigitalbitsBase.Operation.manageBuyOffer(opts);
       var xdr = op.toXDR('hex');
-      var operation = StellarBase.xdr.Operation.fromXDR(
+      var operation = DigitalbitsBase.xdr.Operation.fromXDR(
         Buffer.from(xdr, 'hex')
       );
-      var obj = StellarBase.Operation.fromXDRObject(operation);
+      var obj = DigitalbitsBase.Operation.fromXDRObject(operation);
       expect(obj.type).to.be.equal('manageBuyOffer');
       expect(obj.selling.equals(opts.selling)).to.be.true;
       expect(obj.buying.equals(opts.buying)).to.be.true;
@@ -1299,16 +1303,16 @@ describe('Operation', function() {
       let opts = {
         buyAmount: 20,
         price: '10',
-        selling: new StellarBase.Asset(
+        selling: new DigitalbitsBase.Asset(
           'USD',
           'GDGU5OAPHNPU5UCLE5RDJHG7PXZFQYWKCFOEXSXNMR6KRQRI5T6XXCD7'
         ),
-        buying: new StellarBase.Asset(
+        buying: new DigitalbitsBase.Asset(
           'USD',
           'GDGU5OAPHNPU5UCLE5RDJHG7PXZFQYWKCFOEXSXNMR6KRQRI5T6XXCD7'
         )
       };
-      expect(() => StellarBase.Operation.manageBuyOffer(opts)).to.throw(
+      expect(() => DigitalbitsBase.Operation.manageBuyOffer(opts)).to.throw(
         /buyAmount argument must be of type String/
       );
     });
@@ -1316,16 +1320,16 @@ describe('Operation', function() {
     it('fails to create manageBuyOffer operation with missing price', function() {
       let opts = {
         buyAmount: '20',
-        selling: new StellarBase.Asset(
+        selling: new DigitalbitsBase.Asset(
           'USD',
           'GDGU5OAPHNPU5UCLE5RDJHG7PXZFQYWKCFOEXSXNMR6KRQRI5T6XXCD7'
         ),
-        buying: new StellarBase.Asset(
+        buying: new DigitalbitsBase.Asset(
           'USD',
           'GDGU5OAPHNPU5UCLE5RDJHG7PXZFQYWKCFOEXSXNMR6KRQRI5T6XXCD7'
         )
       };
-      expect(() => StellarBase.Operation.manageBuyOffer(opts)).to.throw(
+      expect(() => DigitalbitsBase.Operation.manageBuyOffer(opts)).to.throw(
         /price argument is required/
       );
     });
@@ -1334,16 +1338,16 @@ describe('Operation', function() {
       let opts = {
         buyAmount: '20',
         price: '-1',
-        selling: new StellarBase.Asset(
+        selling: new DigitalbitsBase.Asset(
           'USD',
           'GDGU5OAPHNPU5UCLE5RDJHG7PXZFQYWKCFOEXSXNMR6KRQRI5T6XXCD7'
         ),
-        buying: new StellarBase.Asset(
+        buying: new DigitalbitsBase.Asset(
           'USD',
           'GDGU5OAPHNPU5UCLE5RDJHG7PXZFQYWKCFOEXSXNMR6KRQRI5T6XXCD7'
         )
       };
-      expect(() => StellarBase.Operation.manageBuyOffer(opts)).to.throw(
+      expect(() => DigitalbitsBase.Operation.manageBuyOffer(opts)).to.throw(
         /price must be positive/
       );
     });
@@ -1352,16 +1356,16 @@ describe('Operation', function() {
       let opts = {
         buyAmount: '20',
         price: 'test',
-        selling: new StellarBase.Asset(
+        selling: new DigitalbitsBase.Asset(
           'USD',
           'GDGU5OAPHNPU5UCLE5RDJHG7PXZFQYWKCFOEXSXNMR6KRQRI5T6XXCD7'
         ),
-        buying: new StellarBase.Asset(
+        buying: new DigitalbitsBase.Asset(
           'USD',
           'GDGU5OAPHNPU5UCLE5RDJHG7PXZFQYWKCFOEXSXNMR6KRQRI5T6XXCD7'
         )
       };
-      expect(() => StellarBase.Operation.manageBuyOffer(opts)).to.throw(
+      expect(() => DigitalbitsBase.Operation.manageBuyOffer(opts)).to.throw(
         /not a number/
       );
     });
@@ -1370,22 +1374,22 @@ describe('Operation', function() {
   describe('.createPassiveSellOffer', function() {
     it('creates a createPassiveSellOfferOp (string price)', function() {
       var opts = {};
-      opts.selling = new StellarBase.Asset(
+      opts.selling = new DigitalbitsBase.Asset(
         'USD',
         'GDGU5OAPHNPU5UCLE5RDJHG7PXZFQYWKCFOEXSXNMR6KRQRI5T6XXCD7'
       );
-      opts.buying = new StellarBase.Asset(
+      opts.buying = new DigitalbitsBase.Asset(
         'USD',
         'GDGU5OAPHNPU5UCLE5RDJHG7PXZFQYWKCFOEXSXNMR6KRQRI5T6XXCD7'
       );
       opts.amount = '11.2782700';
       opts.price = '3.07';
-      let op = StellarBase.Operation.createPassiveSellOffer(opts);
+      let op = DigitalbitsBase.Operation.createPassiveSellOffer(opts);
       var xdr = op.toXDR('hex');
-      var operation = StellarBase.xdr.Operation.fromXDR(
+      var operation = DigitalbitsBase.xdr.Operation.fromXDR(
         Buffer.from(xdr, 'hex')
       );
-      var obj = StellarBase.Operation.fromXDRObject(operation);
+      var obj = DigitalbitsBase.Operation.fromXDRObject(operation);
       expect(obj.type).to.be.equal('createPassiveSellOffer');
       expect(obj.selling.equals(opts.selling)).to.be.true;
       expect(obj.buying.equals(opts.buying)).to.be.true;
@@ -1402,22 +1406,22 @@ describe('Operation', function() {
 
     it('creates a createPassiveSellOfferOp (number price)', function() {
       var opts = {};
-      opts.selling = new StellarBase.Asset(
+      opts.selling = new DigitalbitsBase.Asset(
         'USD',
         'GDGU5OAPHNPU5UCLE5RDJHG7PXZFQYWKCFOEXSXNMR6KRQRI5T6XXCD7'
       );
-      opts.buying = new StellarBase.Asset(
+      opts.buying = new DigitalbitsBase.Asset(
         'USD',
         'GDGU5OAPHNPU5UCLE5RDJHG7PXZFQYWKCFOEXSXNMR6KRQRI5T6XXCD7'
       );
       opts.amount = '11.2782700';
       opts.price = 3.07;
-      let op = StellarBase.Operation.createPassiveSellOffer(opts);
+      let op = DigitalbitsBase.Operation.createPassiveSellOffer(opts);
       var xdr = op.toXDR('hex');
-      var operation = StellarBase.xdr.Operation.fromXDR(
+      var operation = DigitalbitsBase.xdr.Operation.fromXDR(
         Buffer.from(xdr, 'hex')
       );
-      var obj = StellarBase.Operation.fromXDRObject(operation);
+      var obj = DigitalbitsBase.Operation.fromXDRObject(operation);
       expect(obj.type).to.be.equal('createPassiveSellOffer');
       expect(obj.selling.equals(opts.selling)).to.be.true;
       expect(obj.buying.equals(opts.buying)).to.be.true;
@@ -1434,22 +1438,22 @@ describe('Operation', function() {
 
     it('creates a createPassiveSellOfferOp (BigNumber price)', function() {
       var opts = {};
-      opts.selling = new StellarBase.Asset(
+      opts.selling = new DigitalbitsBase.Asset(
         'USD',
         'GDGU5OAPHNPU5UCLE5RDJHG7PXZFQYWKCFOEXSXNMR6KRQRI5T6XXCD7'
       );
-      opts.buying = new StellarBase.Asset(
+      opts.buying = new DigitalbitsBase.Asset(
         'USD',
         'GDGU5OAPHNPU5UCLE5RDJHG7PXZFQYWKCFOEXSXNMR6KRQRI5T6XXCD7'
       );
       opts.amount = '11.2782700';
       opts.price = new BigNumber(5).dividedBy(4);
-      let op = StellarBase.Operation.createPassiveSellOffer(opts);
+      let op = DigitalbitsBase.Operation.createPassiveSellOffer(opts);
       var xdr = op.toXDR('hex');
-      var operation = StellarBase.xdr.Operation.fromXDR(
+      var operation = DigitalbitsBase.xdr.Operation.fromXDR(
         Buffer.from(xdr, 'hex')
       );
-      var obj = StellarBase.Operation.fromXDRObject(operation);
+      var obj = DigitalbitsBase.Operation.fromXDRObject(operation);
       expect(obj.type).to.be.equal('createPassiveSellOffer');
       expect(obj.selling.equals(opts.selling)).to.be.true;
       expect(obj.buying.equals(opts.buying)).to.be.true;
@@ -1468,53 +1472,53 @@ describe('Operation', function() {
       let opts = {
         amount: 20,
         price: '10',
-        selling: new StellarBase.Asset(
+        selling: new DigitalbitsBase.Asset(
           'USD',
           'GDGU5OAPHNPU5UCLE5RDJHG7PXZFQYWKCFOEXSXNMR6KRQRI5T6XXCD7'
         ),
-        buying: new StellarBase.Asset(
+        buying: new DigitalbitsBase.Asset(
           'USD',
           'GDGU5OAPHNPU5UCLE5RDJHG7PXZFQYWKCFOEXSXNMR6KRQRI5T6XXCD7'
         )
       };
-      expect(() => StellarBase.Operation.createPassiveSellOffer(opts)).to.throw(
-        /amount argument must be of type String/
-      );
+      expect(() =>
+        DigitalbitsBase.Operation.createPassiveSellOffer(opts)
+      ).to.throw(/amount argument must be of type String/);
     });
 
     it('fails to create createPassiveSellOffer operation with missing price', function() {
       let opts = {
         amount: '20',
-        selling: new StellarBase.Asset(
+        selling: new DigitalbitsBase.Asset(
           'USD',
           'GDGU5OAPHNPU5UCLE5RDJHG7PXZFQYWKCFOEXSXNMR6KRQRI5T6XXCD7'
         ),
-        buying: new StellarBase.Asset(
+        buying: new DigitalbitsBase.Asset(
           'USD',
           'GDGU5OAPHNPU5UCLE5RDJHG7PXZFQYWKCFOEXSXNMR6KRQRI5T6XXCD7'
         )
       };
-      expect(() => StellarBase.Operation.createPassiveSellOffer(opts)).to.throw(
-        /price argument is required/
-      );
+      expect(() =>
+        DigitalbitsBase.Operation.createPassiveSellOffer(opts)
+      ).to.throw(/price argument is required/);
     });
 
     it('fails to create createPassiveSellOffer operation with negative price', function() {
       let opts = {
         amount: '20',
         price: '-2',
-        selling: new StellarBase.Asset(
+        selling: new DigitalbitsBase.Asset(
           'USD',
           'GDGU5OAPHNPU5UCLE5RDJHG7PXZFQYWKCFOEXSXNMR6KRQRI5T6XXCD7'
         ),
-        buying: new StellarBase.Asset(
+        buying: new DigitalbitsBase.Asset(
           'USD',
           'GDGU5OAPHNPU5UCLE5RDJHG7PXZFQYWKCFOEXSXNMR6KRQRI5T6XXCD7'
         )
       };
-      expect(() => StellarBase.Operation.createPassiveSellOffer(opts)).to.throw(
-        /price must be positive/
-      );
+      expect(() =>
+        DigitalbitsBase.Operation.createPassiveSellOffer(opts)
+      ).to.throw(/price must be positive/);
     });
   });
 
@@ -1523,12 +1527,12 @@ describe('Operation', function() {
       var opts = {};
       opts.destination =
         'GDGU5OAPHNPU5UCLE5RDJHG7PXZFQYWKCFOEXSXNMR6KRQRI5T6XXCD7';
-      let op = StellarBase.Operation.accountMerge(opts);
+      let op = DigitalbitsBase.Operation.accountMerge(opts);
       var xdr = op.toXDR('hex');
-      var operation = StellarBase.xdr.Operation.fromXDR(
+      var operation = DigitalbitsBase.xdr.Operation.fromXDR(
         Buffer.from(xdr, 'hex')
       );
-      var obj = StellarBase.Operation.fromXDRObject(operation);
+      var obj = DigitalbitsBase.Operation.fromXDRObject(operation);
       expect(obj.type).to.be.equal('accountMerge');
       expect(obj.destination).to.be.equal(opts.destination);
     });
@@ -1539,14 +1543,14 @@ describe('Operation', function() {
       opts.source =
         'MAAAAAAAAAAAAAB7BQ2L7E5NBWMXDUCMZSIPOBKRDSBYVLMXGSSKF6YNPIB7Y77ITLVL6';
       expect(() => {
-        StellarBase.Operation.accountMerge(opts);
+        DigitalbitsBase.Operation.accountMerge(opts);
       }).to.throw(/destination is invalid/);
     });
     it('fails to create accountMerge operation with an invalid destination address', function() {
       let opts = {
         destination: 'GCEZW'
       };
-      expect(() => StellarBase.Operation.accountMerge(opts)).to.throw(
+      expect(() => DigitalbitsBase.Operation.accountMerge(opts)).to.throw(
         /destination is invalid/
       );
     });
@@ -1554,12 +1558,12 @@ describe('Operation', function() {
 
   describe('.inflation', function() {
     it('creates a inflationOp', function() {
-      let op = StellarBase.Operation.inflation();
+      let op = DigitalbitsBase.Operation.inflation();
       var xdr = op.toXDR('hex');
-      var operation = StellarBase.xdr.Operation.fromXDR(
+      var operation = DigitalbitsBase.xdr.Operation.fromXDR(
         Buffer.from(xdr, 'hex')
       );
-      var obj = StellarBase.Operation.fromXDRObject(operation);
+      var obj = DigitalbitsBase.Operation.fromXDRObject(operation);
       expect(obj.type).to.be.equal('inflation');
     });
   });
@@ -1570,12 +1574,12 @@ describe('Operation', function() {
         name: 'name',
         value: 'value'
       };
-      let op = StellarBase.Operation.manageData(opts);
+      let op = DigitalbitsBase.Operation.manageData(opts);
       var xdr = op.toXDR('hex');
-      var operation = StellarBase.xdr.Operation.fromXDR(
+      var operation = DigitalbitsBase.xdr.Operation.fromXDR(
         Buffer.from(xdr, 'hex')
       );
-      var obj = StellarBase.Operation.fromXDRObject(operation);
+      var obj = DigitalbitsBase.Operation.fromXDRObject(operation);
       expect(obj.type).to.be.equal('manageData');
       expect(obj.name).to.be.equal(opts.name);
       expect(obj.value.toString('ascii')).to.be.equal(opts.value);
@@ -1586,12 +1590,12 @@ describe('Operation', function() {
         name: 'name',
         value: Buffer.from('value')
       };
-      let op = StellarBase.Operation.manageData(opts);
+      let op = DigitalbitsBase.Operation.manageData(opts);
       var xdr = op.toXDR('hex');
-      var operation = StellarBase.xdr.Operation.fromXDR(
+      var operation = DigitalbitsBase.xdr.Operation.fromXDR(
         Buffer.from(xdr, 'hex')
       );
-      var obj = StellarBase.Operation.fromXDRObject(operation);
+      var obj = DigitalbitsBase.Operation.fromXDRObject(operation);
       expect(obj.type).to.be.equal('manageData');
       expect(obj.name).to.be.equal(opts.name);
       expect(obj.value.toString('hex')).to.be.equal(opts.value.toString('hex'));
@@ -1602,12 +1606,12 @@ describe('Operation', function() {
         name: 'name',
         value: null
       };
-      let op = StellarBase.Operation.manageData(opts);
+      let op = DigitalbitsBase.Operation.manageData(opts);
       var xdr = op.toXDR('hex');
-      var operation = StellarBase.xdr.Operation.fromXDR(
+      var operation = DigitalbitsBase.xdr.Operation.fromXDR(
         Buffer.from(xdr, 'hex')
       );
-      var obj = StellarBase.Operation.fromXDRObject(operation);
+      var obj = DigitalbitsBase.Operation.fromXDRObject(operation);
       expect(obj.type).to.be.equal('manageData');
       expect(obj.name).to.be.equal(opts.name);
       expect(obj.value).to.be.undefined;
@@ -1616,19 +1620,19 @@ describe('Operation', function() {
     describe('fails to create manageData operation', function() {
       it('name is not a string', function() {
         expect(() =>
-          StellarBase.Operation.manageData({ name: 123 })
+          DigitalbitsBase.Operation.manageData({ name: 123 })
         ).to.throw();
       });
 
       it('name is too long', function() {
         expect(() =>
-          StellarBase.Operation.manageData({ name: 'a'.repeat(65) })
+          DigitalbitsBase.Operation.manageData({ name: 'a'.repeat(65) })
         ).to.throw();
       });
 
       it('value is too long', function() {
         expect(() =>
-          StellarBase.Operation.manageData({
+          DigitalbitsBase.Operation.manageData({
             name: 'a',
             value: Buffer.alloc(65)
           })
@@ -1642,19 +1646,19 @@ describe('Operation', function() {
       var opts = {
         bumpTo: '77833036561510299'
       };
-      let op = StellarBase.Operation.bumpSequence(opts);
+      let op = DigitalbitsBase.Operation.bumpSequence(opts);
       var xdr = op.toXDR('hex');
-      var operation = StellarBase.xdr.Operation.fromXDR(
+      var operation = DigitalbitsBase.xdr.Operation.fromXDR(
         Buffer.from(xdr, 'hex')
       );
-      var obj = StellarBase.Operation.fromXDRObject(operation);
+      var obj = DigitalbitsBase.Operation.fromXDRObject(operation);
       expect(obj.type).to.be.equal('bumpSequence');
       expect(obj.bumpTo).to.be.equal(opts.bumpTo);
     });
 
     it('fails when `bumpTo` is not string', function() {
       expect(() =>
-        StellarBase.Operation.bumpSequence({ bumpTo: 1000 })
+        DigitalbitsBase.Operation.bumpSequence({ bumpTo: 1000 })
       ).to.throw();
     });
   });
@@ -1672,7 +1676,7 @@ describe('Operation', function() {
       for (var i in values) {
         let { value, expected } = values[i];
         expect(
-          StellarBase.Operation._checkUnsignedIntValue(value, value)
+          DigitalbitsBase.Operation._checkUnsignedIntValue(value, value)
         ).to.be.equal(expected);
       }
     });
@@ -1695,14 +1699,14 @@ describe('Operation', function() {
       for (var i in values) {
         let value = values[i];
         expect(() =>
-          StellarBase.Operation._checkUnsignedIntValue(value, value)
+          DigitalbitsBase.Operation._checkUnsignedIntValue(value, value)
         ).to.throw();
       }
     });
 
     it('return correct values when isValidFunction is set', function() {
       expect(
-        StellarBase.Operation._checkUnsignedIntValue(
+        DigitalbitsBase.Operation._checkUnsignedIntValue(
           'test',
           undefined,
           (value) => value < 10
@@ -1710,14 +1714,14 @@ describe('Operation', function() {
       ).to.equal(undefined);
 
       expect(
-        StellarBase.Operation._checkUnsignedIntValue(
+        DigitalbitsBase.Operation._checkUnsignedIntValue(
           'test',
           8,
           (value) => value < 10
         )
       ).to.equal(8);
       expect(
-        StellarBase.Operation._checkUnsignedIntValue(
+        DigitalbitsBase.Operation._checkUnsignedIntValue(
           'test',
           '8',
           (value) => value < 10
@@ -1725,14 +1729,14 @@ describe('Operation', function() {
       ).to.equal(8);
 
       expect(() => {
-        StellarBase.Operation._checkUnsignedIntValue(
+        DigitalbitsBase.Operation._checkUnsignedIntValue(
           'test',
           12,
           (value) => value < 10
         );
       }).to.throw();
       expect(() => {
-        StellarBase.Operation._checkUnsignedIntValue(
+        DigitalbitsBase.Operation._checkUnsignedIntValue(
           'test',
           '12',
           (value) => value < 10
@@ -1743,27 +1747,27 @@ describe('Operation', function() {
 
   describe('createClaimableBalance()', function() {
     it('creates a CreateClaimableBalanceOp', function() {
-      const asset = new StellarBase.Asset(
+      const asset = new DigitalbitsBase.Asset(
         'USD',
         'GDGU5OAPHNPU5UCLE5RDJHG7PXZFQYWKCFOEXSXNMR6KRQRI5T6XXCD7'
       );
       const amount = '100.0000000';
       const claimants = [
-        new StellarBase.Claimant(
+        new DigitalbitsBase.Claimant(
           'GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ'
         )
       ];
 
-      const op = StellarBase.Operation.createClaimableBalance({
+      const op = DigitalbitsBase.Operation.createClaimableBalance({
         asset,
         amount,
         claimants
       });
       var xdr = op.toXDR('hex');
-      var operation = StellarBase.xdr.Operation.fromXDR(
+      var operation = DigitalbitsBase.xdr.Operation.fromXDR(
         Buffer.from(xdr, 'hex')
       );
-      var obj = StellarBase.Operation.fromXDRObject(operation);
+      var obj = DigitalbitsBase.Operation.fromXDRObject(operation);
       expect(obj.type).to.be.equal('createClaimableBalance');
       expect(obj.asset.toString()).to.equal(asset.toString());
       expect(obj.amount).to.be.equal(amount);
@@ -1775,7 +1779,7 @@ describe('Operation', function() {
     it('throws an error when asset is not present', function() {
       const amount = '100.0000000';
       const claimants = [
-        new StellarBase.Claimant(
+        new DigitalbitsBase.Claimant(
           'GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ'
         )
       ];
@@ -1786,18 +1790,18 @@ describe('Operation', function() {
       };
 
       expect(() =>
-        StellarBase.Operation.createClaimableBalance(attrs)
+        DigitalbitsBase.Operation.createClaimableBalance(attrs)
       ).to.throw(
         /must provide an asset for create claimable balance operation/
       );
     });
     it('throws an error when amount is not present', function() {
-      const asset = new StellarBase.Asset(
+      const asset = new DigitalbitsBase.Asset(
         'USD',
         'GDGU5OAPHNPU5UCLE5RDJHG7PXZFQYWKCFOEXSXNMR6KRQRI5T6XXCD7'
       );
       const claimants = [
-        new StellarBase.Claimant(
+        new DigitalbitsBase.Claimant(
           'GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ'
         )
       ];
@@ -1808,13 +1812,13 @@ describe('Operation', function() {
       };
 
       expect(() =>
-        StellarBase.Operation.createClaimableBalance(attrs)
+        DigitalbitsBase.Operation.createClaimableBalance(attrs)
       ).to.throw(
         /amount argument must be of type String, represent a positive number and have at most 7 digits after the decimal/
       );
     });
     it('throws an error when claimants is empty or not present', function() {
-      const asset = new StellarBase.Asset(
+      const asset = new DigitalbitsBase.Asset(
         'USD',
         'GDGU5OAPHNPU5UCLE5RDJHG7PXZFQYWKCFOEXSXNMR6KRQRI5T6XXCD7'
       );
@@ -1826,12 +1830,12 @@ describe('Operation', function() {
       };
 
       expect(() =>
-        StellarBase.Operation.createClaimableBalance(attrs)
+        DigitalbitsBase.Operation.createClaimableBalance(attrs)
       ).to.throw(/must provide at least one claimant/);
 
       attrs.claimants = [];
       expect(() =>
-        StellarBase.Operation.createClaimableBalance(attrs)
+        DigitalbitsBase.Operation.createClaimableBalance(attrs)
       ).to.throw(/must provide at least one claimant/);
     });
   });
@@ -1841,23 +1845,23 @@ describe('Operation', function() {
       const balanceId =
         '00000000da0d57da7d4850e7fc10d2a9d0ebc731f7afb40574c03395b17d49149b91f5be';
 
-      const op = StellarBase.Operation.claimClaimableBalance({ balanceId });
+      const op = DigitalbitsBase.Operation.claimClaimableBalance({ balanceId });
       var xdr = op.toXDR('hex');
-      var operation = StellarBase.xdr.Operation.fromXDR(
+      var operation = DigitalbitsBase.xdr.Operation.fromXDR(
         Buffer.from(xdr, 'hex')
       );
-      var obj = StellarBase.Operation.fromXDRObject(operation);
+      var obj = DigitalbitsBase.Operation.fromXDRObject(operation);
       expect(obj.type).to.be.equal('claimClaimableBalance');
       expect(obj.balanceId).to.equal(balanceId);
     });
     it('throws an error when balanceId is not present', function() {
-      expect(() => StellarBase.Operation.claimClaimableBalance({})).to.throw(
-        /must provide a valid claimable balance id/
-      );
+      expect(() =>
+        DigitalbitsBase.Operation.claimClaimableBalance({})
+      ).to.throw(/must provide a valid claimable balance id/);
     });
     it('throws an error for invalid balanceIds', function() {
       expect(() =>
-        StellarBase.Operation.claimClaimableBalance({
+        DigitalbitsBase.Operation.claimClaimableBalance({
           balanceId: 'badc0ffee'
         })
       ).to.throw(/must provide a valid claimable balance id/);
@@ -1869,25 +1873,25 @@ describe('Operation', function() {
       const balanceId =
         '00000000da0d57da7d4850e7fc10d2a9d0ebc731f7afb40574c03395b17d49149b91f5be';
 
-      const op = StellarBase.Operation.clawbackClaimableBalance({
+      const op = DigitalbitsBase.Operation.clawbackClaimableBalance({
         balanceId: balanceId
       });
       var xdr = op.toXDR('hex');
-      var operation = StellarBase.xdr.Operation.fromXDR(
+      var operation = DigitalbitsBase.xdr.Operation.fromXDR(
         Buffer.from(xdr, 'hex')
       );
-      var obj = StellarBase.Operation.fromXDRObject(operation);
+      var obj = DigitalbitsBase.Operation.fromXDRObject(operation);
       expect(obj.type).to.be.equal('clawbackClaimableBalance');
       expect(obj.balanceId).to.equal(balanceId);
     });
     it('throws an error when balanceId is not present', function() {
-      expect(() => StellarBase.Operation.clawbackClaimableBalance({})).to.throw(
-        /must provide a valid claimable balance id/
-      );
+      expect(() =>
+        DigitalbitsBase.Operation.clawbackClaimableBalance({})
+      ).to.throw(/must provide a valid claimable balance id/);
     });
     it('throws an error for invalid balanceIds', function() {
       expect(() =>
-        StellarBase.Operation.clawbackClaimableBalance({
+        DigitalbitsBase.Operation.clawbackClaimableBalance({
           balanceId: 'badc0ffee'
         })
       ).to.throw(/must provide a valid claimable balance id/);
@@ -1899,25 +1903,25 @@ describe('Operation', function() {
       const sponsoredId =
         'GDGU5OAPHNPU5UCLE5RDJHG7PXZFQYWKCFOEXSXNMR6KRQRI5T6XXCD7';
 
-      const op = StellarBase.Operation.beginSponsoringFutureReserves({
+      const op = DigitalbitsBase.Operation.beginSponsoringFutureReserves({
         sponsoredId
       });
       var xdr = op.toXDR('hex');
 
-      var operation = StellarBase.xdr.Operation.fromXDR(xdr, 'hex');
+      var operation = DigitalbitsBase.xdr.Operation.fromXDR(xdr, 'hex');
       expect(operation.body().switch().name).to.equal(
         'beginSponsoringFutureReserves'
       );
-      var obj = StellarBase.Operation.fromXDRObject(operation);
+      var obj = DigitalbitsBase.Operation.fromXDRObject(operation);
       expect(obj.type).to.be.equal('beginSponsoringFutureReserves');
       expect(obj.sponsoredId).to.equal(sponsoredId);
     });
     it('throws an error when sponsoredId is invalid', function() {
       expect(() =>
-        StellarBase.Operation.beginSponsoringFutureReserves({})
+        DigitalbitsBase.Operation.beginSponsoringFutureReserves({})
       ).to.throw(/sponsoredId is invalid/);
       expect(() =>
-        StellarBase.Operation.beginSponsoringFutureReserves({
+        DigitalbitsBase.Operation.beginSponsoringFutureReserves({
           sponsoredId: 'GBAD'
         })
       ).to.throw(/sponsoredId is invalid/);
@@ -1926,14 +1930,14 @@ describe('Operation', function() {
 
   describe('endSponsoringFutureReserves()', function() {
     it('creates a endSponsoringFutureReservesOp', function() {
-      const op = StellarBase.Operation.endSponsoringFutureReserves();
+      const op = DigitalbitsBase.Operation.endSponsoringFutureReserves();
       var xdr = op.toXDR('hex');
 
-      var operation = StellarBase.xdr.Operation.fromXDR(xdr, 'hex');
+      var operation = DigitalbitsBase.xdr.Operation.fromXDR(xdr, 'hex');
       expect(operation.body().switch().name).to.equal(
         'endSponsoringFutureReserves'
       );
-      var obj = StellarBase.Operation.fromXDRObject(operation);
+      var obj = DigitalbitsBase.Operation.fromXDRObject(operation);
       expect(obj.type).to.be.equal('endSponsoringFutureReserves');
     });
   });
@@ -1942,23 +1946,23 @@ describe('Operation', function() {
     it('creates a revokeAccountSponsorshipOp', function() {
       const account =
         'GDGU5OAPHNPU5UCLE5RDJHG7PXZFQYWKCFOEXSXNMR6KRQRI5T6XXCD7';
-      const op = StellarBase.Operation.revokeAccountSponsorship({
+      const op = DigitalbitsBase.Operation.revokeAccountSponsorship({
         account
       });
       var xdr = op.toXDR('hex');
 
-      var operation = StellarBase.xdr.Operation.fromXDR(xdr, 'hex');
+      var operation = DigitalbitsBase.xdr.Operation.fromXDR(xdr, 'hex');
       expect(operation.body().switch().name).to.equal('revokeSponsorship');
-      var obj = StellarBase.Operation.fromXDRObject(operation);
+      var obj = DigitalbitsBase.Operation.fromXDRObject(operation);
       expect(obj.type).to.be.equal('revokeAccountSponsorship');
       expect(obj.account).to.be.equal(account);
     });
     it('throws an error when account is invalid', function() {
-      expect(() => StellarBase.Operation.revokeAccountSponsorship({})).to.throw(
-        /account is invalid/
-      );
       expect(() =>
-        StellarBase.Operation.revokeAccountSponsorship({
+        DigitalbitsBase.Operation.revokeAccountSponsorship({})
+      ).to.throw(/account is invalid/);
+      expect(() =>
+        DigitalbitsBase.Operation.revokeAccountSponsorship({
           account: 'GBAD'
         })
       ).to.throw(/account is invalid/);
@@ -1969,34 +1973,34 @@ describe('Operation', function() {
     it('creates a revokeTrustlineSponsorship', function() {
       const account =
         'GDGU5OAPHNPU5UCLE5RDJHG7PXZFQYWKCFOEXSXNMR6KRQRI5T6XXCD7';
-      var asset = new StellarBase.Asset(
+      var asset = new DigitalbitsBase.Asset(
         'USDUSD',
         'GDGU5OAPHNPU5UCLE5RDJHG7PXZFQYWKCFOEXSXNMR6KRQRI5T6XXCD7'
       );
-      const op = StellarBase.Operation.revokeTrustlineSponsorship({
+      const op = DigitalbitsBase.Operation.revokeTrustlineSponsorship({
         account,
         asset
       });
       var xdr = op.toXDR('hex');
 
-      var operation = StellarBase.xdr.Operation.fromXDR(xdr, 'hex');
+      var operation = DigitalbitsBase.xdr.Operation.fromXDR(xdr, 'hex');
       expect(operation.body().switch().name).to.equal('revokeSponsorship');
-      var obj = StellarBase.Operation.fromXDRObject(operation);
+      var obj = DigitalbitsBase.Operation.fromXDRObject(operation);
       expect(obj.type).to.be.equal('revokeTrustlineSponsorship');
     });
     it('throws an error when account is invalid', function() {
       expect(() =>
-        StellarBase.Operation.revokeTrustlineSponsorship({})
+        DigitalbitsBase.Operation.revokeTrustlineSponsorship({})
       ).to.throw(/account is invalid/);
       expect(() =>
-        StellarBase.Operation.revokeTrustlineSponsorship({
+        DigitalbitsBase.Operation.revokeTrustlineSponsorship({
           account: 'GBAD'
         })
       ).to.throw(/account is invalid/);
     });
     it('throws an error when asset is invalid', function() {
       expect(() =>
-        StellarBase.Operation.revokeTrustlineSponsorship({
+        DigitalbitsBase.Operation.revokeTrustlineSponsorship({
           account: 'GDGU5OAPHNPU5UCLE5RDJHG7PXZFQYWKCFOEXSXNMR6KRQRI5T6XXCD7'
         })
       ).to.throw(/asset is invalid/);
@@ -2007,32 +2011,32 @@ describe('Operation', function() {
     it('creates a revokeOfferSponsorship', function() {
       const seller = 'GDGU5OAPHNPU5UCLE5RDJHG7PXZFQYWKCFOEXSXNMR6KRQRI5T6XXCD7';
       var offerId = '1234';
-      const op = StellarBase.Operation.revokeOfferSponsorship({
+      const op = DigitalbitsBase.Operation.revokeOfferSponsorship({
         seller,
         offerId
       });
       var xdr = op.toXDR('hex');
 
-      var operation = StellarBase.xdr.Operation.fromXDR(xdr, 'hex');
+      var operation = DigitalbitsBase.xdr.Operation.fromXDR(xdr, 'hex');
       expect(operation.body().switch().name).to.equal('revokeSponsorship');
-      var obj = StellarBase.Operation.fromXDRObject(operation);
+      var obj = DigitalbitsBase.Operation.fromXDRObject(operation);
       expect(obj.type).to.be.equal('revokeOfferSponsorship');
       expect(obj.seller).to.be.equal(seller);
       expect(obj.offerId).to.be.equal(offerId);
     });
     it('throws an error when seller is invalid', function() {
-      expect(() => StellarBase.Operation.revokeOfferSponsorship({})).to.throw(
-        /seller is invalid/
-      );
       expect(() =>
-        StellarBase.Operation.revokeOfferSponsorship({
+        DigitalbitsBase.Operation.revokeOfferSponsorship({})
+      ).to.throw(/seller is invalid/);
+      expect(() =>
+        DigitalbitsBase.Operation.revokeOfferSponsorship({
           seller: 'GBAD'
         })
       ).to.throw(/seller is invalid/);
     });
     it('throws an error when asset offerId is not included', function() {
       expect(() =>
-        StellarBase.Operation.revokeOfferSponsorship({
+        DigitalbitsBase.Operation.revokeOfferSponsorship({
           seller: 'GDGU5OAPHNPU5UCLE5RDJHG7PXZFQYWKCFOEXSXNMR6KRQRI5T6XXCD7'
         })
       ).to.throw(/offerId is invalid/);
@@ -2044,32 +2048,32 @@ describe('Operation', function() {
       const account =
         'GDGU5OAPHNPU5UCLE5RDJHG7PXZFQYWKCFOEXSXNMR6KRQRI5T6XXCD7';
       var name = 'foo';
-      const op = StellarBase.Operation.revokeDataSponsorship({
+      const op = DigitalbitsBase.Operation.revokeDataSponsorship({
         account,
         name
       });
       var xdr = op.toXDR('hex');
 
-      var operation = StellarBase.xdr.Operation.fromXDR(xdr, 'hex');
+      var operation = DigitalbitsBase.xdr.Operation.fromXDR(xdr, 'hex');
       expect(operation.body().switch().name).to.equal('revokeSponsorship');
-      var obj = StellarBase.Operation.fromXDRObject(operation);
+      var obj = DigitalbitsBase.Operation.fromXDRObject(operation);
       expect(obj.type).to.be.equal('revokeDataSponsorship');
       expect(obj.account).to.be.equal(account);
       expect(obj.name).to.be.equal(name);
     });
     it('throws an error when account is invalid', function() {
-      expect(() => StellarBase.Operation.revokeDataSponsorship({})).to.throw(
-        /account is invalid/
-      );
       expect(() =>
-        StellarBase.Operation.revokeDataSponsorship({
+        DigitalbitsBase.Operation.revokeDataSponsorship({})
+      ).to.throw(/account is invalid/);
+      expect(() =>
+        DigitalbitsBase.Operation.revokeDataSponsorship({
           account: 'GBAD'
         })
       ).to.throw(/account is invalid/);
     });
     it('throws an error when data name is not included', function() {
       expect(() =>
-        StellarBase.Operation.revokeDataSponsorship({
+        DigitalbitsBase.Operation.revokeDataSponsorship({
           account: 'GDGU5OAPHNPU5UCLE5RDJHG7PXZFQYWKCFOEXSXNMR6KRQRI5T6XXCD7'
         })
       ).to.throw(/name must be a string, up to 64 characters/);
@@ -2080,20 +2084,20 @@ describe('Operation', function() {
     it('creates a revokeClaimableBalanceSponsorship', function() {
       const balanceId =
         '00000000da0d57da7d4850e7fc10d2a9d0ebc731f7afb40574c03395b17d49149b91f5be';
-      const op = StellarBase.Operation.revokeClaimableBalanceSponsorship({
+      const op = DigitalbitsBase.Operation.revokeClaimableBalanceSponsorship({
         balanceId
       });
       var xdr = op.toXDR('hex');
 
-      var operation = StellarBase.xdr.Operation.fromXDR(xdr, 'hex');
+      var operation = DigitalbitsBase.xdr.Operation.fromXDR(xdr, 'hex');
       expect(operation.body().switch().name).to.equal('revokeSponsorship');
-      var obj = StellarBase.Operation.fromXDRObject(operation);
+      var obj = DigitalbitsBase.Operation.fromXDRObject(operation);
       expect(obj.type).to.be.equal('revokeClaimableBalanceSponsorship');
       expect(obj.balanceId).to.be.equal(balanceId);
     });
     it('throws an error when balanceId is invalid', function() {
       expect(() =>
-        StellarBase.Operation.revokeClaimableBalanceSponsorship({})
+        DigitalbitsBase.Operation.revokeClaimableBalanceSponsorship({})
       ).to.throw(/balanceId is invalid/);
     });
   });
@@ -2106,43 +2110,43 @@ describe('Operation', function() {
         ed25519PublicKey:
           'GDGU5OAPHNPU5UCLE5RDJHG7PXZFQYWKCFOEXSXNMR6KRQRI5T6XXCD7'
       };
-      let op = StellarBase.Operation.revokeSignerSponsorship({
+      let op = DigitalbitsBase.Operation.revokeSignerSponsorship({
         account,
         signer
       });
       let xdr = op.toXDR('hex');
 
-      let operation = StellarBase.xdr.Operation.fromXDR(xdr, 'hex');
+      let operation = DigitalbitsBase.xdr.Operation.fromXDR(xdr, 'hex');
       expect(operation.body().switch().name).to.equal('revokeSponsorship');
-      let obj = StellarBase.Operation.fromXDRObject(operation);
+      let obj = DigitalbitsBase.Operation.fromXDRObject(operation);
       expect(obj.type).to.be.equal('revokeSignerSponsorship');
       expect(obj.account).to.be.equal(account);
       expect(obj.signer.ed25519PublicKey).to.be.equal(signer.ed25519PublicKey);
 
       // preAuthTx signer
       signer = {
-        preAuthTx: StellarBase.hash('Tx hash').toString('hex')
+        preAuthTx: DigitalbitsBase.hash('Tx hash').toString('hex')
       };
-      op = StellarBase.Operation.revokeSignerSponsorship({
+      op = DigitalbitsBase.Operation.revokeSignerSponsorship({
         account,
         signer
       });
-      operation = StellarBase.xdr.Operation.fromXDR(op.toXDR('hex'), 'hex');
-      obj = StellarBase.Operation.fromXDRObject(operation);
+      operation = DigitalbitsBase.xdr.Operation.fromXDR(op.toXDR('hex'), 'hex');
+      obj = DigitalbitsBase.Operation.fromXDRObject(operation);
       expect(obj.type).to.be.equal('revokeSignerSponsorship');
       expect(obj.account).to.be.equal(account);
       expect(obj.signer.preAuthTx).to.be.equal(signer.preAuthTx);
 
       // sha256Hash signer
       signer = {
-        sha256Hash: StellarBase.hash('Hash Preimage').toString('hex')
+        sha256Hash: DigitalbitsBase.hash('Hash Preimage').toString('hex')
       };
-      op = StellarBase.Operation.revokeSignerSponsorship({
+      op = DigitalbitsBase.Operation.revokeSignerSponsorship({
         account,
         signer
       });
-      operation = StellarBase.xdr.Operation.fromXDR(op.toXDR('hex'), 'hex');
-      obj = StellarBase.Operation.fromXDRObject(operation);
+      operation = DigitalbitsBase.xdr.Operation.fromXDR(op.toXDR('hex'), 'hex');
+      obj = DigitalbitsBase.Operation.fromXDRObject(operation);
       expect(obj.type).to.be.equal('revokeSignerSponsorship');
       expect(obj.account).to.be.equal(account);
       expect(obj.signer.sha256Hash).to.be.equal(signer.sha256Hash);
@@ -2153,7 +2157,7 @@ describe('Operation', function() {
           'GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ'
       };
       expect(() =>
-        StellarBase.Operation.revokeSignerSponsorship({
+        DigitalbitsBase.Operation.revokeSignerSponsorship({
           signer
         })
       ).to.throw(/account is invalid/);
@@ -2162,42 +2166,42 @@ describe('Operation', function() {
 
   describe('clawback()', function() {
     it('requires asset, amount, account', function() {
-      let asset = new StellarBase.Asset(
+      let asset = new DigitalbitsBase.Asset(
         'GCOIN',
         'GDGU5OAPHNPU5UCLE5RDJHG7PXZFQYWKCFOEXSXNMR6KRQRI5T6XXCD7'
       );
       const amount = '100.0000000';
 
       expect(() => {
-        StellarBase.Operation.clawback({
+        DigitalbitsBase.Operation.clawback({
           from: 'GDGU5OAPHNPU5UCLE5RDJHG7PXZFQYWKCFOEXSXNMR6KRQRI5T6XXCD7'
         });
       }).to.throw();
       expect(() => {
-        StellarBase.Operation.clawback({ amount });
+        DigitalbitsBase.Operation.clawback({ amount });
       }).to.throw();
       expect(() => {
-        StellarBase.Operation.clawback({ asset });
+        DigitalbitsBase.Operation.clawback({ asset });
       }).to.throw();
       expect(() => {
-        StellarBase.Operation.clawback({});
+        DigitalbitsBase.Operation.clawback({});
       }).to.throw();
     });
     it('returns a clawback()', function() {
       let account = 'GDGU5OAPHNPU5UCLE5RDJHG7PXZFQYWKCFOEXSXNMR6KRQRI5T6XXCD7';
-      let asset = new StellarBase.Asset('GCOIN', account);
+      let asset = new DigitalbitsBase.Asset('GCOIN', account);
       const amount = '100.0000000';
-      const op = StellarBase.Operation.clawback({
+      const op = DigitalbitsBase.Operation.clawback({
         from: account,
         amount: amount,
         asset: asset
       });
 
       var xdr = op.toXDR('hex');
-      var operation = StellarBase.xdr.Operation.fromXDR(
+      var operation = DigitalbitsBase.xdr.Operation.fromXDR(
         Buffer.from(xdr, 'hex')
       );
-      var obj = StellarBase.Operation.fromXDRObject(operation);
+      var obj = DigitalbitsBase.Operation.fromXDRObject(operation);
       expect(obj.type).to.be.equal('clawback');
       expect(obj.asset.equals(asset)).to.be.true;
       expect(obj.from).to.be.equal(account);
@@ -2207,9 +2211,9 @@ describe('Operation', function() {
   describe('setTrustLineFlags()', function() {
     it('creates a SetTrustLineFlagsOp', function() {
       let account = 'GDGU5OAPHNPU5UCLE5RDJHG7PXZFQYWKCFOEXSXNMR6KRQRI5T6XXCD7';
-      let asset = new StellarBase.Asset('GCOIN', account);
+      let asset = new DigitalbitsBase.Asset('GCOIN', account);
 
-      const op = StellarBase.Operation.setTrustLineFlags({
+      const op = DigitalbitsBase.Operation.setTrustLineFlags({
         trustor: account,
         asset: asset,
         flags: {
@@ -2223,10 +2227,10 @@ describe('Operation', function() {
       expect(opBody.setFlags()).to.be.equal(2);
 
       var xdr = op.toXDR('hex');
-      var operation = StellarBase.xdr.Operation.fromXDR(
+      var operation = DigitalbitsBase.xdr.Operation.fromXDR(
         Buffer.from(xdr, 'hex')
       );
-      var obj = StellarBase.Operation.fromXDRObject(operation);
+      var obj = DigitalbitsBase.Operation.fromXDRObject(operation);
       expect(obj.type).to.be.equal('setTrustLineFlags');
       expect(obj.asset.equals(asset)).to.be.true;
       expect(obj.trustor).to.be.equal(account);
@@ -2236,23 +2240,23 @@ describe('Operation', function() {
     });
     it('leaves unmodified flags as undefined', function() {
       let account = 'GDGU5OAPHNPU5UCLE5RDJHG7PXZFQYWKCFOEXSXNMR6KRQRI5T6XXCD7';
-      let asset = new StellarBase.Asset('GCOIN', account);
+      let asset = new DigitalbitsBase.Asset('GCOIN', account);
 
       expect(() =>
-        StellarBase.Operation.setTrustLineFlags({
+        DigitalbitsBase.Operation.setTrustLineFlags({
           trustor: account,
           asset: asset
         })
       ).to.throw();
       expect(() =>
-        StellarBase.Operation.setTrustLineFlags({
+        DigitalbitsBase.Operation.setTrustLineFlags({
           trustor: account,
           asset: asset,
           flags: []
         })
       ).to.throw();
 
-      const op = StellarBase.Operation.setTrustLineFlags({
+      const op = DigitalbitsBase.Operation.setTrustLineFlags({
         trustor: account,
         asset: asset,
         flags: {
@@ -2263,10 +2267,10 @@ describe('Operation', function() {
       expect(opBody.setFlags()).to.be.equal(1);
 
       var xdr = op.toXDR('hex');
-      var operation = StellarBase.xdr.Operation.fromXDR(
+      var operation = DigitalbitsBase.xdr.Operation.fromXDR(
         Buffer.from(xdr, 'hex')
       );
-      var obj = StellarBase.Operation.fromXDRObject(operation);
+      var obj = DigitalbitsBase.Operation.fromXDRObject(operation);
       expect(obj.type).to.be.equal('setTrustLineFlags');
       expect(obj.asset.equals(asset)).to.be.true;
       expect(obj.trustor).to.be.equal(account);
@@ -2276,7 +2280,7 @@ describe('Operation', function() {
     });
     it('fails with invalid flags', function() {
       expect(() => {
-        StellarBase.Operation.setTrustLineFlags({
+        DigitalbitsBase.Operation.setTrustLineFlags({
           trustor: account,
           asset: asset,
           flags: {
@@ -2288,7 +2292,7 @@ describe('Operation', function() {
     });
     it('should require parameters', function() {
       expect(() => {
-        StellarBase.Operation.setTrustLineFlags({});
+        DigitalbitsBase.Operation.setTrustLineFlags({});
       }).to.throw();
     });
   });
@@ -2303,7 +2307,7 @@ describe('Operation', function() {
       ];
 
       for (var i in amounts) {
-        expect(StellarBase.Operation.isValidAmount(amounts[i])).to.be.true;
+        expect(DigitalbitsBase.Operation.isValidAmount(amounts[i])).to.be.true;
       }
     });
 
@@ -2325,27 +2329,29 @@ describe('Operation', function() {
       ];
 
       for (var i in amounts) {
-        expect(StellarBase.Operation.isValidAmount(amounts[i])).to.be.false;
+        expect(DigitalbitsBase.Operation.isValidAmount(amounts[i])).to.be.false;
       }
     });
 
     it('allows 0 only if allowZero argument is set to true', function() {
-      expect(StellarBase.Operation.isValidAmount('0')).to.be.false;
-      expect(StellarBase.Operation.isValidAmount('0', true)).to.be.true;
+      expect(DigitalbitsBase.Operation.isValidAmount('0')).to.be.false;
+      expect(DigitalbitsBase.Operation.isValidAmount('0', true)).to.be.true;
     });
   });
 
   describe('._fromXDRAmount()', function() {
     it('correctly parses the amount', function() {
-      expect(StellarBase.Operation._fromXDRAmount(1)).to.be.equal('0.0000001');
-      expect(StellarBase.Operation._fromXDRAmount(10000000)).to.be.equal(
+      expect(DigitalbitsBase.Operation._fromXDRAmount(1)).to.be.equal(
+        '0.0000001'
+      );
+      expect(DigitalbitsBase.Operation._fromXDRAmount(10000000)).to.be.equal(
         '1.0000000'
       );
-      expect(StellarBase.Operation._fromXDRAmount(10000000000)).to.be.equal(
+      expect(DigitalbitsBase.Operation._fromXDRAmount(10000000000)).to.be.equal(
         '1000.0000000'
       );
       expect(
-        StellarBase.Operation._fromXDRAmount(1000000000000000000)
+        DigitalbitsBase.Operation._fromXDRAmount(1000000000000000000)
       ).to.be.equal('100000000000.0000000');
     });
   });

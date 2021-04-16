@@ -1,19 +1,19 @@
-// Copyright 2015 Stellar Development Foundation and contributors. Licensed
+// Copyright 2015 Digitalbits Development Foundation and contributors. Licensed
 // under the Apache License, Version 2.0. See the COPYING file at the root
 // of this distribution or at http://www.apache.org/licenses/LICENSE-2.0
 
-%#include "xdr/Stellar-SCP.h"
-%#include "xdr/Stellar-transaction.h"
+%#include "xdr/Digitalbits-SCP.h"
+%#include "xdr/Digitalbits-transaction.h"
 
-namespace stellar
+namespace digitalbits
 {
 
 typedef opaque UpgradeType<128>;
 
-enum StellarValueType
+enum DigitalbitsValueType
 {
-    STELLAR_VALUE_BASIC = 0,
-    STELLAR_VALUE_SIGNED = 1
+    DIGITALBITS_VALUE_BASIC = 0,
+    DIGITALBITS_VALUE_SIGNED = 1
 };
 
 struct LedgerCloseValueSignature
@@ -22,9 +22,9 @@ struct LedgerCloseValueSignature
     Signature signature; // nodeID's signature
 };
 
-/* StellarValue is the value used by SCP to reach consensus on a given ledger
+/* DigitalbitsValue is the value used by SCP to reach consensus on a given ledger
  */
-struct StellarValue
+struct DigitalbitsValue
 {
     Hash txSetHash;      // transaction set to apply to previous ledger
     TimePoint closeTime; // network close time
@@ -37,11 +37,11 @@ struct StellarValue
     UpgradeType upgrades<6>;
 
     // reserved for future use
-    union switch (StellarValueType v)
+    union switch (DigitalbitsValueType v)
     {
-    case STELLAR_VALUE_BASIC:
+    case DIGITALBITS_VALUE_BASIC:
         void;
-    case STELLAR_VALUE_SIGNED:
+    case DIGITALBITS_VALUE_SIGNED:
         LedgerCloseValueSignature lcValueSignature;
     }
     ext;
@@ -54,7 +54,7 @@ struct LedgerHeader
 {
     uint32 ledgerVersion;    // the protocol version of the ledger
     Hash previousLedgerHash; // hash of the previous ledger header
-    StellarValue scpValue;   // what consensus agreed to
+    DigitalbitsValue scpValue;   // what consensus agreed to
     Hash txSetResultHash;    // the TransactionResultSet that led to this ledger
     Hash bucketListHash;     // hash of the ledger state
 
@@ -89,7 +89,7 @@ struct LedgerHeader
 };
 
 /* Ledger upgrades
-note that the `upgrades` field from StellarValue is normalized such that
+note that the `upgrades` field from DigitalbitsValue is normalized such that
 it only contains one entry per LedgerUpgradeType, and entries are sorted
 in ascending order
 */

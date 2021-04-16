@@ -1,5 +1,5 @@
 import padEnd from 'lodash/padEnd';
-import xdr from '../generated/stellar-xdr_generated';
+import xdr from '../generated/digitalbits-xdr_generated';
 import { Keypair } from '../keypair';
 import { StrKey } from '../strkey';
 

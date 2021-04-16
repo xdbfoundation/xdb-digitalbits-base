@@ -4,17 +4,17 @@ describe('FeeBumpTransaction', function() {
   beforeEach(function() {
     this.baseFee = '100';
     this.networkPassphrase = 'Standalone Network ; February 2017';
-    this.innerSource = StellarBase.Keypair.master(this.networkPassphrase);
-    this.innerAccount = new StellarBase.Account(
+    this.innerSource = DigitalbitsBase.Keypair.master(this.networkPassphrase);
+    this.innerAccount = new DigitalbitsBase.Account(
       this.innerSource.publicKey(),
       '7'
     );
     this.destination =
       'GDQERENWDDSQZS7R7WKHZI3BSOYMV3FSWR7TFUYFTKQ447PIX6NREOJM';
     this.amount = '2000.0000000';
-    this.asset = StellarBase.Asset.native();
+    this.asset = DigitalbitsBase.Asset.native();
 
-    this.innerTx = new StellarBase.TransactionBuilder(this.innerAccount, {
+    this.innerTx = new DigitalbitsBase.TransactionBuilder(this.innerAccount, {
       fee: '100',
       networkPassphrase: this.networkPassphrase,
       timebounds: {
@@ -23,19 +23,19 @@ describe('FeeBumpTransaction', function() {
       }
     })
       .addOperation(
-        StellarBase.Operation.payment({
+        DigitalbitsBase.Operation.payment({
           destination: this.destination,
           asset: this.asset,
           amount: this.amount
         })
       )
-      .addMemo(StellarBase.Memo.text('Happy birthday!'))
+      .addMemo(DigitalbitsBase.Memo.text('Happy birthday!'))
       .build();
     this.innerTx.sign(this.innerSource);
-    this.feeSource = StellarBase.Keypair.fromSecret(
+    this.feeSource = DigitalbitsBase.Keypair.fromSecret(
       'SB7ZMPZB3YMMK5CUWENXVLZWBK4KYX4YU5JBXQNZSK2DP2Q7V3LVTO5V'
     );
-    this.transaction = StellarBase.TransactionBuilder.buildFeeBumpTransaction(
+    this.transaction = DigitalbitsBase.TransactionBuilder.buildFeeBumpTransaction(
       this.feeSource,
       '100',
       this.innerTx,
@@ -55,7 +55,7 @@ describe('FeeBumpTransaction', function() {
     expect(innerTransaction.toXDR()).to.be.equal(this.innerTx.toXDR());
     expect(innerTransaction.source).to.be.equal(this.innerSource.publicKey());
     expect(innerTransaction.fee).to.be.equal('100');
-    expect(innerTransaction.memo.type).to.be.equal(StellarBase.MemoText);
+    expect(innerTransaction.memo.type).to.be.equal(DigitalbitsBase.MemoText);
     expect(innerTransaction.memo.value.toString('ascii')).to.be.equal(
       'Happy birthday!'
     );
@@ -73,13 +73,13 @@ describe('FeeBumpTransaction', function() {
         .toXDR()
         .toString('base64')
     ).to.be.equal(expectedXDR);
-    const expectedTxEnvelope = StellarBase.xdr.TransactionEnvelope.fromXDR(
+    const expectedTxEnvelope = DigitalbitsBase.xdr.TransactionEnvelope.fromXDR(
       expectedXDR,
       'base64'
     ).value();
 
     expect(innerTransaction.source).to.equal(
-      StellarBase.StrKey.encodeEd25519PublicKey(
+      DigitalbitsBase.StrKey.encodeEd25519PublicKey(
         expectedTxEnvelope
           .tx()
           .innerTx()
@@ -90,7 +90,7 @@ describe('FeeBumpTransaction', function() {
       )
     );
     expect(transaction.feeSource).to.equal(
-      StellarBase.StrKey.encodeEd25519PublicKey(
+      DigitalbitsBase.StrKey.encodeEd25519PublicKey(
         expectedTxEnvelope
           .tx()
           .feeSource()
@@ -138,11 +138,11 @@ describe('FeeBumpTransaction', function() {
     const input = this.transaction.toEnvelope();
 
     expect(() => {
-      new StellarBase.FeeBumpTransaction(input, { garbage: 'yes' });
+      new DigitalbitsBase.FeeBumpTransaction(input, { garbage: 'yes' });
     }).to.throw(/expected a string/);
 
     expect(() => {
-      new StellarBase.FeeBumpTransaction(input, 1234);
+      new DigitalbitsBase.FeeBumpTransaction(input, 1234);
     }).to.throw(/expected a string/);
   });
 
@@ -159,7 +159,7 @@ describe('FeeBumpTransaction', function() {
 
   it('signs using hash preimage', function() {
     let preimage = randomBytes(64);
-    let hash = StellarBase.hash(preimage);
+    let hash = DigitalbitsBase.hash(preimage);
     let tx = this.transaction;
     tx.signHashX(preimage);
     let env = tx.toEnvelope().feeBump();
@@ -189,7 +189,7 @@ describe('FeeBumpTransaction', function() {
     it('does not return a reference to the source transaction', function() {
       const transaction = this.transaction;
       const envelope = transaction.toEnvelope().value();
-      envelope.tx().fee(StellarBase.xdr.Int64.fromString('300'));
+      envelope.tx().fee(DigitalbitsBase.xdr.Int64.fromString('300'));
 
       expect(transaction.tx.fee().toString()).to.equal('200');
     });
@@ -200,7 +200,7 @@ describe('FeeBumpTransaction', function() {
     const signer = this.feeSource;
     const presignHash = transaction.hash();
 
-    const addedSignatureTx = new StellarBase.FeeBumpTransaction(
+    const addedSignatureTx = new DigitalbitsBase.FeeBumpTransaction(
       transaction.toEnvelope(),
       this.networkPassphrase
     );
@@ -239,14 +239,14 @@ describe('FeeBumpTransaction', function() {
     const presignHash = transaction.hash();
     const signer = this.feeSource;
 
-    const signature = new StellarBase.FeeBumpTransaction(
+    const signature = new DigitalbitsBase.FeeBumpTransaction(
       transaction.toEnvelope(),
       this.networkPassphrase
     ).getKeypairSignature(signer);
 
     expect(signer.sign(presignHash).toString('base64')).to.equal(signature);
 
-    const addedSignatureTx = new StellarBase.FeeBumpTransaction(
+    const addedSignatureTx = new DigitalbitsBase.FeeBumpTransaction(
       transaction.toEnvelope(),
       this.networkPassphrase
     );
@@ -284,12 +284,12 @@ describe('FeeBumpTransaction', function() {
     const transaction = this.transaction;
     const signer = this.feeSource;
 
-    const signature = new StellarBase.FeeBumpTransaction(
+    const signature = new DigitalbitsBase.FeeBumpTransaction(
       transaction.toEnvelope(),
       this.networkPassphrase
     ).getKeypairSignature(signer);
 
-    const alteredTx = StellarBase.TransactionBuilder.buildFeeBumpTransaction(
+    const alteredTx = DigitalbitsBase.TransactionBuilder.buildFeeBumpTransaction(
       this.feeSource,
       '200',
       this.innerTx,
@@ -304,21 +304,21 @@ describe('FeeBumpTransaction', function() {
   it('outputs xdr as a string', function() {
     const xdrString =
       'AAAABQAAAADgSJG2GOUMy/H9lHyjYZOwyuyytH8y0wWaoc596L+bEgAAAAAAAADIAAAAAgAAAABzdv3ojkzWHMD7KUoXhrPx0GH18vHKV0ZfqpMiEblG1gAAAGQAAAAAAAAACAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAA9IYXBweSBiaXJ0aGRheSEAAAAAAQAAAAAAAAABAAAAAOBIkbYY5QzL8f2UfKNhk7DK7LK0fzLTBZqhzn3ov5sSAAAAAAAAAASoF8gAAAAAAAAAAAERuUbWAAAAQK933Dnt1pxXlsf1B5CYn81PLxeYsx+MiV9EGbMdUfEcdDWUySyIkdzJefjpR5ejdXVp/KXosGmNUQ+DrIBlzg0AAAAAAAAAAei/mxIAAABAijIIQpL6KlFefiL4FP8UWQktWEz4wFgGNSaXe7mZdVMuiREntehi1b7MRqZ1h+W+Y0y+Z2HtMunsilT2yS5mAA==';
-    const transaction = new StellarBase.FeeBumpTransaction(
+    const transaction = new DigitalbitsBase.FeeBumpTransaction(
       xdrString,
       this.networkPassphrase
     );
-    expect(transaction).to.be.instanceof(StellarBase.FeeBumpTransaction);
+    expect(transaction).to.be.instanceof(DigitalbitsBase.FeeBumpTransaction);
     expect(transaction.toXDR()).to.be.equal(xdrString);
   });
 
   it('handles muxed accounts', function() {
-    let med25519 = new StellarBase.xdr.MuxedAccountMed25519({
-      id: StellarBase.xdr.Uint64.fromString('0'),
+    let med25519 = new DigitalbitsBase.xdr.MuxedAccountMed25519({
+      id: DigitalbitsBase.xdr.Uint64.fromString('0'),
       ed25519: this.feeSource.rawPublicKey()
     });
 
-    let muxedAccount = StellarBase.xdr.MuxedAccount.keyTypeMuxedEd25519(
+    let muxedAccount = DigitalbitsBase.xdr.MuxedAccount.keyTypeMuxedEd25519(
       med25519
     );
 
@@ -327,7 +327,7 @@ describe('FeeBumpTransaction', function() {
       .feeBump()
       .tx()
       .feeSource(muxedAccount);
-    const txWithMuxedAccount = new StellarBase.FeeBumpTransaction(
+    const txWithMuxedAccount = new DigitalbitsBase.FeeBumpTransaction(
       envelope,
       this.networkPassphrase
     );

@@ -1,5 +1,5 @@
 import map from 'lodash/map';
-import xdr from './generated/stellar-xdr_generated';
+import xdr from './generated/digitalbits-xdr_generated';
 import { hash } from './hashing';
 
 import { StrKey } from './strkey';
@@ -17,7 +17,7 @@ import { encodeMuxedAccountToAddress } from './util/decode_encode_muxed_account'
  * submitting to the network or forwarding on to additional signers.
  * @constructor
  * @param {string|xdr.TransactionEnvelope} envelope - The transaction envelope object or base64 encoded string.
- * @param {string} [networkPassphrase] passphrase of the target stellar network (e.g. "Public Global Stellar Network ; September 2015").
+ * @param {string} [networkPassphrase] passphrase of the target xdbfoundation network (e.g. "Public Global Digitalbits Network ; September 2015").
  * @extends TransactionBase
  */
 export class Transaction extends TransactionBase {
@@ -137,7 +137,7 @@ export class Transaction extends TransactionBase {
   /**
    * Returns the "signature base" of this transaction, which is the value
    * that, when hashed, should be signed to create a signature that
-   * validators on the Stellar Network will accept.
+   * validators on the Digitalbits Network will accept.
    *
    * It is composed of a 4 prefix bytes followed by the xdr-encoded form
    * of this transaction.

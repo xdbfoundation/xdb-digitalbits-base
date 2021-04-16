@@ -1,7 +1,7 @@
 const webpack = require('webpack');
 
 module.exports = {
-  output: { library: 'StellarBase' },
+  output: { library: 'DigitalbitsBase' },
   mode: 'development',
   module: {
     rules: [

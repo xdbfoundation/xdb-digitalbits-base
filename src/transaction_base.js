@@ -1,4 +1,4 @@
-import xdr from './generated/stellar-xdr_generated';
+import xdr from './generated/digitalbits-xdr_generated';
 import { hash } from './hashing';
 import { Keypair } from './keypair';
 
@@ -83,7 +83,7 @@ export class TransactionBase {
    *
    * When you get a transaction XDR to sign....
    * - Instantiate a `Transaction` object with the XDR
-   * - Use {@link Keypair} to generate a keypair object for your Stellar seed.
+   * - Use {@link Keypair} to generate a keypair object for your Digitalbits seed.
    * - Run `getKeypairSignature` with that keypair
    * - Send back the signature along with your publicKey (not your secret seed!)
    *
@@ -91,7 +91,7 @@ export class TransactionBase {
    * ```javascript
    * // `transactionXDR` is a string from the person generating the transaction
    * const transaction = new Transaction(transactionXDR, networkPassphrase);
-   * const keypair = Keypair.fromSecret(myStellarSeed);
+   * const keypair = Keypair.fromSecret(myDigitalbitsSeed);
    * return transaction.getKeypairSignature(keypair);
    * ```
    *

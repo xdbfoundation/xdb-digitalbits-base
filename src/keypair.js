@@ -1,7 +1,7 @@
 import nacl from 'tweetnacl';
 import { sign, verify, generate } from './signing';
 import { StrKey } from './strkey';
-import xdr from './generated/stellar-xdr_generated';
+import xdr from './generated/digitalbits-xdr_generated';
 import { hash } from './hashing';
 
 /**
@@ -78,7 +78,7 @@ export class Keypair {
 
   /**
    * Returns `Keypair` object representing network master key.
-   * @param {string} networkPassphrase passphrase of the target stellar network (e.g. "Public Global Stellar Network ; September 2015").
+   * @param {string} networkPassphrase passphrase of the target digitalbits network (e.g. "LiveNet Global DigitalBits Network ; February 2021").
    * @returns {Keypair}
    */
   static master(networkPassphrase) {
@@ -99,7 +99,7 @@ export class Keypair {
   static fromPublicKey(publicKey) {
     publicKey = StrKey.decodeEd25519PublicKey(publicKey);
     if (publicKey.length !== 32) {
-      throw new Error('Invalid Stellar public key');
+      throw new Error('Invalid Digitalbits public key');
     }
     return new this({ type: 'ed25519', publicKey });
   }

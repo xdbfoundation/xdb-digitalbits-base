@@ -1,10 +1,10 @@
 /**
  * Contains passphrases for common networks:
- * * `Networks.PUBLIC`: `Public Global Stellar Network ; September 2015`
- * * `Networks.TESTNET`: `Test SDF Network ; September 2015`
+ * * `Networks.PUBLIC`: `LiveNet Global DigitalBits Network ; February 2021`
+ * * `Networks.TESTNET`: `LiveNet DigitalBits Fee Pool ; February 2021`
  * @type {{PUBLIC: string, TESTNET: string}}
  */
 export const Networks = {
-  PUBLIC: 'Public Global Stellar Network ; September 2015',
-  TESTNET: 'Test SDF Network ; September 2015'
+  PUBLIC: 'LiveNet Global DigitalBits Network ; February 2021',
+  TESTNET: 'LiveNet DigitalBits Fee Pool ; February 2021'
 };

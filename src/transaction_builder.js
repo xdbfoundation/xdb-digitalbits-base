@@ -2,7 +2,7 @@ import { UnsignedHyper } from 'js-xdr';
 import BigNumber from 'bignumber.js';
 import clone from 'lodash/clone';
 import isUndefined from 'lodash/isUndefined';
-import xdr from './generated/stellar-xdr_generated';
+import xdr from './generated/digitalbits-xdr_generated';
 import { Keypair } from './keypair';
 import { Transaction } from './transaction';
 import { FeeBumpTransaction } from './fee_bump_transaction';
@@ -16,14 +16,12 @@ import { Memo } from './memo';
  * fee on the network.
  *
  * @constant
- * @see [Fees](https://www.stellar.org/developers/guides/concepts/fees.html)
  */
 export const BASE_FEE = '100'; // Stroops
 
 /**
  * @constant
  * @see {@link TransactionBuilder#setTimeout}
- * @see [Timeout](https://www.stellar.org/developers/horizon/reference/endpoints/transactions-create.html#timeout)
  */
 export const TimeoutInfinite = 0;
 
@@ -40,12 +38,12 @@ export const TimeoutInfinite = 0;
  * constructed `{@link Transaction}` that can be signed. The returned transaction will contain the
  * sequence number of the source account and include the signature from the source account.</p>
  *
- * <p><strong>Be careful about unsubmitted transactions!</strong> When you build a transaction, stellar-sdk
+ * <p><strong>Be careful about unsubmitted transactions!</strong> When you build a transaction, digitalbits-sdk
  * automatically increments the source account's sequence number. If you end up
  * not submitting this transaction and submitting another one instead, it'll fail due to
  * the sequence number being wrong. So if you decide not to use a built transaction,
  * make sure to update the source account's sequence number
- * with [Server.loadAccount](https://stellar.github.io/js-stellar-sdk/Server.html#loadAccount) before creating another transaction.</p>
+ * with Server.loadAccount before creating another transaction.</p>
  *
  * <p>The following code example creates a new transaction with {@link Operation.createAccount} and
  * {@link Operation.payment} operations.
@@ -76,7 +74,7 @@ export const TimeoutInfinite = 0;
  * @param {number|string|Date} [opts.timebounds.minTime] - 64 bit unix timestamp or Date object
  * @param {number|string|Date} [opts.timebounds.maxTime] - 64 bit unix timestamp or Date object
  * @param {Memo} [opts.memo] - The memo for the transaction
- * @param {string} [opts.networkPassphrase] passphrase of the target stellar network (e.g. "Public Global Stellar Network ; September 2015").
+ * @param {string} [opts.networkPassphrase] passphrase of the target Digitalbits network (e.g. "LiveNet Global DigitalBits Network ; February 2021").
  */
 export class TransactionBuilder {
   constructor(sourceAccount, opts = {}) {
@@ -118,7 +116,7 @@ export class TransactionBuilder {
   }
 
   /**
-   * Because of the distributed nature of the Stellar network it is possible that the status of your transaction
+   * Because of the distributed nature of the Digitalbits network it is possible that the status of your transaction
    * will be determined after a long time if the network is highly congested.
    * If you want to be sure to receive the status of the transaction within a given period you should set the
    * {@link TimeBounds} with <code>maxTime</code> on the transaction (this is what <code>setTimeout</code> does
@@ -169,7 +167,7 @@ export class TransactionBuilder {
   /**
    * Set network nassphrase for the Transaction that will be built.
    *
-   * @param {string} [networkPassphrase] passphrase of the target stellar network (e.g. "Public Global Stellar Network ; September 2015").
+   * @param {string} [networkPassphrase] passphrase of the target digitalbits network (e.g. "LiveNet Global DigitalBits Network ; February 2021").
    * @returns {TransactionBuilder}
    */
   setNetworkPassphrase(networkPassphrase) {
@@ -241,7 +239,7 @@ export class TransactionBuilder {
    * @param {Keypair} feeSource - The account paying for the transaction.
    * @param {string} baseFee - The max fee willing to pay per operation in inner transaction (**in stroops**). Required.
    * @param {Transaction} innerTx - The Transaction to be bumped by the fee bump transaction.
-   * @param {string} networkPassphrase - networkPassphrase of the target stellar network (e.g. "Public Global Stellar Network ; September 2015").
+   * @param {string} networkPassphrase - networkPassphrase of the target digitalbits network (e.g. "LiveNet Global DigitalBits Network ; February 2021").
    * @returns {FeeBumpTransaction}
    */
   static buildFeeBumpTransaction(
@@ -314,7 +312,7 @@ export class TransactionBuilder {
   /**
    * Build a {@link Transaction} or {@link FeeBumpTransaction} from an xdr.TransactionEnvelope.
    * @param {string|xdr.TransactionEnvelope} envelope - The transaction envelope object or base64 encoded string.
-   * @param {string} networkPassphrase - networkPassphrase of the target stellar network (e.g. "Public Global Stellar Network ; September 2015").
+   * @param {string} networkPassphrase - networkPassphrase of the target Digitalbits network (e.g. "LiveNet Global DigitalBits Network ; February 2021").
    * @returns {Transaction|FeeBumpTransaction}
    */
   static fromXDR(envelope, networkPassphrase) {

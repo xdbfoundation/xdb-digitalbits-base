@@ -1,4 +1,4 @@
-import xdr from '../generated/stellar-xdr_generated';
+import xdr from '../generated/digitalbits-xdr_generated';
 import { decodeAddressToMuxedAccount } from '../util/decode_encode_muxed_account';
 
 /**

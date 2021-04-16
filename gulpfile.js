@@ -42,7 +42,7 @@ gulp.task(
     return gulp
       .src('src/browser.js')
       .pipe(webpack(webpackConfigBrowser))
-      .pipe(plugins.rename('stellar-base.js'))
+      .pipe(plugins.rename('digitalbits-base.js'))
       .pipe(gulp.dest('dist'))
       .pipe(
         plugins.uglify({
@@ -51,7 +51,7 @@ gulp.task(
           }
         })
       )
-      .pipe(plugins.rename('stellar-base.min.js'))
+      .pipe(plugins.rename('digitalbits-base.min.js'))
       .pipe(gulp.dest('dist'));
   })
 );
@@ -107,7 +107,10 @@ gulp.task(
 );
 
 gulp.task('test:watch', function() {
-  return gulp.watch(['src/**/*', 'test/unit/**/*.js'], gulp.series(['clear-screen', 'test:node']));
+  return gulp.watch(
+    ['src/**/*', 'test/unit/**/*.js'],
+    gulp.series(['clear-screen', 'test:node'])
+  );
 });
 
 gulp.task(

@@ -23,7 +23,7 @@ module.exports = function(config) {
 
   config.set({
     sauceLabs: {
-      testName: 'js-stellar-base',
+      testName: 'js-digitalbits-base',
       recordScreenshots: false,
       recordVideo: false
     },
@@ -31,7 +31,7 @@ module.exports = function(config) {
     customLaunchers: customLaunchers,
     browsers: Object.keys(customLaunchers),
 
-    files: ['dist/stellar-base.min.js', 'test/unit/**/*.js'],
+    files: ['dist/digitalbits-base.min.js', 'test/unit/**/*.js'],
 
     preprocessors: {
       'test/unit/**/*.js': ['webpack']

@@ -127,7 +127,7 @@ export class Memo<T extends MemoType = MemoType> {
     : T extends MemoType.ID
     ? string
     : T extends MemoType.Text
-    ? string | Buffer // github.com/stellar/js-stellar-base/issues/152
+    ? string | Buffer // github.com/xdbfoundation/js-digitalbits-base/issues/152
     : T extends MemoType.Hash
     ? Buffer
     : T extends MemoType.Return
@@ -138,8 +138,8 @@ export class Memo<T extends MemoType = MemoType> {
 }
 
 export enum Networks {
-  PUBLIC = 'Public Global Stellar Network ; September 2015',
-  TESTNET = 'Test SDF Network ; September 2015'
+  PUBLIC = 'LiveNet Global DigitalBits Network ; February 2021',
+  TESTNET = 'LiveNet DigitalBits Fee Pool ; February 2021'
 }
 
 export const AuthRequiredFlag: 1;

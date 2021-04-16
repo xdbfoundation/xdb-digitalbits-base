@@ -3,7 +3,7 @@ module.exports = {
     mocha: true
   },
   globals: {
-    StellarBase: true,
+    DigitalbitsBase: true,
     chai: true,
     sinon: true,
     expect: true
