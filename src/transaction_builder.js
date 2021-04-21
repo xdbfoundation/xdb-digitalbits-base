@@ -125,7 +125,7 @@ export class TransactionBuilder {
    * If you don't want to set timeout, use <code>{@link TimeoutInfinite}</code>. In general you should set
    * <code>{@link TimeoutInfinite}</code> only in smart contracts.
    *
-   * Please note that Horizon may still return <code>504 Gateway Timeout</code> error, even for short timeouts.
+   * Please note that Frontier may still return <code>504 Gateway Timeout</code> error, even for short timeouts.
    * In such case you need to resubmit the same transaction again without making any changes to receive a status.
    * This method is using the machine system time (UTC), make sure it is set correctly.
    * @param {number} timeout Number of seconds the transaction is good. Can't be negative.

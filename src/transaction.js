@@ -17,7 +17,7 @@ import { encodeMuxedAccountToAddress } from './util/decode_encode_muxed_account'
  * submitting to the network or forwarding on to additional signers.
  * @constructor
  * @param {string|xdr.TransactionEnvelope} envelope - The transaction envelope object or base64 encoded string.
- * @param {string} [networkPassphrase] passphrase of the target xdbfoundation network (e.g. "Public Global Digitalbits Network ; September 2015").
+ * @param {string} [networkPassphrase] passphrase of the target xdbfoundation network (e.g. "LiveNet Global DigitalBits Network ; February 2021").
  * @extends TransactionBase
  */
 export class Transaction extends TransactionBase {
