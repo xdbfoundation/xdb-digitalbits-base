@@ -9,7 +9,6 @@
     "test:watch": "gulp test:watch",
     "xdr": "bundle exec xdrgen -o src/generated -l javascript -n digitalbits-xdr xdr/Digitalbits-ledger-entries.x xdr/Digitalbits-ledger.x xdr/Digitalbits-overlay.x xdr/Digitalbits-SCP.x xdr/Digitalbits-transaction.x xdr/Digitalbits-types.x",
     "docs": "jsdoc -c .jsdoc.json --verbose",
-    "dtslint": "dtslint types",
     "preversion": "gulp test",
     "version": "gulp build",
     "postversion": "git push && git push --tags",
@@ -51,7 +50,6 @@
     "clear": "^0.1.0",
     "coveralls": "^3.0.2",
     "del": "^5.1.0",
-    "dtslint": "3.0.0",
     "eslint": "^5.12.1",
     "eslint-config-airbnb-base": "^13.1.0",
     "eslint-config-prettier": "^3.6.0",
@@ -91,6 +89,8 @@
     "webpack-stream": "^5.2.1"
   },
   "dependencies": {
+    "babel-preset-es2015": "6.22.0",
+    "babel-preset-react": "6.23.0",
     "base32.js": "^0.1.0",
     "bignumber.js": "^4.0.0",
     "bundle": "^2.1.0",
