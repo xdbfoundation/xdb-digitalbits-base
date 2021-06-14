@@ -11,7 +11,7 @@ import clone from "lodash/clone";
 import map from "lodash/map";
 import isUndefined from "lodash/isUndefined";
 
-let BASE_FEE     = 100; // Stroops
+let BASE_FEE     = 100; // Nibbs
 let MIN_LEDGER   = 0;
 let MAX_LEDGER   = 0xFFFFFFFF; // max uint32
 
@@ -51,7 +51,7 @@ let MAX_LEDGER   = 0xFFFFFFFF; // max uint32
  * @constructor
  * @param {Account} sourceAccount - The source account for this transaction.
  * @param {object} [opts]
- * @param {number} [opts.fee] - The max fee willing to pay per operation in this transaction (**in stroops**).
+ * @param {number} [opts.fee] - The max fee willing to pay per operation in this transaction (**in nibbs**).
  * @param {object} [opts.timebounds] - The timebounds for the validity of this transaction.
  * @param {number|string} [opts.timebounds.minTime] - 64 bit unix timestamp
  * @param {number|string} [opts.timebounds.maxTime] - 64 bit unix timestamp

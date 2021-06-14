@@ -100,7 +100,7 @@ enum AccountFlags
 struct AccountEntry
 {
     AccountID accountID;      // master public key for this account
-    int64 balance;            // in stroops
+    int64 balance;            // in nibbs
     SequenceNumber seqNum;    // last sequence number used for this account
     uint32 numSubEntries;     // number of sub-entries this account has
                               // drives the reserve
