@@ -1,7 +1,3 @@
----
-title: Transaction Examples
----
-
 - [Creating an account](#creating-an-account)
 - [Assets](#assets)
 - [Path payment](#path-payment)
@@ -40,12 +36,14 @@ Object of the `Asset` class represents an asset in the DigitalBits network. Righ
 * issued assets with asset code of maximum 12 characters (`ASSET_TYPE_CREDIT_ALPHANUM12`).
 
 To create a new native asset representation use static `native()` method:
+
 ```js
 var nativeAsset = Asset.native();
 var isNative = nativeAsset.isNative(); // true
 ```
 
 To represent an issued asset you need to create a new object of type `Asset` with an asset code and issuer:
+
 ```js
 // Creates TEST asset issued by GBBM6BKZPEHWYO3E3YKREDPQXMS4VK35YLNU7NFBRI26RAN7GI5POFBB
 var testAsset = new Asset('TEST', 'GBBM6BKZPEHWYO3E3YKREDPQXMS4VK35YLNU7NFBRI26RAN7GI5POFBB');
@@ -61,10 +59,10 @@ In the example below we're sending 1000 XDB (at max) from `GABJLI6IVBKJ7HIC5NN7H
 `GBBM6BKZPEHWYO3E3YKREDPQXMS4VK35YLNU7NFBRI26RAN7GI5POFBB`. Destination Asset will be `GBP` issued by
 `GASOCNHNNLYFNMDJYQ3XFMI7BYHIOCFW3GJEOWRPEGK2TDPGTG2E5EDW`. Assets will be exchanged using the following path:
 
-* `USD` issued by `GBBM6BKZPEHWYO3E3YKREDPQXMS4VK35YLNU7NFBRI26RAN7GI5POFBB`,
-* `EUR` issued by `GDTNXRLOJD2YEBPKK7KCMR7J33AAG5VZXHAJTHIG736D6LVEFLLLKPDL`.
+- `USD` issued by `GBBM6BKZPEHWYO3E3YKREDPQXMS4VK35YLNU7NFBRI26RAN7GI5POFBB`,
+- `EUR` issued by `GDTNXRLOJD2YEBPKK7KCMR7J33AAG5VZXHAJTHIG736D6LVEFLLLKPDL`.
 
-The [path payment](https://developer.digitalbits.io/guides/concepts/list-of-operations.html#path-payment) will cause the destination address to get 5.5 GBP. It will cost the sender no more than 1000 XDB. In this example there will be 3 exchanges, XDB -> USD, USD-> EUR, EUR->GBP.
+The [path payment](https://developers.digitalbits.io/guides/docs/guides/concepts/list-of-operations#path-payment) will cause the destination address to get 5.5 GBP. It will cost the sender no more than 1000 XDB. In this example there will be 3 exchanges, XDB -> USD, USD-> EUR, EUR->GBP.
 
 ```js
 DigitalBitsBase.Network.useTestNetwork();
@@ -90,7 +88,7 @@ transaction.sign(keypair);
 
 ## Multi-signature account
 
-[Multi-signature accounts](https://developer.digitalbits.io/guides/concepts/multi-sig.html) can be used to require that transactions require multiple public keys to sign before they are considered valid.
+[Multi-signature accounts](https://developer.digitalbits.io/guides/docs/guides/concepts/multi-sig) can be used to require that transactions require multiple public keys to sign before they are considered valid.
 This is done by first configuring your account's "threshold" levels. Each operation has a threshold level of either low, medium,
 or high. You give each threshold level a number between 1-255 in your account. Then, for each key in your account, you
 assign it a weight (1-255, setting a 0 weight deletes the key). Any transaction must be signed with enough keys to meet the threshold.
@@ -101,9 +99,9 @@ Now, the transaction you submit for this payment must include both signatures of
 
 In this example, we will:
 
-* Add a second signer to the account
-* Set our account's masterkey weight and threshold levels
-* Create a multi signature transaction that sends a payment
+- Add a second signer to the account
+- Set our account's masterkey weight and threshold levels
+- Create a multi signature transaction that sends a payment
 
 In each example, we'll use the root account.
 

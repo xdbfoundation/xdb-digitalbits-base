@@ -1,28 +1,24 @@
----
-title: Building Transactions
----
-
-[Transactions](https://developer.digitalbits.io/guides/concepts/transactions.html) are the commands that modify the state of the ledger.
+[Transactions](https://developers.digitalbits.io/guides/docs/guides/concepts/transactions) are the commands that modify the state of the ledger.
 They include sending payments, creating offers, making account configuration changes, etc.
 
-Every transaction has a source [account](https://developer.digitalbits.io/guides/concepts/accounts.html). This is the account
-that pays the [fee](https://developer.digitalbits.io/guides/concepts/fees.html) and uses up a sequence number for the transaction.
+Every transaction has a source [account](https://developers.digitalbits.io/guides/docs/guides/concepts/accounts). This is the account
+that pays the [fee](https://developers.digitalbits.io/guides/docs/guides/concepts/fees) and uses up a sequence number for the transaction.
 
-Transactions are made up of one or more [operations](https://developer.digitalbits.io/guides/concepts/operations.html). Each operation also has a source account, which defaults to the transaction's source account.
+Transactions are made up of one or more [operations](https://developers.digitalbits.io/guides/docs/guides/concepts/operations). Each operation also has a source account, which defaults to the transaction's source account.
 
 
-## [TransactionBuilder](https://github.com/digitalbitsorg/js-digitalbits-base/blob/master/src/transaction_builder.js)
+## [TransactionBuilder](https://github.com/xdbfoundation/js-digitalbits-base/blob/master/src/transaction_builder.js)
 
 The `TransactionBuilder` class is used to construct new transactions. TransactionBuilder is given an account that is used as transaction's "source account".
-The transaction will use the current sequence number of the given [Account](https://github.com/digitalbitsorg/js-digitalbits-base/blob/master/src/account.js) object as its sequence number and increments
+The transaction will use the current sequence number of the given [Account](https://github.com/xdbfoundation/js-digitalbits-base/blob/master/src/account.js) object as its sequence number and increments
 the given account's sequence number when `build()` is called on the `TransactionBuilder`.
 
 Operations can be added to the transaction calling `addOperation(operation)` for each operation you wish to add to the transaction.
-See [operation.js](https://github.com/digitalbitsorg/js-digitalbits-base/blob/master/src/operation.js) for a list of possible operations you can add.
+See [operation.js](https://github.com/xdbfoundation/js-digitalbits-base/blob/master/src/operation.js) for a list of possible operations you can add.
 `addOperation(operation)` returns the current `TransactionBuilder` object so you can chain multiple calls.
 
 After adding the desired operations, call the `build()` method on the `TransactionBuilder`.
-This will return a fully constructed [Transaction](https://github.com/digitalbitsorg/js-digitalbits-base/blob/master/src/transaction.js).
+This will return a fully constructed [Transaction](https://github.com/xdbfoundation/js-digitalbits-base/blob/master/src/transaction.js).
 The returned transaction will contain the sequence number of the source account. This transaction is unsigned. You must sign it before it will be accepted by the DigitalBits network.
 
 
@@ -66,7 +62,7 @@ the correct value.  So, if you're submitting many transactions quickly, you will
 
 ## Adding Memos
 Transactions can contain a "memo" field you can use to attach additional information to the transaction. You can do this
-by passing a [memo](https://github.com/digitalbitsorg/js-digitalbits-base/blob/master/src/memo.js) object when you construct the TransactionBuilder.
+by passing a [memo](https://github.com/xdbfoundation/js-digitalbits-base/blob/master/src/memo.js) object when you construct the TransactionBuilder.
 There are 5 types of memos:
 * `Memo.none` - empty memo,
 * `Memo.text` - 28-byte ascii encoded string memo,
@@ -86,7 +82,7 @@ var transaction = new DigitalBitsBase.TransactionBuilder(account, {memo:memo})
 ```
 
 
-## [Transaction](https://github.com/digitalbitsorg/js-digitalbits-base/blob/master/src/transaction.js)
+## [Transaction](https://github.com/xdbfoundation/js-digitalbits-base/blob/master/src/transaction.js)
 
 You probably won't instantiate `Transaction` objects directly. Objects of this class are returned after `TransactionBuilder`
 builds a transaction. However, you can create a new `Transaction` object from a base64 representation of a transaction envelope.
@@ -103,7 +99,7 @@ Most importantly, you can sign a transaction using `sign()` method. See below...
 ## Signing and Multi-sig
 Transactions require signatures for authorization, and generally they only require one.  However, you can exercise more
 control over authorization and set up complex schemes by increasing the number of signatures a transaction requires.  For
-more, please consult the [multi-sig documentation](https://developer.digitalbits.io/guides/concepts/multi-sig.html).
+more, please consult the [multi-sig documentation](https://developer.digitalbits.io/guides/docs/guides/concepts/multi-sig).
 
 You add signatures to a transaction with the `Transaction.sign()` function. You can chain multiple `sign()` calls together.
 
@@ -128,6 +124,7 @@ var canSign = keypair.canSign(); // true
 ```
 
 You can also create a randomly generated keypair:
+
 ```js
 var keypair = Keypair.random();
 ```
