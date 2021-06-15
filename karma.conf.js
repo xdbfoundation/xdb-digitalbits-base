@@ -1,24 +1,19 @@
+var webpackConfig = require('./webpack.config.browser.js');
+delete webpackConfig.plugins;
+delete webpackConfig.output;
+
 module.exports = function(config) {
   config.set({
     frameworks: ['mocha', 'sinon-chai'],
-    browsers : ["Firefox"],
+    browsers: ['Firefox'],
 
-    files: [
-      'dist/digitalbits-base.js',
-      'test/unit/**/*.js'
-    ],
+    files: ['dist/digitalbits-base.js', 'test/unit/**/*.js'],
 
     preprocessors: {
       'test/unit/**/*.js': ['webpack']
     },
 
-    webpack: {
-      module: {
-        loaders: [
-          { test: /\.js$/, exclude: /node_modules/, loader: 'babel-loader'}
-        ]
-      }
-    },
+    webpack: webpackConfig,
 
     webpackMiddleware: {
       noInfo: true
@@ -26,6 +21,6 @@ module.exports = function(config) {
 
     singleRun: true,
 
-    reporters: ['dots'],
+    reporters: ['dots']
   });
 };

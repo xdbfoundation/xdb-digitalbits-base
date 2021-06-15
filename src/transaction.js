@@ -1,102 +1,151 @@
-import {xdr, hash} from "./index";
+import map from 'lodash/map';
+import xdr from './generated/digitalbits-xdr_generated';
+import { hash } from './hashing';
 
-import {StrKey} from "./strkey";
-import {Operation} from "./operation";
-import {Network} from "./network";
-import {Memo} from "./memo";
-import map from "lodash/map";
-import each from "lodash/each";
-import isString from 'lodash/isString';
-import crypto from "crypto";
-
-let MIN_LEDGER   = 0;
-let MAX_LEDGER   = 0xFFFFFFFF; // max uint32
+import { StrKey } from './strkey';
+import { Operation } from './operation';
+import { Memo } from './memo';
+import { TransactionBase } from './transaction_base';
+import { encodeMuxedAccountToAddress } from './util/decode_encode_muxed_account';
 
 /**
- * A new Transaction object is created from a transaction envelope or via {@link TransactionBuilder}.
- * Once a Transaction has been created from an envelope, its attributes and operations
- * should not be changed. You should only add signers (using {@link Transaction#sign}) to a Transaction object before
- * submitting to the network or forwarding on to additional signers.
+ * Use {@link TransactionBuilder} to build a transaction object. If you have an
+ * object or base64-encoded string of the transaction envelope XDR, use {@link
+ * TransactionBuilder.fromXDR}.
+ *
+ * Once a Transaction has been created, its attributes and operations should not
+ * be changed. You should only add signatures (using {@link Transaction#sign})
+ * to a Transaction object before submitting to the network or forwarding on to
+ * additional signers.
+ *
  * @constructor
- * @param {string|xdr.TransactionEnvelope} envelope - The transaction envelope object or base64 encoded string.
+ *
+ * @param {string|xdr.TransactionEnvelope} envelope - transaction envelope
+ *     object or base64 encoded string
+ * @param {string}  [networkPassphrase] - passphrase of the target DigitalBits
+ *     network (e.g. "LiveNet Global DigitalBits Network ; February 2021")
+ * @param {bool}    [opts.withMuxing] - Indicates that this.sourceAccount is a
+ *     muxed account (i.e. came from an M... address) and should be interpreted
+ *     fully as such. By default, this option is disabled until muxed accounts
+ *     are mature.
+ *
+ * @extends TransactionBase
  */
-export class Transaction {
-  constructor(envelope) {
-    if (typeof envelope === "string") {
-      let buffer = new Buffer(envelope, "base64");
+export class Transaction extends TransactionBase {
+  constructor(envelope, networkPassphrase, withMuxing) {
+    if (typeof envelope === 'string') {
+      const buffer = Buffer.from(envelope, 'base64');
       envelope = xdr.TransactionEnvelope.fromXDR(buffer);
     }
-    // since this transaction is immutable, save the tx
-    this.tx       = envelope.tx();
-    this.source   = StrKey.encodeEd25519PublicKey(envelope.tx().sourceAccount().ed25519());
-    this.fee      = this.tx.fee();
-    this._memo    = this.tx.memo();
-    this.sequence = this.tx.seqNum().toString();
 
-    let timeBounds = this.tx.timeBounds();
+    const envelopeType = envelope.switch();
+    if (
+      !(
+        envelopeType === xdr.EnvelopeType.envelopeTypeTxV0() ||
+        envelopeType === xdr.EnvelopeType.envelopeTypeTx()
+      )
+    ) {
+      throw new Error(
+        `Invalid TransactionEnvelope: expected an envelopeTypeTxV0 or envelopeTypeTx but received an ${envelopeType.name}.`
+      );
+    }
+
+    const txEnvelope = envelope.value();
+    const tx = txEnvelope.tx();
+    const fee = tx.fee().toString();
+    const signatures = (txEnvelope.signatures() || []).slice();
+
+    super(tx, signatures, fee, networkPassphrase);
+
+    this._envelopeType = envelopeType;
+    this._memo = tx.memo();
+    this._sequence = tx.seqNum().toString();
+
+    switch (this._envelopeType) {
+      case xdr.EnvelopeType.envelopeTypeTxV0():
+        this._source = StrKey.encodeEd25519PublicKey(
+          this.tx.sourceAccountEd25519()
+        );
+        break;
+      default:
+        this._source = encodeMuxedAccountToAddress(
+          this.tx.sourceAccount(),
+          withMuxing
+        );
+        break;
+    }
+
+    const timeBounds = tx.timeBounds();
     if (timeBounds) {
-      this.timeBounds = {
+      this._timeBounds = {
         minTime: timeBounds.minTime().toString(),
         maxTime: timeBounds.maxTime().toString()
       };
     }
-
-    let operations  = this.tx.operations() || [];
-    this.operations = map(operations, op => {
-      return Operation.fromXDRObject(op);
-    });
-
-    let signatures = envelope.signatures() || [];
-    this.signatures = map(signatures, s => s);
+    const operations = tx.operations() || [];
+    this._operations = map(operations, (op) => Operation.fromXDRObject(op));
   }
 
+  /**
+   * @type {object}
+   * @property {string} 64 bit unix timestamp
+   * @property {string} 64 bit unix timestamp
+   * @readonly
+   */
+  get timeBounds() {
+    return this._timeBounds;
+  }
+
+  set timeBounds(value) {
+    throw new Error('Transaction is immutable');
+  }
+
+  /**
+   * @type {string}
+   * @readonly
+   */
+  get sequence() {
+    return this._sequence;
+  }
+
+  set sequence(value) {
+    throw new Error('Transaction is immutable');
+  }
+
+  /**
+   * @type {string}
+   * @readonly
+   */
+  get source() {
+    return this._source;
+  }
+
+  set source(value) {
+    throw new Error('Transaction is immutable');
+  }
+
+  /**
+   * @type {Array.<xdr.Operation>}
+   * @readonly
+   */
+  get operations() {
+    return this._operations;
+  }
+
+  set operations(value) {
+    throw new Error('Transaction is immutable');
+  }
+
+  /**
+   * @type {string}
+   * @readonly
+   */
   get memo() {
     return Memo.fromXDRObject(this._memo);
   }
 
   set memo(value) {
-    throw new Error("Transaction is immutable");
-  }
-
-  /**
-   * Signs the transaction with the given {@link Keypair}.
-   * @param {...Keypair} keypairs Keypairs of signers
-   * @returns {void}
-   */
-  sign(...keypairs) {
-    let txHash = this.hash();
-    let newSigs = each(keypairs, kp => {
-      let sig = kp.signDecorated(txHash);
-      this.signatures.push(sig);
-    });
-  }
-
-  /**
-   * Add `hashX` signer preimage as signature.
-   * @param {Buffer|String} preimage Preimage of hash used as signer
-   * @returns {void}
-   */
-  signHashX(preimage) {
-    if (isString(preimage)) {
-      preimage = Buffer.from(preimage, "hex");
-    }
-
-    if (preimage.length > 64) {
-      throw new Error('preimage cannnot be longer than 64 bytes');
-    }
-
-    let signature = preimage;
-    let hash = crypto.createHash('sha256').update(preimage).digest();
-    let hint = hash.slice(hash.length - 4);
-    this.signatures.push(new xdr.DecoratedSignature({hint, signature}));
-  }
-
-  /**
-   * Returns a hash for this transaction, suitable for signing.
-   * @returns {Buffer}
-   */
-  hash() {
-    return hash(this.signatureBase());
+    throw new Error('Transaction is immutable');
   }
 
   /**
@@ -109,15 +158,32 @@ export class Transaction {
    * @returns {Buffer}
    */
   signatureBase() {
-    if (Network.current() === null) {
-      throw new Error("No network selected. Use `Network.use`, `Network.usePublicNetwork` or `Network.useTestNetwork` helper methods to select network.");
+    let tx = this.tx;
+
+    // Backwards Compatibility: Use ENVELOPE_TYPE_TX to sign ENVELOPE_TYPE_TX_V0
+    // we need a Transaction to generate the signature base
+    if (this._envelopeType === xdr.EnvelopeType.envelopeTypeTxV0()) {
+      tx = xdr.Transaction.fromXDR(
+        Buffer.concat([
+          // TransactionV0 is a transaction with the AccountID discriminant
+          // stripped off, we need to put it back to build a valid transaction
+          // which we can use to build a TransactionSignaturePayloadTaggedTransaction
+          xdr.PublicKeyType.publicKeyTypeEd25519().toXDR(),
+          tx.toXDR()
+        ])
+      );
     }
 
-    return Buffer.concat([
-      Network.current().networkId(),
-      xdr.EnvelopeType.envelopeTypeTx().toXDR(),
-      this.tx.toXDR()
-    ]);
+    const taggedTransaction = new xdr.TransactionSignaturePayloadTaggedTransaction.envelopeTypeTx(
+      tx
+    );
+
+    const txSignature = new xdr.TransactionSignaturePayload({
+      networkId: xdr.Hash.fromXDR(hash(this.networkPassphrase)),
+      taggedTransaction
+    });
+
+    return txSignature.toXDR();
   }
 
   /**
@@ -125,9 +191,32 @@ export class Transaction {
    * @returns {xdr.TransactionEnvelope}
    */
   toEnvelope() {
-    let tx = this.tx;
-    let signatures = this.signatures;
-    let envelope = new xdr.TransactionEnvelope({tx, signatures});
+    const rawTx = this.tx.toXDR();
+    const signatures = this.signatures.slice(); // make a copy of the signatures
+
+    let envelope;
+    switch (this._envelopeType) {
+      case xdr.EnvelopeType.envelopeTypeTxV0():
+        envelope = new xdr.TransactionEnvelope.envelopeTypeTxV0(
+          new xdr.TransactionV0Envelope({
+            tx: xdr.TransactionV0.fromXDR(rawTx), // make a copy of tx
+            signatures
+          })
+        );
+        break;
+      case xdr.EnvelopeType.envelopeTypeTx():
+        envelope = new xdr.TransactionEnvelope.envelopeTypeTx(
+          new xdr.TransactionV1Envelope({
+            tx: xdr.Transaction.fromXDR(rawTx), // make a copy of tx
+            signatures
+          })
+        );
+        break;
+      default:
+        throw new Error(
+          `Invalid TransactionEnvelope: expected an envelopeTypeTxV0 or envelopeTypeTx but received an ${this._envelopeType.name}.`
+        );
+    }
 
     return envelope;
   }

@@ -1,78 +1,10 @@
-import {hash} from "./hashing";
-
 /**
  * Contains passphrases for common networks:
- * * `Networks.PUBLIC`: `Live DigitalBits Network ; March 2018`
- * * `Networks.TESTNET`: `Test DigitalBits Network ; December 2017`
+ * * `Networks.PUBLIC`: `LiveNet Global DigitalBits Network ; February 2021`
+ * * `Networks.TESTNET`: `TestNet Global DigitalBits Network ; December 2020`
  * @type {{PUBLIC: string, TESTNET: string}}
  */
 export const Networks = {
-	PUBLIC: "LiveNet Global DigitalBits Network ; February 2021",
-	TESTNET: "TestNet Global DigitalBits Network ; December 2020"
+  PUBLIC: 'LiveNet Global DigitalBits Network ; February 2021',
+  TESTNET: 'TestNet Global DigitalBits Network ; December 2020'
 };
-
-var current = null;
-
-/**
- * The Network class provides helper methods to get the passphrase or id for different
- * digitalbits networks.  It also provides the {@link Network.current} class method that returns the network
- * that will be used by this process for the purposes of generating signatures.
- *
- * You should select network your app will use before adding the first signature. You can use the `use`,
- * `usePublicNetwork` and `useTestNetwork` helper methods.
- *
- * Creates a new `Network` object.
- * @constructor
- * @param {string} networkPassphrase Network passphrase
- */
-export class Network {
-	constructor(networkPassphrase) {
-		this._networkPassphrase = networkPassphrase;
-	}
-
-	/**
-	 * Use DigitalBits Public Network
-	 */
-	static usePublicNetwork() {
-		this.use(new Network(Networks.PUBLIC));
-	}
-
-	/**
-	 * Use test network.
-	 */
-	static useTestNetwork() {
-		this.use(new Network(Networks.TESTNET));
-	}
-
-	/**
-	 * Use network defined by Network object.
-	 * @param {Network} network Network to use
-	 */
-	static use(network) {
-		current = network;
-	}
-
-	/**
-	 * Returns currently selected network.
-	 * @returns {Network}
-	 */
-	static current() {
-		return current;
-	}
-
-	/**
-	 * Returns network passphrase.
-	 * @returns {string}
-	 */
-	networkPassphrase() {
-		return this._networkPassphrase;
-	}
-
-	/**
-	 * Returns Network ID. Network ID is SHA-256 hash of network passphrase.
-	 * @returns {string}
-	 */
-	networkId() {
-		return hash(this.networkPassphrase());
-	}
-}

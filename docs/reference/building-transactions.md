@@ -23,12 +23,14 @@ The returned transaction will contain the sequence number of the source account.
 
 
 ```js
-DigitalBitsBase.Network.useTestNetwork();
 // DigitalBitsBase.Network.usePublicNetwork(); if this transaction is for the public network
 // Create an Account object from an address and sequence number.
 var account=new DigitalBitsBase.Account("GD6WU64OEP5C4LRBH6NK3MHYIA2ADN6K6II6EXPNVUR3ERBXT4AN4ACD","2319149195853854");
 
-var transaction = new DigitalBitsBase.TransactionBuilder(account)
+var transaction = new DigitalBitsBase.TransactionBuilder(account, {
+        fee: DigitalBitsBase.BASE_FEE,
+        networkPassphrase: Networks.TESTNET
+    })
         // add a payment operation to the transaction
         .addOperation(DigitalBitsBase.Operation.payment({
                 destination: "GASOCNHNNLYFNMDJYQ3XFMI7BYHIOCFW3GJEOWRPEGK2TDPGTG2E5EDW",
@@ -42,6 +44,8 @@ var transaction = new DigitalBitsBase.TransactionBuilder(account)
                     weight: 1
                 }
             }))
+        // mark this transaction as valid only for the next 30 seconds
+        .setTimeout(30)
         .build();
 ```
 
@@ -64,20 +68,26 @@ the correct value.  So, if you're submitting many transactions quickly, you will
 Transactions can contain a "memo" field you can use to attach additional information to the transaction. You can do this
 by passing a [memo](https://github.com/xdbfoundation/js-digitalbits-base/blob/master/src/memo.js) object when you construct the TransactionBuilder.
 There are 5 types of memos:
-* `Memo.none` - empty memo,
-* `Memo.text` - 28-byte ascii encoded string memo,
-* `Memo.id` - 64-bit number memo,
-* `Memo.hash` - 32-byte hash - ex. hash of an item in a content server,
-* `Memo.returnHash` - 32-byte hash used for returning payments - contains hash of the transaction being rejected.
+
+- `Memo.none` - empty memo,
+- `Memo.text` - 28-byte ascii encoded string memo,
+- `Memo.id` - 64-bit number memo,
+- `Memo.hash` - 32-byte hash - ex. hash of an item in a content server,
+- `Memo.returnHash` - 32-byte hash used for returning payments - contains hash of the transaction being rejected.
 
 ```js
 var memo = Memo.text('Happy birthday!');
-var transaction = new DigitalBitsBase.TransactionBuilder(account, {memo:memo})
+var transaction = new DigitalBitsBase.TransactionBuilder(account, {
+    memo: memo,
+    fee: DigitalBitsBase.BASE_FEE,
+    networkPassphrase: Networks.TESTNET
+})
         .addOperation(DigitalBitsBase.Operation.payment({
                 destination: "GASOCNHNNLYFNMDJYQ3XFMI7BYHIOCFW3GJEOWRPEGK2TDPGTG2E5EDW",
                 asset: DigitalBitsBase.Asset.native(),
                 amount: "2000"
             }))
+        .setTimeout(30)
         .build();
 ```
 
@@ -131,24 +141,27 @@ var keypair = Keypair.random();
 
 
 ```js
-DigitalBitsBase.Network.useTestNetwork();
 var key1 = Keypair.fromSecret('SBK2VIYYSVG76E7VC3QHYARNFLY2EAQXDHRC7BMXBBGIFG74ARPRMNQM');
 var key2 = Keypair.fromSecret('SAMZUAAPLRUH62HH3XE7NVD6ZSMTWPWGM6DS4X47HLVRHEBKP4U2H5E7');
 
 // Create an Account object from an address and sequence number.
 var account=new DigitalBitsBase.Account("GD6WU64OEP5C4LRBH6NK3MHYIA2ADN6K6II6EXPNVUR3ERBXT4AN4ACD","2319149195853854");
 
-var transaction = new DigitalBitsBase.TransactionBuilder(account)
+var transaction = new DigitalBitsBase.TransactionBuilder(account, {
+    fee: DigitalBitsBase.BASE_FEE,
+    networkPassphrase: Networks.TESTNET
+})
         .addOperation(DigitalBitsBase.Operation.payment({
                 destination: "GASOCNHNNLYFNMDJYQ3XFMI7BYHIOCFW3GJEOWRPEGK2TDPGTG2E5EDW",
                 asset: DigitalBitsBase.Asset.native(),
                 amount: "2000"  // 2000 XDB
             }))
+        .setTimeout(30)
         .build();
 
 transaction.sign(key1);
 transaction.sign(key2);
-// submit tx to Frontier...
+// submit tx to Horizon...
 ```
 
 

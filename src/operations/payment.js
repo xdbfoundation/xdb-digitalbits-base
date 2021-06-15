@@ -1,0 +1,50 @@
+import xdr from '../generated/digitalbits-xdr_generated';
+import { decodeAddressToMuxedAccount } from '../util/decode_encode_muxed_account';
+
+/**
+ * Create a payment operation.
+ *
+ * @function
+ * @alias Operation.payment
+ * @see https://developers.digitalbits.io/guides/docs/guides/concepts/list-of-operations#payment
+ *
+ * @param {object}  opts - Options object
+ * @param {string}  opts.destination  - The destination account ID.
+ * @param {Asset}   opts.asset        - The asset to send.
+ * @param {string}  opts.amount       - The amount to send.
+ * @param {bool}    [opts.withMuxing] - Indicates that opts.destination is an
+ *     M... address and should be interpreted fully as a muxed account. By
+ *     default, this option is disabled until muxed accounts are mature.
+ * @param {string}  [opts.source]     - The source account for the payment.
+ *     Defaults to the transaction's source account.
+ *
+ * @returns {xdr.Operation}   The resulting payment operation (xdr.PaymentOp)
+ */
+export function payment(opts) {
+  if (!opts.asset) {
+    throw new Error('Must provide an asset for a payment operation');
+  }
+  if (!this.isValidAmount(opts.amount)) {
+    throw new TypeError(this.constructAmountRequirementsError('amount'));
+  }
+
+  const attributes = {};
+  try {
+    attributes.destination = decodeAddressToMuxedAccount(
+      opts.destination,
+      opts.withMuxing
+    );
+  } catch (e) {
+    throw new Error('destination is invalid; did you forget to enable muxing?');
+  }
+
+  attributes.asset = opts.asset.toXDRObject();
+  attributes.amount = this._toXDRAmount(opts.amount);
+  const paymentOp = new xdr.PaymentOp(attributes);
+
+  const opAttributes = {};
+  opAttributes.body = xdr.OperationBody.payment(paymentOp);
+  this.setSourceAccount(opAttributes, opts);
+
+  return new xdr.Operation(opAttributes);
+}
