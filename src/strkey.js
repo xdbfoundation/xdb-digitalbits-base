@@ -37,7 +37,7 @@ export class StrKey {
   }
 
   /**
-   * Returns true if the given Digitalbits public key is a valid ed25519 public key.
+   * Returns true if the given DigitalBits public key is a valid ed25519 public key.
    * @param {string} publicKey public key to check
    * @returns {boolean}
    */
@@ -64,7 +64,7 @@ export class StrKey {
   }
 
   /**
-   * Returns true if the given Digitalbits secret key is a valid ed25519 secret seed.
+   * Returns true if the given DigitalBits secret key is a valid ed25519 secret seed.
    * @param {string} seed seed to check
    * @returns {boolean}
    */

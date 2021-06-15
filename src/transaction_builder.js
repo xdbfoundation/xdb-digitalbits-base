@@ -17,7 +17,7 @@ import { Memo } from './memo';
  *
  * @constant
  */
-export const BASE_FEE = '100'; // Stroops
+export const BASE_FEE = '100'; // nibbs
 
 /**
  * @constant
@@ -60,7 +60,7 @@ export const TimeoutInfinite = 0;
  *     destination: destinationB,
  *     amount: "100",
  *     asset: Asset.native()
- * })) // <- sends 100 XLM to destinationB
+ * })) // <- sends 100 XDB to destinationB
  * .setTimeout(30)
  * .build();
  *
@@ -69,12 +69,12 @@ export const TimeoutInfinite = 0;
  * @constructor
  * @param {Account} sourceAccount - The source account for this transaction.
  * @param {object} opts Options object
- * @param {string} opts.fee - The max fee willing to pay per operation in this transaction (**in stroops**). Required.
+ * @param {string} opts.fee - The max fee willing to pay per operation in this transaction (**in nibbs**). Required.
  * @param {object} [opts.timebounds] - The timebounds for the validity of this transaction.
  * @param {number|string|Date} [opts.timebounds.minTime] - 64 bit unix timestamp or Date object
  * @param {number|string|Date} [opts.timebounds.maxTime] - 64 bit unix timestamp or Date object
  * @param {Memo} [opts.memo] - The memo for the transaction
- * @param {string} [opts.networkPassphrase] passphrase of the target Digitalbits network (e.g. "LiveNet Global DigitalBits Network ; February 2021").
+ * @param {string} [opts.networkPassphrase] passphrase of the target DigitalBits network (e.g. "LiveNet Global DigitalBits Network ; February 2021").
  */
 export class TransactionBuilder {
   constructor(sourceAccount, opts = {}) {
@@ -83,7 +83,7 @@ export class TransactionBuilder {
     }
 
     if (isUndefined(opts.fee)) {
-      throw new Error('must specify fee for the transaction (in stroops)');
+      throw new Error('must specify fee for the transaction (in nibbs)');
     }
 
     this.source = sourceAccount;
@@ -116,7 +116,7 @@ export class TransactionBuilder {
   }
 
   /**
-   * Because of the distributed nature of the Digitalbits network it is possible that the status of your transaction
+   * Because of the distributed nature of the DigitalBits network it is possible that the status of your transaction
    * will be determined after a long time if the network is highly congested.
    * If you want to be sure to receive the status of the transaction within a given period you should set the
    * {@link TimeBounds} with <code>maxTime</code> on the transaction (this is what <code>setTimeout</code> does
@@ -237,7 +237,7 @@ export class TransactionBuilder {
   /**
    * Builds a {@link FeeBumpTransaction}
    * @param {Keypair} feeSource - The account paying for the transaction.
-   * @param {string} baseFee - The max fee willing to pay per operation in inner transaction (**in stroops**). Required.
+   * @param {string} baseFee - The max fee willing to pay per operation in inner transaction (**in nibbs**). Required.
    * @param {Transaction} innerTx - The Transaction to be bumped by the fee bump transaction.
    * @param {string} networkPassphrase - networkPassphrase of the target digitalbits network (e.g. "LiveNet Global DigitalBits Network ; February 2021").
    * @returns {FeeBumpTransaction}
@@ -255,7 +255,7 @@ export class TransactionBuilder {
     // The fee rate for fee bump is at least the fee rate of the inner transaction
     if (base.lessThan(innerBaseFeeRate)) {
       throw new Error(
-        `Invalid baseFee, it should be at least ${innerBaseFeeRate} stroops.`
+        `Invalid baseFee, it should be at least ${innerBaseFeeRate} nibbs.`
       );
     }
 
@@ -264,7 +264,7 @@ export class TransactionBuilder {
     // The fee rate is at least the minimum fee
     if (base.lessThan(minBaseFee)) {
       throw new Error(
-        `Invalid baseFee, it should be at least ${minBaseFee} stroops.`
+        `Invalid baseFee, it should be at least ${minBaseFee} nibbs.`
       );
     }
 
@@ -312,7 +312,7 @@ export class TransactionBuilder {
   /**
    * Build a {@link Transaction} or {@link FeeBumpTransaction} from an xdr.TransactionEnvelope.
    * @param {string|xdr.TransactionEnvelope} envelope - The transaction envelope object or base64 encoded string.
-   * @param {string} networkPassphrase - networkPassphrase of the target Digitalbits network (e.g. "LiveNet Global DigitalBits Network ; February 2021").
+   * @param {string} networkPassphrase - networkPassphrase of the target DigitalBits network (e.g. "LiveNet Global DigitalBits Network ; February 2021").
    * @returns {Transaction|FeeBumpTransaction}
    */
   static fromXDR(envelope, networkPassphrase) {

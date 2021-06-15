@@ -7,7 +7,7 @@
   "scripts": {
     "test": "gulp test:node",
     "test:watch": "gulp test:watch",
-    "xdr": "bundle exec xdrgen -o src/generated -l javascript -n digitalbits-xdr xdr/Digitalbits-ledger-entries.x xdr/Digitalbits-ledger.x xdr/Digitalbits-overlay.x xdr/Digitalbits-SCP.x xdr/Digitalbits-transaction.x xdr/Digitalbits-types.x",
+    "xdr": "bundle exec xdrgen -o src/generated -l javascript -n digitalbits-xdr xdr/DigitalBits-ledger-entries.x xdr/DigitalBits-ledger.x xdr/DigitalBits-overlay.x xdr/DigitalBits-SCP.x xdr/DigitalBits-transaction.x xdr/DigitalBits-types.x",
     "docs": "jsdoc -c .jsdoc.json --verbose",
     "preversion": "gulp test",
     "version": "gulp build",

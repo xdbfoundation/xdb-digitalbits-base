@@ -41,7 +41,7 @@ export const AuthRevocableFlag = 1 << 1;
 export const AuthImmutableFlag = 1 << 2;
 
 /**
- * `Operation` class represents operations in Digitalbits network.
+ * `Operation` class represents operations in DigitalBits network.
  * Use one of static methods to create operations:
  * * `{@link Operation.createAccount}`
  * * `{@link Operation.payment}`

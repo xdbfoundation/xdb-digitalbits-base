@@ -83,7 +83,7 @@ export class TransactionBase {
    *
    * When you get a transaction XDR to sign....
    * - Instantiate a `Transaction` object with the XDR
-   * - Use {@link Keypair} to generate a keypair object for your Digitalbits seed.
+   * - Use {@link Keypair} to generate a keypair object for your DigitalBits seed.
    * - Run `getKeypairSignature` with that keypair
    * - Send back the signature along with your publicKey (not your secret seed!)
    *
@@ -91,7 +91,7 @@ export class TransactionBase {
    * ```javascript
    * // `transactionXDR` is a string from the person generating the transaction
    * const transaction = new Transaction(transactionXDR, networkPassphrase);
-   * const keypair = Keypair.fromSecret(myDigitalbitsSeed);
+   * const keypair = Keypair.fromSecret(myDigitalBitsSeed);
    * return transaction.getKeypairSignature(keypair);
    * ```
    *

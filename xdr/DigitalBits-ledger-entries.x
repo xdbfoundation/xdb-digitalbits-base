@@ -1,8 +1,8 @@
-// Copyright 2015 Digitalbits Development Foundation and contributors. Licensed
+// Copyright 2015 DigitalBits Development Foundation and contributors. Licensed
 // under the Apache License, Version 2.0. See the COPYING file at the root
 // of this distribution or at http://www.apache.org/licenses/LICENSE-2.0
 
-%#include "xdr/Digitalbits-types.h"
+%#include "xdr/DigitalBits-types.h"
 
 namespace digitalbits
 {
@@ -156,7 +156,7 @@ struct AccountEntryExtensionV1
 
 /* AccountEntry
 
-    Main entry representing a user in Digitalbits. All transactions are
+    Main entry representing a user in DigitalBits. All transactions are
     performed using an account.
 
     Other ledger entries created require an account.
@@ -165,7 +165,7 @@ struct AccountEntryExtensionV1
 struct AccountEntry
 {
     AccountID accountID;      // master public key for this account
-    int64 balance;            // in stroops
+    int64 balance;            // in nibbs
     SequenceNumber seqNum;    // last sequence number used for this account
     uint32 numSubEntries;     // number of sub-entries this account has
                               // drives the reserve

@@ -401,14 +401,14 @@ export namespace xdr {
     static envelopeTypeOpId(): EnvelopeType;
   }
 
-  class DigitalbitsValueType {
+  class DigitalBitsValueType {
     readonly name: 'digitalbitsValueBasic' | 'digitalbitsValueSigned';
 
     readonly value: 0 | 1;
 
-    static digitalbitsValueBasic(): DigitalbitsValueType;
+    static digitalbitsValueBasic(): DigitalBitsValueType;
 
-    static digitalbitsValueSigned(): DigitalbitsValueType;
+    static digitalbitsValueSigned(): DigitalBitsValueType;
   }
 
   class LedgerUpgradeType {
@@ -2296,12 +2296,12 @@ export namespace xdr {
     static validateXDR(input: string, format: 'hex' | 'base64'): boolean;
   }
 
-  class DigitalbitsValue {
+  class DigitalBitsValue {
     constructor(attributes: {
       txSetHash: Buffer;
       closeTime: TimePoint;
       upgrades: Buffer[];
-      ext: DigitalbitsValueExt;
+      ext: DigitalBitsValueExt;
     });
 
     txSetHash(value?: Buffer): Buffer;
@@ -2310,23 +2310,23 @@ export namespace xdr {
 
     upgrades(value?: Buffer[]): Buffer[];
 
-    ext(value?: DigitalbitsValueExt): DigitalbitsValueExt;
+    ext(value?: DigitalBitsValueExt): DigitalBitsValueExt;
 
     toXDR(format?: 'raw'): Buffer;
 
     toXDR(format: 'hex' | 'base64'): string;
 
-    static read(io: Buffer): DigitalbitsValue;
+    static read(io: Buffer): DigitalBitsValue;
 
-    static write(value: DigitalbitsValue, io: Buffer): void;
+    static write(value: DigitalBitsValue, io: Buffer): void;
 
-    static isValid(value: DigitalbitsValue): boolean;
+    static isValid(value: DigitalBitsValue): boolean;
 
-    static toXDR(value: DigitalbitsValue): Buffer;
+    static toXDR(value: DigitalBitsValue): Buffer;
 
-    static fromXDR(input: Buffer, format?: 'raw'): DigitalbitsValue;
+    static fromXDR(input: Buffer, format?: 'raw'): DigitalBitsValue;
 
-    static fromXDR(input: string, format: 'hex' | 'base64'): DigitalbitsValue;
+    static fromXDR(input: string, format: 'hex' | 'base64'): DigitalBitsValue;
 
     static validateXDR(input: Buffer, format?: 'raw'): boolean;
 
@@ -2337,7 +2337,7 @@ export namespace xdr {
     constructor(attributes: {
       ledgerVersion: number;
       previousLedgerHash: Buffer;
-      scpValue: DigitalbitsValue;
+      scpValue: DigitalBitsValue;
       txSetResultHash: Buffer;
       bucketListHash: Buffer;
       ledgerSeq: number;
@@ -2356,7 +2356,7 @@ export namespace xdr {
 
     previousLedgerHash(value?: Buffer): Buffer;
 
-    scpValue(value?: DigitalbitsValue): DigitalbitsValue;
+    scpValue(value?: DigitalBitsValue): DigitalBitsValue;
 
     txSetResultHash(value?: Buffer): Buffer;
 
@@ -3368,13 +3368,13 @@ export namespace xdr {
   class AuthenticatedMessageV0 {
     constructor(attributes: {
       sequence: Uint64;
-      message: DigitalbitsMessage;
+      message: DigitalBitsMessage;
       mac: HmacSha256Mac;
     });
 
     sequence(value?: Uint64): Uint64;
 
-    message(value?: DigitalbitsMessage): DigitalbitsMessage;
+    message(value?: DigitalBitsMessage): DigitalBitsMessage;
 
     mac(value?: HmacSha256Mac): HmacSha256Mac;
 
@@ -5819,18 +5819,18 @@ export namespace xdr {
     static validateXDR(input: string, format: 'hex' | 'base64'): boolean;
   }
 
-  class DigitalbitsValueExt {
-    switch(): DigitalbitsValueType;
+  class DigitalBitsValueExt {
+    switch(): DigitalBitsValueType;
 
     lcValueSignature(
       value?: LedgerCloseValueSignature
     ): LedgerCloseValueSignature;
 
-    static digitalbitsValueBasic(): DigitalbitsValueExt;
+    static digitalbitsValueBasic(): DigitalBitsValueExt;
 
     static digitalbitsValueSigned(
       value: LedgerCloseValueSignature
-    ): DigitalbitsValueExt;
+    ): DigitalBitsValueExt;
 
     value(): LedgerCloseValueSignature | void;
 
@@ -5838,17 +5838,17 @@ export namespace xdr {
 
     toXDR(format: 'hex' | 'base64'): string;
 
-    static read(io: Buffer): DigitalbitsValueExt;
+    static read(io: Buffer): DigitalBitsValueExt;
 
-    static write(value: DigitalbitsValueExt, io: Buffer): void;
+    static write(value: DigitalBitsValueExt, io: Buffer): void;
 
-    static isValid(value: DigitalbitsValueExt): boolean;
+    static isValid(value: DigitalBitsValueExt): boolean;
 
-    static toXDR(value: DigitalbitsValueExt): Buffer;
+    static toXDR(value: DigitalBitsValueExt): Buffer;
 
-    static fromXDR(input: Buffer, format?: 'raw'): DigitalbitsValueExt;
+    static fromXDR(input: Buffer, format?: 'raw'): DigitalBitsValueExt;
 
-    static fromXDR(input: string, format: 'hex' | 'base64'): DigitalbitsValueExt;
+    static fromXDR(input: string, format: 'hex' | 'base64'): DigitalBitsValueExt;
 
     static validateXDR(input: Buffer, format?: 'raw'): boolean;
 
@@ -6293,7 +6293,7 @@ export namespace xdr {
     static validateXDR(input: string, format: 'hex' | 'base64'): boolean;
   }
 
-  class DigitalbitsMessage {
+  class DigitalBitsMessage {
     switch(): MessageType;
 
     error(value?: Error): Error;
@@ -6328,35 +6328,35 @@ export namespace xdr {
 
     getScpLedgerSeq(value?: number): number;
 
-    static errorMsg(value: Error): DigitalbitsMessage;
+    static errorMsg(value: Error): DigitalBitsMessage;
 
-    static hello(value: Hello): DigitalbitsMessage;
+    static hello(value: Hello): DigitalBitsMessage;
 
-    static auth(value: Auth): DigitalbitsMessage;
+    static auth(value: Auth): DigitalBitsMessage;
 
-    static dontHave(value: DontHave): DigitalbitsMessage;
+    static dontHave(value: DontHave): DigitalBitsMessage;
 
-    static getPeers(): DigitalbitsMessage;
+    static getPeers(): DigitalBitsMessage;
 
-    static peers(value: PeerAddress[]): DigitalbitsMessage;
+    static peers(value: PeerAddress[]): DigitalBitsMessage;
 
-    static getTxSet(value: Buffer): DigitalbitsMessage;
+    static getTxSet(value: Buffer): DigitalBitsMessage;
 
-    static txSet(value: TransactionSet): DigitalbitsMessage;
+    static txSet(value: TransactionSet): DigitalBitsMessage;
 
-    static transaction(value: TransactionEnvelope): DigitalbitsMessage;
+    static transaction(value: TransactionEnvelope): DigitalBitsMessage;
 
-    static surveyRequest(value: SignedSurveyRequestMessage): DigitalbitsMessage;
+    static surveyRequest(value: SignedSurveyRequestMessage): DigitalBitsMessage;
 
-    static surveyResponse(value: SignedSurveyResponseMessage): DigitalbitsMessage;
+    static surveyResponse(value: SignedSurveyResponseMessage): DigitalBitsMessage;
 
-    static getScpQuorumset(value: Buffer): DigitalbitsMessage;
+    static getScpQuorumset(value: Buffer): DigitalBitsMessage;
 
-    static scpQuorumset(value: ScpQuorumSet): DigitalbitsMessage;
+    static scpQuorumset(value: ScpQuorumSet): DigitalBitsMessage;
 
-    static scpMessage(value: ScpEnvelope): DigitalbitsMessage;
+    static scpMessage(value: ScpEnvelope): DigitalBitsMessage;
 
-    static getScpState(value: number): DigitalbitsMessage;
+    static getScpState(value: number): DigitalBitsMessage;
 
     value():
       | Error
@@ -6379,17 +6379,17 @@ export namespace xdr {
 
     toXDR(format: 'hex' | 'base64'): string;
 
-    static read(io: Buffer): DigitalbitsMessage;
+    static read(io: Buffer): DigitalBitsMessage;
 
-    static write(value: DigitalbitsMessage, io: Buffer): void;
+    static write(value: DigitalBitsMessage, io: Buffer): void;
 
-    static isValid(value: DigitalbitsMessage): boolean;
+    static isValid(value: DigitalBitsMessage): boolean;
 
-    static toXDR(value: DigitalbitsMessage): Buffer;
+    static toXDR(value: DigitalBitsMessage): Buffer;
 
-    static fromXDR(input: Buffer, format?: 'raw'): DigitalbitsMessage;
+    static fromXDR(input: Buffer, format?: 'raw'): DigitalBitsMessage;
 
-    static fromXDR(input: string, format: 'hex' | 'base64'): DigitalbitsMessage;
+    static fromXDR(input: string, format: 'hex' | 'base64'): DigitalBitsMessage;
 
     static validateXDR(input: Buffer, format?: 'raw'): boolean;
 

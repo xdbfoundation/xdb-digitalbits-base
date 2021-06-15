@@ -1,16 +1,16 @@
-// Copyright 2015 Digitalbits Development Foundation and contributors. Licensed
+// Copyright 2015 DigitalBits Development Foundation and contributors. Licensed
 // under the Apache License, Version 2.0. See the COPYING file at the root
 // of this distribution or at http://www.apache.org/licenses/LICENSE-2.0
 
-%#include "xdr/Digitalbits-SCP.h"
-%#include "xdr/Digitalbits-transaction.h"
+%#include "xdr/DigitalBits-SCP.h"
+%#include "xdr/DigitalBits-transaction.h"
 
 namespace digitalbits
 {
 
 typedef opaque UpgradeType<128>;
 
-enum DigitalbitsValueType
+enum DigitalBitsValueType
 {
     DIGITALBITS_VALUE_BASIC = 0,
     DIGITALBITS_VALUE_SIGNED = 1
@@ -22,9 +22,9 @@ struct LedgerCloseValueSignature
     Signature signature; // nodeID's signature
 };
 
-/* DigitalbitsValue is the value used by SCP to reach consensus on a given ledger
+/* DigitalBitsValue is the value used by SCP to reach consensus on a given ledger
  */
-struct DigitalbitsValue
+struct DigitalBitsValue
 {
     Hash txSetHash;      // transaction set to apply to previous ledger
     TimePoint closeTime; // network close time
@@ -37,7 +37,7 @@ struct DigitalbitsValue
     UpgradeType upgrades<6>;
 
     // reserved for future use
-    union switch (DigitalbitsValueType v)
+    union switch (DigitalBitsValueType v)
     {
     case DIGITALBITS_VALUE_BASIC:
         void;
@@ -54,22 +54,22 @@ struct LedgerHeader
 {
     uint32 ledgerVersion;    // the protocol version of the ledger
     Hash previousLedgerHash; // hash of the previous ledger header
-    DigitalbitsValue scpValue;   // what consensus agreed to
+    DigitalBitsValue scpValue;   // what consensus agreed to
     Hash txSetResultHash;    // the TransactionResultSet that led to this ledger
     Hash bucketListHash;     // hash of the ledger state
 
     uint32 ledgerSeq; // sequence number of this ledger
 
-    int64 totalCoins; // total number of stroops in existence.
-                      // 10,000,000 stroops in 1 XLM
+    int64 totalCoins; // total number of nibbs in existence.
+                      // 10,000,000 nibbs in 1 XDB
 
     int64 feePool;       // fees burned since last inflation run
     uint32 inflationSeq; // inflation sequence number
 
     uint64 idPool; // last used global ID, used for generating objects
 
-    uint32 baseFee;     // base fee per operation in stroops
-    uint32 baseReserve; // account base reserve in stroops
+    uint32 baseFee;     // base fee per operation in nibbs
+    uint32 baseReserve; // account base reserve in nibbs
 
     uint32 maxTxSetSize; // maximum size a transaction set can be
 
@@ -89,7 +89,7 @@ struct LedgerHeader
 };
 
 /* Ledger upgrades
-note that the `upgrades` field from DigitalbitsValue is normalized such that
+note that the `upgrades` field from DigitalBitsValue is normalized such that
 it only contains one entry per LedgerUpgradeType, and entries are sorted
 in ascending order
 */

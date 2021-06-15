@@ -1,33 +1,33 @@
 describe('StrKey', function() {
   beforeEach(function() {
-    var keypair = DigitalbitsBase.Keypair.master(
+    var keypair = DigitalBitsBase.Keypair.master(
       'Test SDF Network ; September 2015'
     );
     this.unencodedBuffer = keypair.rawPublicKey();
     this.unencoded = this.unencodedBuffer.toString();
     this.accountIdEncoded = keypair.publicKey();
-    this.seedEncoded = DigitalbitsBase.StrKey.encodeEd25519SecretSeed(
+    this.seedEncoded = DigitalBitsBase.StrKey.encodeEd25519SecretSeed(
       this.unencodedBuffer
     );
   });
   describe('#decodeCheck', function() {
     it('decodes correctly', function() {
       expect(
-        DigitalbitsBase.StrKey.decodeEd25519PublicKey(this.accountIdEncoded)
+        DigitalBitsBase.StrKey.decodeEd25519PublicKey(this.accountIdEncoded)
       ).to.eql(this.unencodedBuffer);
       expect(
-        DigitalbitsBase.StrKey.decodeEd25519SecretSeed(this.seedEncoded)
+        DigitalBitsBase.StrKey.decodeEd25519SecretSeed(this.seedEncoded)
       ).to.eql(this.unencodedBuffer);
     });
 
     it('throws an error when the version byte is wrong', function() {
       expect(() =>
-        DigitalbitsBase.StrKey.decodeEd25519SecretSeed(
+        DigitalBitsBase.StrKey.decodeEd25519SecretSeed(
           'GBPXXOA5N4JYPESHAADMQKBPWZWQDQ64ZV6ZL2S3LAGW4SY7NTCMWIVL'
         )
       ).to.throw(/invalid version/);
       expect(() =>
-        DigitalbitsBase.StrKey.decodeEd25519PublicKey(
+        DigitalBitsBase.StrKey.decodeEd25519PublicKey(
           'SBGWKM3CD4IL47QN6X54N6Y33T3JDNVI6AIJ6CD5IM47HG3IG4O36XCU'
         )
       ).to.throw(/invalid version/);
@@ -36,53 +36,53 @@ describe('StrKey', function() {
     it('throws an error when decoded data encodes to other string', function() {
       // accountId
       expect(() =>
-        DigitalbitsBase.StrKey.decodeEd25519PublicKey(
+        DigitalBitsBase.StrKey.decodeEd25519PublicKey(
           'GBPXX0A5N4JYPESHAADMQKBPWZWQDQ64ZV6ZL2S3LAGW4SY7NTCMWIVL'
         )
       ).to.throw(/invalid encoded string/);
       expect(() =>
-        DigitalbitsBase.StrKey.decodeEd25519PublicKey(
+        DigitalBitsBase.StrKey.decodeEd25519PublicKey(
           'GCFZB6L25D26RQFDWSSBDEYQ32JHLRMTT44ZYE3DZQUTYOL7WY43PLBG++'
         )
       ).to.throw(/invalid encoded string/);
       expect(() =>
-        DigitalbitsBase.StrKey.decodeEd25519PublicKey(
+        DigitalBitsBase.StrKey.decodeEd25519PublicKey(
           'GADE5QJ2TY7S5ZB65Q43DFGWYWCPHIYDJ2326KZGAGBN7AE5UY6JVDRRA'
         )
       ).to.throw(/invalid encoded string/);
       expect(() =>
-        DigitalbitsBase.StrKey.decodeEd25519PublicKey(
+        DigitalBitsBase.StrKey.decodeEd25519PublicKey(
           'GB6OWYST45X57HCJY5XWOHDEBULB6XUROWPIKW77L5DSNANBEQGUPADT2'
         )
       ).to.throw(/invalid encoded string/);
       expect(() =>
-        DigitalbitsBase.StrKey.decodeEd25519PublicKey(
+        DigitalBitsBase.StrKey.decodeEd25519PublicKey(
           'GB6OWYST45X57HCJY5XWOHDEBULB6XUROWPIKW77L5DSNANBEQGUPADT2T'
         )
       ).to.throw(/invalid encoded string/);
       // seed
       expect(() =>
-        DigitalbitsBase.StrKey.decodeEd25519SecretSeed(
+        DigitalBitsBase.StrKey.decodeEd25519SecretSeed(
           'SB7OJNF5727F3RJUG5ASQJ3LUM44ELLNKW35ZZQDHMVUUQNGYW'
         )
       ).to.throw(/invalid encoded string/);
       expect(() =>
-        DigitalbitsBase.StrKey.decodeEd25519SecretSeed(
+        DigitalBitsBase.StrKey.decodeEd25519SecretSeed(
           'SB7OJNF5727F3RJUG5ASQJ3LUM44ELLNKW35ZZQDHMVUUQNGYWMEGB2W2'
         )
       ).to.throw(/invalid encoded string/);
       expect(() =>
-        DigitalbitsBase.StrKey.decodeEd25519SecretSeed(
+        DigitalBitsBase.StrKey.decodeEd25519SecretSeed(
           'SB7OJNF5727F3RJUG5ASQJ3LUM44ELLNKW35ZZQDHMVUUQNGYWMEGB2W2T'
         )
       ).to.throw(/invalid encoded string/);
       expect(() =>
-        DigitalbitsBase.StrKey.decodeEd25519SecretSeed(
+        DigitalBitsBase.StrKey.decodeEd25519SecretSeed(
           'SCMB30FQCIQAWZ4WQTS6SVK37LGMAFJGXOZIHTH2PY6EXLP37G46H6DT'
         )
       ).to.throw(/invalid encoded string/);
       expect(() =>
-        DigitalbitsBase.StrKey.decodeEd25519SecretSeed(
+        DigitalBitsBase.StrKey.decodeEd25519SecretSeed(
           'SAYC2LQ322EEHZYWNSKBEW6N66IRTDREEBUXXU5HPVZGMAXKLIZNM45H++'
         )
       ).to.throw(/invalid encoded string/);
@@ -90,12 +90,12 @@ describe('StrKey', function() {
 
     it('throws an error when the checksum is wrong', function() {
       expect(() =>
-        DigitalbitsBase.StrKey.decodeEd25519PublicKey(
+        DigitalBitsBase.StrKey.decodeEd25519PublicKey(
           'GBPXXOA5N4JYPESHAADMQKBPWZWQDQ64ZV6ZL2S3LAGW4SY7NTCMWIVT'
         )
       ).to.throw(/invalid checksum/);
       expect(() =>
-        DigitalbitsBase.StrKey.decodeEd25519SecretSeed(
+        DigitalBitsBase.StrKey.decodeEd25519SecretSeed(
           'SBGWKM3CD4IL47QN6X54N6Y33T3JDNVI6AIJ6CD5IM47HG3IG4O36XCX'
         )
       ).to.throw(/invalid checksum/);
@@ -105,52 +105,52 @@ describe('StrKey', function() {
   describe('#encodeCheck', function() {
     it('encodes a buffer correctly', function() {
       expect(
-        DigitalbitsBase.StrKey.encodeEd25519PublicKey(this.unencodedBuffer)
+        DigitalBitsBase.StrKey.encodeEd25519PublicKey(this.unencodedBuffer)
       ).to.eql(this.accountIdEncoded);
       expect(
-        DigitalbitsBase.StrKey.encodeEd25519PublicKey(this.unencodedBuffer)
+        DigitalBitsBase.StrKey.encodeEd25519PublicKey(this.unencodedBuffer)
       ).to.match(/^G/);
       expect(
-        DigitalbitsBase.StrKey.encodeEd25519SecretSeed(this.unencodedBuffer)
+        DigitalBitsBase.StrKey.encodeEd25519SecretSeed(this.unencodedBuffer)
       ).to.eql(this.seedEncoded);
       expect(
-        DigitalbitsBase.StrKey.encodeEd25519SecretSeed(this.unencodedBuffer)
+        DigitalBitsBase.StrKey.encodeEd25519SecretSeed(this.unencodedBuffer)
       ).to.match(/^S/);
 
       var strkeyEncoded;
 
-      strkeyEncoded = DigitalbitsBase.StrKey.encodePreAuthTx(
+      strkeyEncoded = DigitalBitsBase.StrKey.encodePreAuthTx(
         this.unencodedBuffer
       );
       expect(strkeyEncoded).to.match(/^T/);
-      expect(DigitalbitsBase.StrKey.decodePreAuthTx(strkeyEncoded)).to.eql(
+      expect(DigitalBitsBase.StrKey.decodePreAuthTx(strkeyEncoded)).to.eql(
         this.unencodedBuffer
       );
 
-      strkeyEncoded = DigitalbitsBase.StrKey.encodeSha256Hash(
+      strkeyEncoded = DigitalBitsBase.StrKey.encodeSha256Hash(
         this.unencodedBuffer
       );
       expect(strkeyEncoded).to.match(/^X/);
-      expect(DigitalbitsBase.StrKey.decodeSha256Hash(strkeyEncoded)).to.eql(
+      expect(DigitalBitsBase.StrKey.decodeSha256Hash(strkeyEncoded)).to.eql(
         this.unencodedBuffer
       );
     });
 
     it('encodes a buffer correctly', function() {
       expect(
-        DigitalbitsBase.StrKey.encodeEd25519PublicKey(this.unencodedBuffer)
+        DigitalBitsBase.StrKey.encodeEd25519PublicKey(this.unencodedBuffer)
       ).to.eql(this.accountIdEncoded);
       expect(
-        DigitalbitsBase.StrKey.encodeEd25519SecretSeed(this.unencodedBuffer)
+        DigitalBitsBase.StrKey.encodeEd25519SecretSeed(this.unencodedBuffer)
       ).to.eql(this.seedEncoded);
     });
 
     it('throws an error when the data is null', function() {
       expect(() =>
-        DigitalbitsBase.StrKey.encodeEd25519SecretSeed(null)
+        DigitalBitsBase.StrKey.encodeEd25519SecretSeed(null)
       ).to.throw(/null data/);
       expect(() =>
-        DigitalbitsBase.StrKey.encodeEd25519PublicKey(null)
+        DigitalBitsBase.StrKey.encodeEd25519PublicKey(null)
       ).to.throw(/null data/);
     });
   });
@@ -171,7 +171,7 @@ describe('StrKey', function() {
       ];
 
       for (var i in keys) {
-        expect(DigitalbitsBase.StrKey.isValidEd25519PublicKey(keys[i])).to.be
+        expect(DigitalBitsBase.StrKey.isValidEd25519PublicKey(keys[i])).to.be
           .true;
       }
     });
@@ -192,7 +192,7 @@ describe('StrKey', function() {
       ];
 
       for (var i in keys) {
-        expect(DigitalbitsBase.StrKey.isValidEd25519PublicKey(keys[i])).to.be
+        expect(DigitalBitsBase.StrKey.isValidEd25519PublicKey(keys[i])).to.be
           .false;
       }
     });
@@ -210,7 +210,7 @@ describe('StrKey', function() {
       ];
 
       for (var i in keys) {
-        expect(DigitalbitsBase.StrKey.isValidEd25519SecretSeed(keys[i])).to.be
+        expect(DigitalBitsBase.StrKey.isValidEd25519SecretSeed(keys[i])).to.be
           .true;
       }
     });
@@ -226,7 +226,7 @@ describe('StrKey', function() {
       ];
 
       for (var i in keys) {
-        expect(DigitalbitsBase.StrKey.isValidEd25519SecretSeed(keys[i])).to.be
+        expect(DigitalBitsBase.StrKey.isValidEd25519SecretSeed(keys[i])).to.be
           .false;
       }
     });

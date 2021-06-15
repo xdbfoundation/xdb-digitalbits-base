@@ -99,7 +99,7 @@ export class Keypair {
   static fromPublicKey(publicKey) {
     publicKey = StrKey.decodeEd25519PublicKey(publicKey);
     if (publicKey.length !== 32) {
-      throw new Error('Invalid Digitalbits public key');
+      throw new Error('Invalid DigitalBits public key');
     }
     return new this({ type: 'ed25519', publicKey });
   }

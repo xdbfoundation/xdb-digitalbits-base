@@ -1,8 +1,8 @@
-// Copyright 2015 Digitalbits Development Foundation and contributors. Licensed
+// Copyright 2015 DigitalBits Development Foundation and contributors. Licensed
 // under the Apache License, Version 2.0. See the COPYING file at the root
 // of this distribution or at http://www.apache.org/licenses/LICENSE-2.0
 
-%#include "xdr/Digitalbits-ledger.h"
+%#include "xdr/DigitalBits-ledger.h"
 
 namespace digitalbits
 {
@@ -176,7 +176,7 @@ case SURVEY_TOPOLOGY:
     TopologyResponseBody topologyResponseBody;
 };
 
-union DigitalbitsMessage switch (MessageType type)
+union DigitalBitsMessage switch (MessageType type)
 {
 case ERROR_MSG:
     Error error;
@@ -222,7 +222,7 @@ case 0:
     struct
     {
         uint64 sequence;
-        DigitalbitsMessage message;
+        DigitalBitsMessage message;
         HmacSha256Mac mac;
     } v0;
 };

@@ -4,17 +4,17 @@ describe('FeeBumpTransaction', function() {
   beforeEach(function() {
     this.baseFee = '100';
     this.networkPassphrase = 'Standalone Network ; February 2017';
-    this.innerSource = DigitalbitsBase.Keypair.master(this.networkPassphrase);
-    this.innerAccount = new DigitalbitsBase.Account(
+    this.innerSource = DigitalBitsBase.Keypair.master(this.networkPassphrase);
+    this.innerAccount = new DigitalBitsBase.Account(
       this.innerSource.publicKey(),
       '7'
     );
     this.destination =
       'GDQERENWDDSQZS7R7WKHZI3BSOYMV3FSWR7TFUYFTKQ447PIX6NREOJM';
     this.amount = '2000.0000000';
-    this.asset = DigitalbitsBase.Asset.native();
+    this.asset = DigitalBitsBase.Asset.native();
 
-    this.innerTx = new DigitalbitsBase.TransactionBuilder(this.innerAccount, {
+    this.innerTx = new DigitalBitsBase.TransactionBuilder(this.innerAccount, {
       fee: '100',
       networkPassphrase: this.networkPassphrase,
       timebounds: {
@@ -23,19 +23,19 @@ describe('FeeBumpTransaction', function() {
       }
     })
       .addOperation(
-        DigitalbitsBase.Operation.payment({
+        DigitalBitsBase.Operation.payment({
           destination: this.destination,
           asset: this.asset,
           amount: this.amount
         })
       )
-      .addMemo(DigitalbitsBase.Memo.text('Happy birthday!'))
+      .addMemo(DigitalBitsBase.Memo.text('Happy birthday!'))
       .build();
     this.innerTx.sign(this.innerSource);
-    this.feeSource = DigitalbitsBase.Keypair.fromSecret(
+    this.feeSource = DigitalBitsBase.Keypair.fromSecret(
       'SB7ZMPZB3YMMK5CUWENXVLZWBK4KYX4YU5JBXQNZSK2DP2Q7V3LVTO5V'
     );
-    this.transaction = DigitalbitsBase.TransactionBuilder.buildFeeBumpTransaction(
+    this.transaction = DigitalBitsBase.TransactionBuilder.buildFeeBumpTransaction(
       this.feeSource,
       '100',
       this.innerTx,
@@ -55,7 +55,7 @@ describe('FeeBumpTransaction', function() {
     expect(innerTransaction.toXDR()).to.be.equal(this.innerTx.toXDR());
     expect(innerTransaction.source).to.be.equal(this.innerSource.publicKey());
     expect(innerTransaction.fee).to.be.equal('100');
-    expect(innerTransaction.memo.type).to.be.equal(DigitalbitsBase.MemoText);
+    expect(innerTransaction.memo.type).to.be.equal(DigitalBitsBase.MemoText);
     expect(innerTransaction.memo.value.toString('ascii')).to.be.equal(
       'Happy birthday!'
     );
@@ -73,13 +73,13 @@ describe('FeeBumpTransaction', function() {
         .toXDR()
         .toString('base64')
     ).to.be.equal(expectedXDR);
-    const expectedTxEnvelope = DigitalbitsBase.xdr.TransactionEnvelope.fromXDR(
+    const expectedTxEnvelope = DigitalBitsBase.xdr.TransactionEnvelope.fromXDR(
       expectedXDR,
       'base64'
     ).value();
 
     expect(innerTransaction.source).to.equal(
-      DigitalbitsBase.StrKey.encodeEd25519PublicKey(
+      DigitalBitsBase.StrKey.encodeEd25519PublicKey(
         expectedTxEnvelope
           .tx()
           .innerTx()
@@ -90,7 +90,7 @@ describe('FeeBumpTransaction', function() {
       )
     );
     expect(transaction.feeSource).to.equal(
-      DigitalbitsBase.StrKey.encodeEd25519PublicKey(
+      DigitalBitsBase.StrKey.encodeEd25519PublicKey(
         expectedTxEnvelope
           .tx()
           .feeSource()
@@ -138,11 +138,11 @@ describe('FeeBumpTransaction', function() {
     const input = this.transaction.toEnvelope();
 
     expect(() => {
-      new DigitalbitsBase.FeeBumpTransaction(input, { garbage: 'yes' });
+      new DigitalBitsBase.FeeBumpTransaction(input, { garbage: 'yes' });
     }).to.throw(/expected a string/);
 
     expect(() => {
-      new DigitalbitsBase.FeeBumpTransaction(input, 1234);
+      new DigitalBitsBase.FeeBumpTransaction(input, 1234);
     }).to.throw(/expected a string/);
   });
 
@@ -159,7 +159,7 @@ describe('FeeBumpTransaction', function() {
 
   it('signs using hash preimage', function() {
     let preimage = randomBytes(64);
-    let hash = DigitalbitsBase.hash(preimage);
+    let hash = DigitalBitsBase.hash(preimage);
     let tx = this.transaction;
     tx.signHashX(preimage);
     let env = tx.toEnvelope().feeBump();
@@ -189,7 +189,7 @@ describe('FeeBumpTransaction', function() {
     it('does not return a reference to the source transaction', function() {
       const transaction = this.transaction;
       const envelope = transaction.toEnvelope().value();
-      envelope.tx().fee(DigitalbitsBase.xdr.Int64.fromString('300'));
+      envelope.tx().fee(DigitalBitsBase.xdr.Int64.fromString('300'));
 
       expect(transaction.tx.fee().toString()).to.equal('200');
     });
@@ -200,7 +200,7 @@ describe('FeeBumpTransaction', function() {
     const signer = this.feeSource;
     const presignHash = transaction.hash();
 
-    const addedSignatureTx = new DigitalbitsBase.FeeBumpTransaction(
+    const addedSignatureTx = new DigitalBitsBase.FeeBumpTransaction(
       transaction.toEnvelope(),
       this.networkPassphrase
     );
@@ -239,14 +239,14 @@ describe('FeeBumpTransaction', function() {
     const presignHash = transaction.hash();
     const signer = this.feeSource;
 
-    const signature = new DigitalbitsBase.FeeBumpTransaction(
+    const signature = new DigitalBitsBase.FeeBumpTransaction(
       transaction.toEnvelope(),
       this.networkPassphrase
     ).getKeypairSignature(signer);
 
     expect(signer.sign(presignHash).toString('base64')).to.equal(signature);
 
-    const addedSignatureTx = new DigitalbitsBase.FeeBumpTransaction(
+    const addedSignatureTx = new DigitalBitsBase.FeeBumpTransaction(
       transaction.toEnvelope(),
       this.networkPassphrase
     );
@@ -284,12 +284,12 @@ describe('FeeBumpTransaction', function() {
     const transaction = this.transaction;
     const signer = this.feeSource;
 
-    const signature = new DigitalbitsBase.FeeBumpTransaction(
+    const signature = new DigitalBitsBase.FeeBumpTransaction(
       transaction.toEnvelope(),
       this.networkPassphrase
     ).getKeypairSignature(signer);
 
-    const alteredTx = DigitalbitsBase.TransactionBuilder.buildFeeBumpTransaction(
+    const alteredTx = DigitalBitsBase.TransactionBuilder.buildFeeBumpTransaction(
       this.feeSource,
       '200',
       this.innerTx,
@@ -304,21 +304,21 @@ describe('FeeBumpTransaction', function() {
   it('outputs xdr as a string', function() {
     const xdrString =
       'AAAABQAAAADgSJG2GOUMy/H9lHyjYZOwyuyytH8y0wWaoc596L+bEgAAAAAAAADIAAAAAgAAAABzdv3ojkzWHMD7KUoXhrPx0GH18vHKV0ZfqpMiEblG1gAAAGQAAAAAAAAACAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAA9IYXBweSBiaXJ0aGRheSEAAAAAAQAAAAAAAAABAAAAAOBIkbYY5QzL8f2UfKNhk7DK7LK0fzLTBZqhzn3ov5sSAAAAAAAAAASoF8gAAAAAAAAAAAERuUbWAAAAQK933Dnt1pxXlsf1B5CYn81PLxeYsx+MiV9EGbMdUfEcdDWUySyIkdzJefjpR5ejdXVp/KXosGmNUQ+DrIBlzg0AAAAAAAAAAei/mxIAAABAijIIQpL6KlFefiL4FP8UWQktWEz4wFgGNSaXe7mZdVMuiREntehi1b7MRqZ1h+W+Y0y+Z2HtMunsilT2yS5mAA==';
-    const transaction = new DigitalbitsBase.FeeBumpTransaction(
+    const transaction = new DigitalBitsBase.FeeBumpTransaction(
       xdrString,
       this.networkPassphrase
     );
-    expect(transaction).to.be.instanceof(DigitalbitsBase.FeeBumpTransaction);
+    expect(transaction).to.be.instanceof(DigitalBitsBase.FeeBumpTransaction);
     expect(transaction.toXDR()).to.be.equal(xdrString);
   });
 
   it('handles muxed accounts', function() {
-    let med25519 = new DigitalbitsBase.xdr.MuxedAccountMed25519({
-      id: DigitalbitsBase.xdr.Uint64.fromString('0'),
+    let med25519 = new DigitalBitsBase.xdr.MuxedAccountMed25519({
+      id: DigitalBitsBase.xdr.Uint64.fromString('0'),
       ed25519: this.feeSource.rawPublicKey()
     });
 
-    let muxedAccount = DigitalbitsBase.xdr.MuxedAccount.keyTypeMuxedEd25519(
+    let muxedAccount = DigitalBitsBase.xdr.MuxedAccount.keyTypeMuxedEd25519(
       med25519
     );
 
@@ -327,7 +327,7 @@ describe('FeeBumpTransaction', function() {
       .feeBump()
       .tx()
       .feeSource(muxedAccount);
-    const txWithMuxedAccount = new DigitalbitsBase.FeeBumpTransaction(
+    const txWithMuxedAccount = new DigitalBitsBase.FeeBumpTransaction(
       envelope,
       this.networkPassphrase
     );

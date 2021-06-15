@@ -1,4 +1,4 @@
-# JS Digitalbits Base
+# JS DigitalBits Base
 ## Quick start
 
 Using yarn to include js-digitalbits-base in your own project:
@@ -8,13 +8,13 @@ yarn add digitalbits-base
 ```
 
 For browsers, [use Bower to install it](#to-use-in-the-browser). It exports a
-variable `DigitalbitsBase`. The example below assumes you have `digitalbits-base.js`
+variable `DigitalBitsBase`. The example below assumes you have `digitalbits-base.js`
 relative to your html file.
 
 ```html
 <script src="digitalbits-base.js"></script>
 <script>
-  console.log(DigitalbitsBase);
+  console.log(DigitalBitsBase);
 </script>
 ```
 
@@ -31,7 +31,7 @@ yarn add digitalbits-base
 2. require/import it in your JavaScript:
 
 ```js
-var DigitalbitsBase = require('digitalbits-base');
+var DigitalBitsBase = require('digitalbits-base');
 ```
 
 ### To self host for use in the browser
@@ -47,7 +47,7 @@ bower install digitalbits-base
 ```html
 <script src="./bower_components/digitalbits-base/digitalbits-base.js"></script>
 <script>
-  console.log(DigitalbitsBase);
+  console.log(DigitalBitsBase);
 </script>
 ```
 

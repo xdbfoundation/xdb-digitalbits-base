@@ -2,37 +2,37 @@ import randomBytes from 'randombytes';
 
 describe('Transaction', function() {
   it('constructs Transaction object from a TransactionEnvelope', function(done) {
-    let source = new DigitalbitsBase.Account(
+    let source = new DigitalBitsBase.Account(
       'GBBM6BKZPEHWYO3E3YKREDPQXMS4VK35YLNU7NFBRI26RAN7GI5POFBB',
       '0'
     );
     let destination =
       'GDJJRRMBK4IWLEPJGIE6SXD2LP7REGZODU7WDC3I2D6MR37F4XSHBKX2';
-    let asset = DigitalbitsBase.Asset.native();
+    let asset = DigitalBitsBase.Asset.native();
     let amount = '2000.0000000';
 
-    let input = new DigitalbitsBase.TransactionBuilder(source, {
+    let input = new DigitalBitsBase.TransactionBuilder(source, {
       fee: 100,
-      networkPassphrase: DigitalbitsBase.Networks.TESTNET
+      networkPassphrase: DigitalBitsBase.Networks.TESTNET
     })
       .addOperation(
-        DigitalbitsBase.Operation.payment({ destination, asset, amount })
+        DigitalBitsBase.Operation.payment({ destination, asset, amount })
       )
-      .addMemo(DigitalbitsBase.Memo.text('Happy birthday!'))
-      .setTimeout(DigitalbitsBase.TimeoutInfinite)
+      .addMemo(DigitalBitsBase.Memo.text('Happy birthday!'))
+      .setTimeout(DigitalBitsBase.TimeoutInfinite)
       .build()
       .toEnvelope()
       .toXDR('base64');
 
-    var transaction = new DigitalbitsBase.Transaction(
+    var transaction = new DigitalBitsBase.Transaction(
       input,
-      DigitalbitsBase.Networks.TESTNET
+      DigitalBitsBase.Networks.TESTNET
     );
     var operation = transaction.operations[0];
 
     expect(transaction.source).to.be.equal(source.accountId());
     expect(transaction.fee).to.be.equal('100');
-    expect(transaction.memo.type).to.be.equal(DigitalbitsBase.MemoText);
+    expect(transaction.memo.type).to.be.equal(DigitalBitsBase.MemoText);
     expect(transaction.memo.value.toString('ascii')).to.be.equal(
       'Happy birthday!'
     );
@@ -45,24 +45,24 @@ describe('Transaction', function() {
 
   describe('toEnvelope', function() {
     beforeEach(function() {
-      let source = new DigitalbitsBase.Account(
+      let source = new DigitalBitsBase.Account(
         'GBBM6BKZPEHWYO3E3YKREDPQXMS4VK35YLNU7NFBRI26RAN7GI5POFBB',
         '0'
       );
       let destination =
         'GDJJRRMBK4IWLEPJGIE6SXD2LP7REGZODU7WDC3I2D6MR37F4XSHBKX2';
-      let asset = DigitalbitsBase.Asset.native();
+      let asset = DigitalBitsBase.Asset.native();
       let amount = '2000.0000000';
 
-      this.transaction = new DigitalbitsBase.TransactionBuilder(source, {
+      this.transaction = new DigitalBitsBase.TransactionBuilder(source, {
         fee: 100,
-        networkPassphrase: DigitalbitsBase.Networks.TESTNET
+        networkPassphrase: DigitalBitsBase.Networks.TESTNET
       })
         .addOperation(
-          DigitalbitsBase.Operation.payment({ destination, asset, amount })
+          DigitalBitsBase.Operation.payment({ destination, asset, amount })
         )
-        .addMemo(DigitalbitsBase.Memo.text('Happy birthday!'))
-        .setTimeout(DigitalbitsBase.TimeoutInfinite)
+        .addMemo(DigitalBitsBase.Memo.text('Happy birthday!'))
+        .setTimeout(DigitalBitsBase.TimeoutInfinite)
         .build();
     });
 
@@ -76,115 +76,115 @@ describe('Transaction', function() {
     it('does not return a reference to the source transaction', function() {
       const transaction = this.transaction;
       const envelope = transaction.toEnvelope().value();
-      envelope.tx().fee(DigitalbitsBase.xdr.Int64.fromString('300'));
+      envelope.tx().fee(DigitalBitsBase.xdr.Int64.fromString('300'));
 
       expect(transaction.tx.fee().toString()).to.equal('100');
     });
   });
 
   it('throws when a garbage Network is selected', () => {
-    let source = new DigitalbitsBase.Account(
+    let source = new DigitalBitsBase.Account(
       'GBBM6BKZPEHWYO3E3YKREDPQXMS4VK35YLNU7NFBRI26RAN7GI5POFBB',
       '0'
     );
     let destination =
       'GDJJRRMBK4IWLEPJGIE6SXD2LP7REGZODU7WDC3I2D6MR37F4XSHBKX2';
-    let asset = DigitalbitsBase.Asset.native();
+    let asset = DigitalBitsBase.Asset.native();
     let amount = '2000.0000000';
 
-    let input = new DigitalbitsBase.TransactionBuilder(source, {
+    let input = new DigitalBitsBase.TransactionBuilder(source, {
       fee: 100,
-      networkPassphrase: DigitalbitsBase.Networks.TESTNET
+      networkPassphrase: DigitalBitsBase.Networks.TESTNET
     })
       .addOperation(
-        DigitalbitsBase.Operation.payment({ destination, asset, amount })
+        DigitalBitsBase.Operation.payment({ destination, asset, amount })
       )
-      .addMemo(DigitalbitsBase.Memo.text('Happy birthday!'))
-      .setTimeout(DigitalbitsBase.TimeoutInfinite)
+      .addMemo(DigitalBitsBase.Memo.text('Happy birthday!'))
+      .setTimeout(DigitalBitsBase.TimeoutInfinite)
       .build()
       .toEnvelope()
       .toXDR('base64');
 
     expect(() => {
-      new DigitalbitsBase.Transaction(input, { garbage: 'yes' });
+      new DigitalBitsBase.Transaction(input, { garbage: 'yes' });
     }).to.throw(/expected a string/);
 
     expect(() => {
-      new DigitalbitsBase.Transaction(input, 1234);
+      new DigitalBitsBase.Transaction(input, 1234);
     }).to.throw(/expected a string/);
   });
 
   it('throws when a Network is not passed', () => {
-    let source = new DigitalbitsBase.Account(
+    let source = new DigitalBitsBase.Account(
       'GBBM6BKZPEHWYO3E3YKREDPQXMS4VK35YLNU7NFBRI26RAN7GI5POFBB',
       '0'
     );
     let destination =
       'GDJJRRMBK4IWLEPJGIE6SXD2LP7REGZODU7WDC3I2D6MR37F4XSHBKX2';
-    let asset = DigitalbitsBase.Asset.native();
+    let asset = DigitalBitsBase.Asset.native();
     let amount = '2000.0000000';
 
-    let input = new DigitalbitsBase.TransactionBuilder(source, {
+    let input = new DigitalBitsBase.TransactionBuilder(source, {
       fee: 100,
-      networkPassphrase: DigitalbitsBase.Networks.TESTNET
+      networkPassphrase: DigitalBitsBase.Networks.TESTNET
     })
       .addOperation(
-        DigitalbitsBase.Operation.payment({ destination, asset, amount })
+        DigitalBitsBase.Operation.payment({ destination, asset, amount })
       )
-      .addMemo(DigitalbitsBase.Memo.text('Happy birthday!'))
-      .setTimeout(DigitalbitsBase.TimeoutInfinite)
+      .addMemo(DigitalBitsBase.Memo.text('Happy birthday!'))
+      .setTimeout(DigitalBitsBase.TimeoutInfinite)
       .build()
       .toEnvelope()
       .toXDR('base64');
 
     expect(() => {
-      new DigitalbitsBase.Transaction(input);
+      new DigitalBitsBase.Transaction(input);
     }).to.throw(/expected a string/);
   });
 
   it('throws when no fee is provided', function() {
-    let source = new DigitalbitsBase.Account(
+    let source = new DigitalBitsBase.Account(
       'GBBM6BKZPEHWYO3E3YKREDPQXMS4VK35YLNU7NFBRI26RAN7GI5POFBB',
       '0'
     );
     let destination =
       'GDJJRRMBK4IWLEPJGIE6SXD2LP7REGZODU7WDC3I2D6MR37F4XSHBKX2';
-    let asset = DigitalbitsBase.Asset.native();
+    let asset = DigitalBitsBase.Asset.native();
     let amount = '2000';
 
     expect(() =>
-      new DigitalbitsBase.TransactionBuilder(source, {
-        networkPassphrase: DigitalbitsBase.Networks.TESTNET
+      new DigitalBitsBase.TransactionBuilder(source, {
+        networkPassphrase: DigitalBitsBase.Networks.TESTNET
       })
         .addOperation(
-          DigitalbitsBase.Operation.payment({ destination, asset, amount })
+          DigitalBitsBase.Operation.payment({ destination, asset, amount })
         )
-        .setTimeout(DigitalbitsBase.TimeoutInfinite)
+        .setTimeout(DigitalBitsBase.TimeoutInfinite)
         .build()
     ).to.throw(/must specify fee/);
   });
 
   it('signs correctly', function() {
-    let source = new DigitalbitsBase.Account(
+    let source = new DigitalBitsBase.Account(
       'GBBM6BKZPEHWYO3E3YKREDPQXMS4VK35YLNU7NFBRI26RAN7GI5POFBB',
       '0'
     );
     let destination =
       'GDJJRRMBK4IWLEPJGIE6SXD2LP7REGZODU7WDC3I2D6MR37F4XSHBKX2';
-    let asset = DigitalbitsBase.Asset.native();
+    let asset = DigitalBitsBase.Asset.native();
     let amount = '2000';
-    let signer = DigitalbitsBase.Keypair.master(
-      DigitalbitsBase.Networks.TESTNET
+    let signer = DigitalBitsBase.Keypair.master(
+      DigitalBitsBase.Networks.TESTNET
     );
 
-    let tx = new DigitalbitsBase.TransactionBuilder(source, {
+    let tx = new DigitalBitsBase.TransactionBuilder(source, {
       fee: 100,
-      networkPassphrase: DigitalbitsBase.Networks.TESTNET
+      networkPassphrase: DigitalBitsBase.Networks.TESTNET
     })
       .addOperation(
-        DigitalbitsBase.Operation.payment({ destination, asset, amount })
+        DigitalBitsBase.Operation.payment({ destination, asset, amount })
       )
-      .setTimeout(DigitalbitsBase.TimeoutInfinite)
+      .setTimeout(DigitalBitsBase.TimeoutInfinite)
       .build();
     tx.sign(signer);
 
@@ -196,26 +196,26 @@ describe('Transaction', function() {
   });
 
   it('signs using hash preimage', function() {
-    let source = new DigitalbitsBase.Account(
+    let source = new DigitalBitsBase.Account(
       'GBBM6BKZPEHWYO3E3YKREDPQXMS4VK35YLNU7NFBRI26RAN7GI5POFBB',
       '0'
     );
     let destination =
       'GDJJRRMBK4IWLEPJGIE6SXD2LP7REGZODU7WDC3I2D6MR37F4XSHBKX2';
-    let asset = DigitalbitsBase.Asset.native();
+    let asset = DigitalBitsBase.Asset.native();
     let amount = '2000';
 
     let preimage = randomBytes(64);
-    let hash = DigitalbitsBase.hash(preimage);
+    let hash = DigitalBitsBase.hash(preimage);
 
-    let tx = new DigitalbitsBase.TransactionBuilder(source, {
+    let tx = new DigitalBitsBase.TransactionBuilder(source, {
       fee: 100,
-      networkPassphrase: DigitalbitsBase.Networks.TESTNET
+      networkPassphrase: DigitalBitsBase.Networks.TESTNET
     })
       .addOperation(
-        DigitalbitsBase.Operation.payment({ destination, asset, amount })
+        DigitalBitsBase.Operation.payment({ destination, asset, amount })
       )
-      .setTimeout(DigitalbitsBase.TimeoutInfinite)
+      .setTimeout(DigitalBitsBase.TimeoutInfinite)
       .build();
     tx.signHashX(preimage);
 
@@ -228,25 +228,25 @@ describe('Transaction', function() {
   });
 
   it('returns error when signing using hash preimage that is too long', function() {
-    let source = new DigitalbitsBase.Account(
+    let source = new DigitalBitsBase.Account(
       'GBBM6BKZPEHWYO3E3YKREDPQXMS4VK35YLNU7NFBRI26RAN7GI5POFBB',
       '0'
     );
     let destination =
       'GDJJRRMBK4IWLEPJGIE6SXD2LP7REGZODU7WDC3I2D6MR37F4XSHBKX2';
-    let asset = DigitalbitsBase.Asset.native();
+    let asset = DigitalBitsBase.Asset.native();
     let amount = '2000';
 
     let preimage = randomBytes(2 * 64);
 
-    let tx = new DigitalbitsBase.TransactionBuilder(source, {
+    let tx = new DigitalBitsBase.TransactionBuilder(source, {
       fee: 100,
-      networkPassphrase: DigitalbitsBase.Networks.TESTNET
+      networkPassphrase: DigitalBitsBase.Networks.TESTNET
     })
       .addOperation(
-        DigitalbitsBase.Operation.payment({ destination, asset, amount })
+        DigitalBitsBase.Operation.payment({ destination, asset, amount })
       )
-      .setTimeout(DigitalbitsBase.TimeoutInfinite)
+      .setTimeout(DigitalBitsBase.TimeoutInfinite)
       .build();
 
     expect(() => tx.signHashX(preimage)).to.throw(
@@ -258,26 +258,26 @@ describe('Transaction', function() {
     const sourceKey =
       'GBBM6BKZPEHWYO3E3YKREDPQXMS4VK35YLNU7NFBRI26RAN7GI5POFBB';
     // make two sources so they have the same seq number
-    const signedSource = new DigitalbitsBase.Account(sourceKey, '20');
-    const addedSignatureSource = new DigitalbitsBase.Account(sourceKey, '20');
+    const signedSource = new DigitalBitsBase.Account(sourceKey, '20');
+    const addedSignatureSource = new DigitalBitsBase.Account(sourceKey, '20');
     const destination =
       'GDJJRRMBK4IWLEPJGIE6SXD2LP7REGZODU7WDC3I2D6MR37F4XSHBKX2';
-    const asset = DigitalbitsBase.Asset.native();
+    const asset = DigitalBitsBase.Asset.native();
     const amount = '2000';
-    const signer = DigitalbitsBase.Keypair.master(
-      DigitalbitsBase.Networks.TESTNET
+    const signer = DigitalBitsBase.Keypair.master(
+      DigitalBitsBase.Networks.TESTNET
     );
 
-    const signedTx = new DigitalbitsBase.TransactionBuilder(signedSource, {
+    const signedTx = new DigitalBitsBase.TransactionBuilder(signedSource, {
       timebounds: {
         minTime: 0,
         maxTime: 1739392569
       },
       fee: 100,
-      networkPassphrase: DigitalbitsBase.Networks.TESTNET
+      networkPassphrase: DigitalBitsBase.Networks.TESTNET
     })
       .addOperation(
-        DigitalbitsBase.Operation.payment({ destination, asset, amount })
+        DigitalBitsBase.Operation.payment({ destination, asset, amount })
       )
       .build();
 
@@ -286,7 +286,7 @@ describe('Transaction', function() {
 
     const envelopeSigned = signedTx.toEnvelope().value();
 
-    const addedSignatureTx = new DigitalbitsBase.TransactionBuilder(
+    const addedSignatureTx = new DigitalBitsBase.TransactionBuilder(
       addedSignatureSource,
       {
         timebounds: {
@@ -294,11 +294,11 @@ describe('Transaction', function() {
           maxTime: 1739392569
         },
         fee: 100,
-        networkPassphrase: DigitalbitsBase.Networks.TESTNET
+        networkPassphrase: DigitalBitsBase.Networks.TESTNET
       }
     )
       .addOperation(
-        DigitalbitsBase.Operation.payment({ destination, asset, amount })
+        DigitalBitsBase.Operation.payment({ destination, asset, amount })
       )
       .build();
 
@@ -332,26 +332,26 @@ describe('Transaction', function() {
     const sourceKey =
       'GBBM6BKZPEHWYO3E3YKREDPQXMS4VK35YLNU7NFBRI26RAN7GI5POFBB';
     // make two sources so they have the same seq number
-    const signedSource = new DigitalbitsBase.Account(sourceKey, '20');
-    const addedSignatureSource = new DigitalbitsBase.Account(sourceKey, '20');
+    const signedSource = new DigitalBitsBase.Account(sourceKey, '20');
+    const addedSignatureSource = new DigitalBitsBase.Account(sourceKey, '20');
     const destination =
       'GDJJRRMBK4IWLEPJGIE6SXD2LP7REGZODU7WDC3I2D6MR37F4XSHBKX2';
-    const asset = DigitalbitsBase.Asset.native();
+    const asset = DigitalBitsBase.Asset.native();
     const amount = '2000';
-    const signer = DigitalbitsBase.Keypair.master(
-      DigitalbitsBase.Networks.TESTNET
+    const signer = DigitalBitsBase.Keypair.master(
+      DigitalBitsBase.Networks.TESTNET
     );
 
-    const signedTx = new DigitalbitsBase.TransactionBuilder(signedSource, {
+    const signedTx = new DigitalBitsBase.TransactionBuilder(signedSource, {
       timebounds: {
         minTime: 0,
         maxTime: 1739392569
       },
       fee: 100,
-      networkPassphrase: DigitalbitsBase.Networks.TESTNET
+      networkPassphrase: DigitalBitsBase.Networks.TESTNET
     })
       .addOperation(
-        DigitalbitsBase.Operation.payment({ destination, asset, amount })
+        DigitalBitsBase.Operation.payment({ destination, asset, amount })
       )
       .build();
 
@@ -360,14 +360,14 @@ describe('Transaction', function() {
 
     const envelopeSigned = signedTx.toEnvelope().value();
 
-    const signature = new DigitalbitsBase.Transaction(
+    const signature = new DigitalBitsBase.Transaction(
       signedTx.toXDR(),
-      DigitalbitsBase.Networks.TESTNET
+      DigitalBitsBase.Networks.TESTNET
     ).getKeypairSignature(signer);
 
     expect(signer.sign(presignHash).toString('base64')).to.equal(signature);
 
-    const addedSignatureTx = new DigitalbitsBase.TransactionBuilder(
+    const addedSignatureTx = new DigitalBitsBase.TransactionBuilder(
       addedSignatureSource,
       {
         timebounds: {
@@ -375,11 +375,11 @@ describe('Transaction', function() {
           maxTime: 1739392569
         },
         fee: 100,
-        networkPassphrase: DigitalbitsBase.Networks.TESTNET
+        networkPassphrase: DigitalBitsBase.Networks.TESTNET
       }
     )
       .addOperation(
-        DigitalbitsBase.Operation.payment({ destination, asset, amount })
+        DigitalBitsBase.Operation.payment({ destination, asset, amount })
       )
       .build();
 
@@ -411,27 +411,27 @@ describe('Transaction', function() {
     const sourceKey =
       'GBBM6BKZPEHWYO3E3YKREDPQXMS4VK35YLNU7NFBRI26RAN7GI5POFBB';
     // make two sources so they have the same seq number
-    const source = new DigitalbitsBase.Account(sourceKey, '20');
-    const sourceCopy = new DigitalbitsBase.Account(sourceKey, '20');
+    const source = new DigitalBitsBase.Account(sourceKey, '20');
+    const sourceCopy = new DigitalBitsBase.Account(sourceKey, '20');
     const destination =
       'GDJJRRMBK4IWLEPJGIE6SXD2LP7REGZODU7WDC3I2D6MR37F4XSHBKX2';
-    const asset = DigitalbitsBase.Asset.native();
+    const asset = DigitalBitsBase.Asset.native();
     const originalAmount = '2000';
     const alteredAmount = '1000';
-    const signer = DigitalbitsBase.Keypair.master(
-      DigitalbitsBase.Networks.TESTNET
+    const signer = DigitalBitsBase.Keypair.master(
+      DigitalBitsBase.Networks.TESTNET
     );
 
-    const originalTx = new DigitalbitsBase.TransactionBuilder(source, {
+    const originalTx = new DigitalBitsBase.TransactionBuilder(source, {
       timebounds: {
         minTime: 0,
         maxTime: 1739392569
       },
       fee: 100,
-      networkPassphrase: DigitalbitsBase.Networks.TESTNET
+      networkPassphrase: DigitalBitsBase.Networks.TESTNET
     })
       .addOperation(
-        DigitalbitsBase.Operation.payment({
+        DigitalBitsBase.Operation.payment({
           destination,
           asset,
           amount: originalAmount
@@ -439,21 +439,21 @@ describe('Transaction', function() {
       )
       .build();
 
-    const signature = new DigitalbitsBase.Transaction(
+    const signature = new DigitalBitsBase.Transaction(
       originalTx.toXDR(),
-      DigitalbitsBase.Networks.TESTNET
+      DigitalBitsBase.Networks.TESTNET
     ).getKeypairSignature(signer);
 
-    const alteredTx = new DigitalbitsBase.TransactionBuilder(sourceCopy, {
+    const alteredTx = new DigitalBitsBase.TransactionBuilder(sourceCopy, {
       timebounds: {
         minTime: 0,
         maxTime: 1739392569
       },
       fee: 100,
-      networkPassphrase: DigitalbitsBase.Networks.TESTNET
+      networkPassphrase: DigitalBitsBase.Networks.TESTNET
     })
       .addOperation(
-        DigitalbitsBase.Operation.payment({
+        DigitalBitsBase.Operation.payment({
           destination,
           asset,
           amount: alteredAmount
@@ -468,31 +468,31 @@ describe('Transaction', function() {
   });
 
   it('accepts 0 as a valid transaction fee', function(done) {
-    let source = new DigitalbitsBase.Account(
+    let source = new DigitalBitsBase.Account(
       'GBBM6BKZPEHWYO3E3YKREDPQXMS4VK35YLNU7NFBRI26RAN7GI5POFBB',
       '0'
     );
     let destination =
       'GDJJRRMBK4IWLEPJGIE6SXD2LP7REGZODU7WDC3I2D6MR37F4XSHBKX2';
-    let asset = DigitalbitsBase.Asset.native();
+    let asset = DigitalBitsBase.Asset.native();
     let amount = '2000';
 
-    let input = new DigitalbitsBase.TransactionBuilder(source, {
+    let input = new DigitalBitsBase.TransactionBuilder(source, {
       fee: 0,
-      networkPassphrase: DigitalbitsBase.Networks.TESTNET
+      networkPassphrase: DigitalBitsBase.Networks.TESTNET
     })
       .addOperation(
-        DigitalbitsBase.Operation.payment({ destination, asset, amount })
+        DigitalBitsBase.Operation.payment({ destination, asset, amount })
       )
-      .addMemo(DigitalbitsBase.Memo.text('Happy birthday!'))
-      .setTimeout(DigitalbitsBase.TimeoutInfinite)
+      .addMemo(DigitalBitsBase.Memo.text('Happy birthday!'))
+      .setTimeout(DigitalBitsBase.TimeoutInfinite)
       .build()
       .toEnvelope()
       .toXDR('base64');
 
-    var transaction = new DigitalbitsBase.Transaction(
+    var transaction = new DigitalBitsBase.Transaction(
       input,
-      DigitalbitsBase.Networks.TESTNET
+      DigitalBitsBase.Networks.TESTNET
     );
     var operation = transaction.operations[0];
 
@@ -504,9 +504,9 @@ describe('Transaction', function() {
   it('outputs xdr as a string', () => {
     const xdrString =
       'AAAAAAW8Dk9idFR5Le+xi0/h/tU47bgC1YWjtPH1vIVO3BklAAAAZACoKlYAAAABAAAAAAAAAAEAAAALdmlhIGtleWJhc2UAAAAAAQAAAAAAAAAIAAAAAN7aGcXNPO36J1I8MR8S4QFhO79T5JGG2ZeS5Ka1m4mJAAAAAAAAAAFO3BklAAAAQP0ccCoeHdm3S7bOhMjXRMn3EbmETJ9glxpKUZjPSPIxpqZ7EkyTgl3FruieqpZd9LYOzdJrNik1GNBLhgTh/AU=';
-    const transaction = new DigitalbitsBase.Transaction(
+    const transaction = new DigitalBitsBase.Transaction(
       xdrString,
-      DigitalbitsBase.Networks.TESTNET
+      DigitalBitsBase.Networks.TESTNET
     );
     expect(typeof transaction).to.be.equal('object');
     expect(typeof transaction.toXDR).to.be.equal('function');
@@ -517,13 +517,13 @@ describe('Transaction', function() {
     it('handles muxed accounts', function() {
       let baseFee = '100';
       const networkPassphrase = 'Standalone Network ; February 2017';
-      const source = DigitalbitsBase.Keypair.master(networkPassphrase);
-      const account = new DigitalbitsBase.Account(source.publicKey(), '7');
+      const source = DigitalBitsBase.Keypair.master(networkPassphrase);
+      const account = new DigitalBitsBase.Account(source.publicKey(), '7');
       const destination =
         'GDQERENWDDSQZS7R7WKHZI3BSOYMV3FSWR7TFUYFTKQ447PIX6NREOJM';
       const amount = '2000.0000000';
-      const asset = DigitalbitsBase.Asset.native();
-      let tx = new DigitalbitsBase.TransactionBuilder(account, {
+      const asset = DigitalBitsBase.Asset.native();
+      let tx = new DigitalBitsBase.TransactionBuilder(account, {
         fee: '100',
         networkPassphrase: networkPassphrase,
         timebounds: {
@@ -532,19 +532,19 @@ describe('Transaction', function() {
         }
       })
         .addOperation(
-          DigitalbitsBase.Operation.payment({
+          DigitalBitsBase.Operation.payment({
             destination,
             asset,
             amount
           })
         )
-        .addMemo(DigitalbitsBase.Memo.text('Happy birthday!'))
+        .addMemo(DigitalBitsBase.Memo.text('Happy birthday!'))
         .build();
-      let med25519 = new DigitalbitsBase.xdr.MuxedAccountMed25519({
-        id: DigitalbitsBase.xdr.Uint64.fromString('0'),
+      let med25519 = new DigitalBitsBase.xdr.MuxedAccountMed25519({
+        id: DigitalBitsBase.xdr.Uint64.fromString('0'),
         ed25519: source.rawPublicKey()
       });
-      let muxedAccount = DigitalbitsBase.xdr.MuxedAccount.keyTypeMuxedEd25519(
+      let muxedAccount = DigitalBitsBase.xdr.MuxedAccount.keyTypeMuxedEd25519(
         med25519
       );
       const envelope = tx.toEnvelope();
@@ -553,11 +553,11 @@ describe('Transaction', function() {
         .tx()
         .sourceAccount(muxedAccount);
 
-      let destMed25519 = new DigitalbitsBase.xdr.MuxedAccountMed25519({
-        id: DigitalbitsBase.xdr.Uint64.fromString('0'),
-        ed25519: DigitalbitsBase.StrKey.decodeEd25519PublicKey(destination)
+      let destMed25519 = new DigitalBitsBase.xdr.MuxedAccountMed25519({
+        id: DigitalBitsBase.xdr.Uint64.fromString('0'),
+        ed25519: DigitalBitsBase.StrKey.decodeEd25519PublicKey(destination)
       });
-      let destMuxedAccount = DigitalbitsBase.xdr.MuxedAccount.keyTypeMuxedEd25519(
+      let destMuxedAccount = DigitalBitsBase.xdr.MuxedAccount.keyTypeMuxedEd25519(
         destMed25519
       );
       envelope
@@ -568,7 +568,7 @@ describe('Transaction', function() {
         .value()
         .destination(destMuxedAccount);
 
-      const txWithMuxedAccount = new DigitalbitsBase.Transaction(
+      const txWithMuxedAccount = new DigitalBitsBase.Transaction(
         envelope,
         networkPassphrase
       );

@@ -1,6 +1,6 @@
 describe('Memo.constructor()', function() {
   it('throws error when type is invalid', function() {
-    expect(() => new DigitalbitsBase.Memo('test')).to.throw(
+    expect(() => new DigitalBitsBase.Memo('test')).to.throw(
       /Invalid memo type/
     );
   });
@@ -8,19 +8,19 @@ describe('Memo.constructor()', function() {
 
 describe('Memo.none()', function() {
   it('converts to/from xdr object', function() {
-    let memo = DigitalbitsBase.Memo.none().toXDRObject();
+    let memo = DigitalBitsBase.Memo.none().toXDRObject();
     expect(memo.value()).to.be.undefined;
 
-    let baseMemo = DigitalbitsBase.Memo.fromXDRObject(memo);
-    expect(baseMemo.type).to.be.equal(DigitalbitsBase.MemoNone);
+    let baseMemo = DigitalBitsBase.Memo.fromXDRObject(memo);
+    expect(baseMemo.type).to.be.equal(DigitalBitsBase.MemoNone);
     expect(baseMemo.value).to.be.null;
   });
 });
 
 describe('Memo.text()', function() {
   it('returns a value for a correct argument', function() {
-    expect(() => DigitalbitsBase.Memo.text('test')).to.not.throw();
-    let memoUtf8 = DigitalbitsBase.Memo.text('三代之時');
+    expect(() => DigitalBitsBase.Memo.text('test')).to.not.throw();
+    let memoUtf8 = DigitalBitsBase.Memo.text('三代之時');
 
     let a = Buffer.from(memoUtf8.toXDRObject().value(), 'utf8');
     let b = Buffer.from('三代之時', 'utf8');
@@ -28,7 +28,7 @@ describe('Memo.text()', function() {
   });
 
   it('returns a value for a correct argument (utf8)', function() {
-    let memoText = DigitalbitsBase.Memo.text([0xd1])
+    let memoText = DigitalBitsBase.Memo.text([0xd1])
       .toXDRObject()
       .toXDR();
     let expected = Buffer.from([
@@ -50,98 +50,98 @@ describe('Memo.text()', function() {
     ]);
     expect(memoText.equals(expected)).to.be.true;
 
-    memoText = DigitalbitsBase.Memo.text(Buffer.from([0xd1]))
+    memoText = DigitalBitsBase.Memo.text(Buffer.from([0xd1]))
       .toXDRObject()
       .toXDR();
     expect(memoText.equals(expected)).to.be.true;
   });
 
   it('converts to/from xdr object', function() {
-    let memo = DigitalbitsBase.Memo.text('test').toXDRObject();
+    let memo = DigitalBitsBase.Memo.text('test').toXDRObject();
     expect(memo.arm()).to.equal('text');
     expect(memo.text()).to.equal('test');
     expect(memo.value()).to.equal('test');
 
-    let baseMemo = DigitalbitsBase.Memo.fromXDRObject(memo);
-    expect(baseMemo.type).to.be.equal(DigitalbitsBase.MemoText);
+    let baseMemo = DigitalBitsBase.Memo.fromXDRObject(memo);
+    expect(baseMemo.type).to.be.equal(DigitalBitsBase.MemoText);
     expect(baseMemo.value).to.be.equal('test');
   });
 
   it('converts to/from xdr object (array)', function() {
-    let memo = DigitalbitsBase.Memo.text([0xd1]).toXDRObject();
+    let memo = DigitalBitsBase.Memo.text([0xd1]).toXDRObject();
     expect(memo.arm()).to.equal('text');
 
     expect(memo.text()).to.be.deep.equal([0xd1]);
     expect(memo.value()).to.be.deep.equal([0xd1]);
 
-    let baseMemo = DigitalbitsBase.Memo.fromXDRObject(memo);
-    expect(baseMemo.type).to.be.equal(DigitalbitsBase.MemoText);
+    let baseMemo = DigitalBitsBase.Memo.fromXDRObject(memo);
+    expect(baseMemo.type).to.be.equal(DigitalBitsBase.MemoText);
     expect(baseMemo.value).to.be.deep.equal([0xd1]);
   });
 
   it('converts to/from xdr object (buffer)', function() {
     let buf = Buffer.from([0xd1]);
-    let memo = DigitalbitsBase.Memo.text(buf).toXDRObject();
+    let memo = DigitalBitsBase.Memo.text(buf).toXDRObject();
     expect(memo.arm()).to.equal('text');
 
     expect(memo.text().equals(buf)).to.be.true;
     expect(memo.value().equals(buf)).to.be.true;
 
-    let baseMemo = DigitalbitsBase.Memo.fromXDRObject(memo);
-    expect(baseMemo.type).to.be.equal(DigitalbitsBase.MemoText);
+    let baseMemo = DigitalBitsBase.Memo.fromXDRObject(memo);
+    expect(baseMemo.type).to.be.equal(DigitalBitsBase.MemoText);
     expect(baseMemo.value.equals(buf)).to.be.true;
   });
 
   it('throws an error when invalid argument was passed', function() {
-    expect(() => DigitalbitsBase.Memo.text()).to.throw(
+    expect(() => DigitalBitsBase.Memo.text()).to.throw(
       /Expects string, array or buffer, max 28 bytes/
     );
-    expect(() => DigitalbitsBase.Memo.text({})).to.throw(
+    expect(() => DigitalBitsBase.Memo.text({})).to.throw(
       /Expects string, array or buffer, max 28 bytes/
     );
-    expect(() => DigitalbitsBase.Memo.text(10)).to.throw(
+    expect(() => DigitalBitsBase.Memo.text(10)).to.throw(
       /Expects string, array or buffer, max 28 bytes/
     );
-    expect(() => DigitalbitsBase.Memo.text(Infinity)).to.throw(
+    expect(() => DigitalBitsBase.Memo.text(Infinity)).to.throw(
       /Expects string, array or buffer, max 28 bytes/
     );
-    expect(() => DigitalbitsBase.Memo.text(NaN)).to.throw(
+    expect(() => DigitalBitsBase.Memo.text(NaN)).to.throw(
       /Expects string, array or buffer, max 28 bytes/
     );
   });
 
   it('throws an error when string is longer than 28 bytes', function() {
     expect(() =>
-      DigitalbitsBase.Memo.text('12345678901234567890123456789')
+      DigitalBitsBase.Memo.text('12345678901234567890123456789')
     ).to.throw(/Expects string, array or buffer, max 28 bytes/);
     expect(() =>
-      DigitalbitsBase.Memo.text('三代之時三代之時三代之時')
+      DigitalBitsBase.Memo.text('三代之時三代之時三代之時')
     ).to.throw(/Expects string, array or buffer, max 28 bytes/);
   });
 });
 
 describe('Memo.id()', function() {
   it('returns a value for a correct argument', function() {
-    expect(() => DigitalbitsBase.Memo.id('1000')).to.not.throw();
-    expect(() => DigitalbitsBase.Memo.id('0')).to.not.throw();
+    expect(() => DigitalBitsBase.Memo.id('1000')).to.not.throw();
+    expect(() => DigitalBitsBase.Memo.id('0')).to.not.throw();
   });
 
   it('converts to/from xdr object', function() {
-    let memo = DigitalbitsBase.Memo.id('1000').toXDRObject();
+    let memo = DigitalBitsBase.Memo.id('1000').toXDRObject();
     expect(memo.arm()).to.equal('id');
     expect(memo.id().toString()).to.equal('1000');
 
-    let baseMemo = DigitalbitsBase.Memo.fromXDRObject(memo);
-    expect(baseMemo.type).to.be.equal(DigitalbitsBase.MemoID);
+    let baseMemo = DigitalBitsBase.Memo.fromXDRObject(memo);
+    expect(baseMemo.type).to.be.equal(DigitalBitsBase.MemoID);
     expect(baseMemo.value).to.be.equal('1000');
   });
 
   it('throws an error when invalid argument was passed', function() {
-    expect(() => DigitalbitsBase.Memo.id()).to.throw(/Expects a int64/);
-    expect(() => DigitalbitsBase.Memo.id({})).to.throw(/Expects a int64/);
-    expect(() => DigitalbitsBase.Memo.id(Infinity)).to.throw(/Expects a int64/);
-    expect(() => DigitalbitsBase.Memo.id(NaN)).to.throw(/Expects a int64/);
-    expect(() => DigitalbitsBase.Memo.id('test')).to.throw(/Expects a int64/);
+    expect(() => DigitalBitsBase.Memo.id()).to.throw(/Expects a int64/);
+    expect(() => DigitalBitsBase.Memo.id({})).to.throw(/Expects a int64/);
+    expect(() => DigitalBitsBase.Memo.id(Infinity)).to.throw(/Expects a int64/);
+    expect(() => DigitalBitsBase.Memo.id(NaN)).to.throw(/Expects a int64/);
+    expect(() => DigitalBitsBase.Memo.id('test')).to.throw(/Expects a int64/);
   });
 });
 
@@ -149,13 +149,13 @@ describe('Memo.hash() & Memo.return()', function() {
   it('hash converts to/from xdr object', function() {
     let buffer = Buffer.alloc(32, 10);
 
-    let memo = DigitalbitsBase.Memo.hash(buffer).toXDRObject();
+    let memo = DigitalBitsBase.Memo.hash(buffer).toXDRObject();
     expect(memo.arm()).to.equal('hash');
     expect(memo.hash().length).to.equal(32);
     expect(memo.hash()).to.deep.equal(buffer);
 
-    let baseMemo = DigitalbitsBase.Memo.fromXDRObject(memo);
-    expect(baseMemo.type).to.be.equal(DigitalbitsBase.MemoHash);
+    let baseMemo = DigitalBitsBase.Memo.fromXDRObject(memo);
+    expect(baseMemo.type).to.be.equal(DigitalBitsBase.MemoHash);
     expect(baseMemo.value.length).to.equal(32);
     expect(baseMemo.value.toString('hex')).to.be.equal(buffer.toString('hex'));
   });
@@ -164,21 +164,21 @@ describe('Memo.hash() & Memo.return()', function() {
     let buffer = Buffer.alloc(32, 10);
 
     // Testing string hash
-    let memo = DigitalbitsBase.Memo.return(
+    let memo = DigitalBitsBase.Memo.return(
       buffer.toString('hex')
     ).toXDRObject();
     expect(memo.arm()).to.equal('retHash');
     expect(memo.retHash().length).to.equal(32);
     expect(memo.retHash().toString('hex')).to.equal(buffer.toString('hex'));
 
-    let baseMemo = DigitalbitsBase.Memo.fromXDRObject(memo);
-    expect(baseMemo.type).to.be.equal(DigitalbitsBase.MemoReturn);
+    let baseMemo = DigitalBitsBase.Memo.fromXDRObject(memo);
+    expect(baseMemo.type).to.be.equal(DigitalBitsBase.MemoReturn);
     expect(Buffer.isBuffer(baseMemo.value)).to.be.true;
     expect(baseMemo.value.length).to.equal(32);
     expect(baseMemo.value.toString('hex')).to.be.equal(buffer.toString('hex'));
   });
 
-  var methods = [DigitalbitsBase.Memo.hash, DigitalbitsBase.Memo.return];
+  var methods = [DigitalBitsBase.Memo.hash, DigitalBitsBase.Memo.return];
 
   it('returns a value for a correct argument', function() {
     for (let i in methods) {

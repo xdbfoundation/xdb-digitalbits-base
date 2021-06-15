@@ -1,6 +1,6 @@
 describe('Account.constructor', function() {
   it('fails to create Account object from an invalid address', function() {
-    expect(() => new DigitalbitsBase.Account('GBBB')).to.throw(
+    expect(() => new DigitalBitsBase.Account('GBBB')).to.throw(
       /accountId is invalid/
     );
   });
@@ -8,7 +8,7 @@ describe('Account.constructor', function() {
   it('fails to create Account object from an invalid sequence number', function() {
     expect(
       () =>
-        new DigitalbitsBase.Account(
+        new DigitalBitsBase.Account(
           'GBBM6BKZPEHWYO3E3YKREDPQXMS4VK35YLNU7NFBRI26RAN7GI5POFBB',
           100
         )
@@ -16,7 +16,7 @@ describe('Account.constructor', function() {
   });
 
   it('creates an Account object', function() {
-    let account = new DigitalbitsBase.Account(
+    let account = new DigitalBitsBase.Account(
       'GBBM6BKZPEHWYO3E3YKREDPQXMS4VK35YLNU7NFBRI26RAN7GI5POFBB',
       '100'
     );
@@ -29,7 +29,7 @@ describe('Account.constructor', function() {
 
 describe('Account.incrementSequenceNumber', function() {
   it('correctly increments the sequence number', function() {
-    let account = new DigitalbitsBase.Account(
+    let account = new DigitalBitsBase.Account(
       'GBBM6BKZPEHWYO3E3YKREDPQXMS4VK35YLNU7NFBRI26RAN7GI5POFBB',
       '100'
     );

@@ -1,12 +1,12 @@
-import * as DigitalbitsBase from '../src';
+import * as DigitalBitsBase from '../src';
 
-var keypair = DigitalbitsBase.Keypair.random();
+var keypair = DigitalBitsBase.Keypair.random();
 var data = 'data to sign';
-var signature = DigitalbitsBase.sign(data, keypair.rawSecretKey());
+var signature = DigitalBitsBase.sign(data, keypair.rawSecretKey());
 
 console.log('Signature: ' + signature.toString('hex'));
 
-if (DigitalbitsBase.verify(data, signature, keypair.rawPublicKey())) {
+if (DigitalBitsBase.verify(data, signature, keypair.rawPublicKey())) {
   console.log('OK!');
 } else {
   console.log('Bad signature!');

@@ -5,10 +5,10 @@ import { StrKey } from './strkey';
 /**
  * Create a new Account object.
  *
- * `Account` represents a single account in Digitalbits network and its sequence number.
+ * `Account` represents a single account in DigitalBits network and its sequence number.
  * Account tracks the sequence number as it is used by {@link TransactionBuilder}.
  * See [Accounts](https://xdbfoundation.org/developers/learn/concepts/accounts.html) for more information about how
- * accounts work in Digitalbits.
+ * accounts work in DigitalBits.
  * @constructor
  * @param {string} accountId ID of the account (ex. `GB3KJPLFUYN5VL6R3GU3EGCGVCKFDSD7BEDX42HWG5BWFKB3KQGJJRMA`)
  * @param {string} sequence current sequence number of the account
@@ -26,7 +26,7 @@ export class Account {
   }
 
   /**
-   * Returns Digitalbits account ID, ex. `GB3KJPLFUYN5VL6R3GU3EGCGVCKFDSD7BEDX42HWG5BWFKB3KQGJJRMA`
+   * Returns DigitalBits account ID, ex. `GB3KJPLFUYN5VL6R3GU3EGCGVCKFDSD7BEDX42HWG5BWFKB3KQGJJRMA`
    * @returns {string}
    */
   accountId() {

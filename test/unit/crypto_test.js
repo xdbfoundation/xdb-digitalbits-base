@@ -22,7 +22,7 @@ it('new hashing function behaves like crypto', () => {
     .update(input)
     .digest();
 
-  const newHash = DigitalbitsBase.hash(input);
+  const newHash = DigitalBitsBase.hash(input);
 
   expectBuffersToBeEqual(cryptoHash, newHash);
 });

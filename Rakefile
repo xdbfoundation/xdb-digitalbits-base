@@ -7,12 +7,12 @@ namespace :xdr do
   # Prior to launch, we should be separating our .x files into a separate
   # repo, and should be able to improve this integration.
   HAYASHI_XDR = [
-                 "src/xdr/Digitalbits-types.x",
-                 "src/xdr/Digitalbits-ledger-entries.x",
-                 "src/xdr/Digitalbits-transaction.x",
-                 "src/xdr/Digitalbits-ledger.x",
-                 "src/xdr/Digitalbits-overlay.x",
-                 "src/xdr/Digitalbits-SCP.x",
+                 "src/xdr/DigitalBits-types.x",
+                 "src/xdr/DigitalBits-ledger-entries.x",
+                 "src/xdr/DigitalBits-transaction.x",
+                 "src/xdr/DigitalBits-ledger.x",
+                 "src/xdr/DigitalBits-overlay.x",
+                 "src/xdr/DigitalBits-SCP.x",
                 ]
 
   task :update => [:download, :generate]

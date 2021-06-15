@@ -3,22 +3,22 @@ const { expect } = require('chai');
 describe('Claimant', function() {
   describe('constructor', function() {
     it('throws an error when destination is invalid', function() {
-      expect(() => new DigitalbitsBase.Claimant('GCEZWKCA5', null)).to.throw(
+      expect(() => new DigitalBitsBase.Claimant('GCEZWKCA5', null)).to.throw(
         /Destination is invalid/
       );
     });
     it('defaults to unconditional if predicate is undefined', function() {
-      const claimant = new DigitalbitsBase.Claimant(
+      const claimant = new DigitalBitsBase.Claimant(
         'GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ'
       );
       expect(claimant.predicate.switch()).to.equal(
-        DigitalbitsBase.xdr.ClaimPredicateType.claimPredicateUnconditional()
+        DigitalBitsBase.xdr.ClaimPredicateType.claimPredicateUnconditional()
       );
     });
     it('throws an error if predicate is not an xdr.ClaimPredicate', function() {
       expect(
         () =>
-          new DigitalbitsBase.Claimant(
+          new DigitalBitsBase.Claimant(
             'GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ',
             3
           )
@@ -27,20 +27,20 @@ describe('Claimant', function() {
   });
   describe('predicateUnconditional()', function() {
     it('returns an `unconditional` claim predicate', function() {
-      const predicate = DigitalbitsBase.Claimant.predicateUnconditional();
+      const predicate = DigitalBitsBase.Claimant.predicateUnconditional();
       expect(predicate.switch()).to.equal(
-        DigitalbitsBase.xdr.ClaimPredicateType.claimPredicateUnconditional()
+        DigitalBitsBase.xdr.ClaimPredicateType.claimPredicateUnconditional()
       );
     });
   });
   describe('predicateBeforeAbsoluteTime()', function() {
     it('returns a `beforeAbsoluteTime` claim predicate', function() {
       const time = '4102444800000';
-      const predicate = DigitalbitsBase.Claimant.predicateBeforeAbsoluteTime(
+      const predicate = DigitalBitsBase.Claimant.predicateBeforeAbsoluteTime(
         time
       );
       expect(predicate.switch()).to.equal(
-        DigitalbitsBase.xdr.ClaimPredicateType.claimPredicateBeforeAbsoluteTime()
+        DigitalBitsBase.xdr.ClaimPredicateType.claimPredicateBeforeAbsoluteTime()
       );
       const value = predicate.absBefore();
       expect(value.toString()).to.equal(time);
@@ -49,11 +49,11 @@ describe('Claimant', function() {
   describe('predicateBeforeRelativeTime()', function() {
     it('returns a `beforeRelativeTime` claim predicate', function() {
       const time = '86400';
-      const predicate = DigitalbitsBase.Claimant.predicateBeforeRelativeTime(
+      const predicate = DigitalBitsBase.Claimant.predicateBeforeRelativeTime(
         time
       );
       expect(predicate.switch()).to.equal(
-        DigitalbitsBase.xdr.ClaimPredicateType.claimPredicateBeforeRelativeTime()
+        DigitalBitsBase.xdr.ClaimPredicateType.claimPredicateBeforeRelativeTime()
       );
       const value = predicate.relBefore();
       expect(value.toString()).to.equal(time);
@@ -62,12 +62,12 @@ describe('Claimant', function() {
   describe('predicateNot()', function() {
     it('returns a `not` claim predicate', function() {
       const time = '86400';
-      const beforeRel = DigitalbitsBase.Claimant.predicateBeforeRelativeTime(
+      const beforeRel = DigitalBitsBase.Claimant.predicateBeforeRelativeTime(
         time
       );
-      const predicate = DigitalbitsBase.Claimant.predicateNot(beforeRel);
+      const predicate = DigitalBitsBase.Claimant.predicateNot(beforeRel);
       expect(predicate.switch()).to.equal(
-        DigitalbitsBase.xdr.ClaimPredicateType.claimPredicateNot()
+        DigitalBitsBase.xdr.ClaimPredicateType.claimPredicateNot()
       );
       const value = predicate.notPredicate().value();
       expect(value).to.not.be.null;
@@ -76,13 +76,13 @@ describe('Claimant', function() {
   });
   describe('predicateOr()', function() {
     it('returns an `or` claim predicate', function() {
-      const left = DigitalbitsBase.Claimant.predicateBeforeRelativeTime('800');
-      const right = DigitalbitsBase.Claimant.predicateBeforeRelativeTime(
+      const left = DigitalBitsBase.Claimant.predicateBeforeRelativeTime('800');
+      const right = DigitalBitsBase.Claimant.predicateBeforeRelativeTime(
         '1200'
       );
-      const predicate = DigitalbitsBase.Claimant.predicateOr(left, right);
+      const predicate = DigitalBitsBase.Claimant.predicateOr(left, right);
       expect(predicate.switch()).to.equal(
-        DigitalbitsBase.xdr.ClaimPredicateType.claimPredicateOr()
+        DigitalBitsBase.xdr.ClaimPredicateType.claimPredicateOr()
       );
       const predicates = predicate.orPredicates();
       expect(predicates[0].value().toString()).to.equal('800');
@@ -91,13 +91,13 @@ describe('Claimant', function() {
   });
   describe('predicateAnd()', function() {
     it('returns an `and` predicate claim predicate', function() {
-      const left = DigitalbitsBase.Claimant.predicateBeforeRelativeTime('800');
-      const right = DigitalbitsBase.Claimant.predicateBeforeRelativeTime(
+      const left = DigitalBitsBase.Claimant.predicateBeforeRelativeTime('800');
+      const right = DigitalBitsBase.Claimant.predicateBeforeRelativeTime(
         '1200'
       );
-      const predicate = DigitalbitsBase.Claimant.predicateAnd(left, right);
+      const predicate = DigitalBitsBase.Claimant.predicateAnd(left, right);
       expect(predicate.switch()).to.equal(
-        DigitalbitsBase.xdr.ClaimPredicateType.claimPredicateAnd()
+        DigitalBitsBase.xdr.ClaimPredicateType.claimPredicateAnd()
       );
       const predicates = predicate.andPredicates();
       expect(predicates[0].value().toString()).to.equal('800');
@@ -108,13 +108,13 @@ describe('Claimant', function() {
     it('returns the destination accountID', function() {
       const destination =
         'GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ';
-      const claimant = new DigitalbitsBase.Claimant(destination);
+      const claimant = new DigitalBitsBase.Claimant(destination);
       expect(claimant.destination).to.equal(destination);
     });
     it('does not allow changes in accountID', function() {
       const destination =
         'GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ';
-      const claimant = new DigitalbitsBase.Claimant(destination);
+      const claimant = new DigitalBitsBase.Claimant(destination);
       expect(() => (claimant.destination = '32323')).to.throw(
         /Claimant is immutable/
       );
@@ -122,17 +122,17 @@ describe('Claimant', function() {
   });
   describe('predicate()', function() {
     it('returns the predicate', function() {
-      const claimant = new DigitalbitsBase.Claimant(
+      const claimant = new DigitalBitsBase.Claimant(
         'GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ'
       );
       expect(claimant.predicate.switch()).to.equal(
-        DigitalbitsBase.Claimant.predicateUnconditional().switch()
+        DigitalBitsBase.Claimant.predicateUnconditional().switch()
       );
     });
     it('does not allow changes in predicate', function() {
       const destination =
         'GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ';
-      const claimant = new DigitalbitsBase.Claimant(destination);
+      const claimant = new DigitalBitsBase.Claimant(destination);
       expect(() => (claimant.predicate = null)).to.throw(
         /Claimant is immutable/
       );
@@ -142,20 +142,20 @@ describe('Claimant', function() {
     it('returns a xdr.Claimant', function() {
       const destination =
         'GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ';
-      const claimant = new DigitalbitsBase.Claimant(destination);
+      const claimant = new DigitalBitsBase.Claimant(destination);
       const xdrClaimant = claimant.toXDRObject();
-      expect(xdrClaimant).to.be.an.instanceof(DigitalbitsBase.xdr.Claimant);
+      expect(xdrClaimant).to.be.an.instanceof(DigitalBitsBase.xdr.Claimant);
       expect(xdrClaimant.switch()).to.equal(
-        DigitalbitsBase.xdr.ClaimantType.claimantTypeV0()
+        DigitalBitsBase.xdr.ClaimantType.claimantTypeV0()
       );
       const value = xdrClaimant.value();
       expect(
-        DigitalbitsBase.StrKey.encodeEd25519PublicKey(
+        DigitalBitsBase.StrKey.encodeEd25519PublicKey(
           value.destination().ed25519()
         )
       ).to.equal(destination);
       expect(value.predicate().switch()).to.equal(
-        DigitalbitsBase.Claimant.predicateUnconditional().switch()
+        DigitalBitsBase.Claimant.predicateUnconditional().switch()
       );
 
       expect(() => xdrClaimant.toXDR()).to.not.throw();
@@ -165,13 +165,13 @@ describe('Claimant', function() {
     it('returns a Claimant', function() {
       const destination =
         'GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ';
-      const claimant = new DigitalbitsBase.Claimant(destination);
+      const claimant = new DigitalBitsBase.Claimant(destination);
       const hex = claimant.toXDRObject().toXDR('hex');
-      const xdrClaimant = DigitalbitsBase.xdr.Claimant.fromXDR(hex, 'hex');
-      const fromXDR = DigitalbitsBase.Claimant.fromXDR(xdrClaimant);
+      const xdrClaimant = DigitalBitsBase.xdr.Claimant.fromXDR(hex, 'hex');
+      const fromXDR = DigitalBitsBase.Claimant.fromXDR(xdrClaimant);
       expect(fromXDR.destination).to.equal(destination);
       expect(fromXDR.predicate.switch()).to.equal(
-        DigitalbitsBase.Claimant.predicateUnconditional().switch()
+        DigitalBitsBase.Claimant.predicateUnconditional().switch()
       );
     });
   });
