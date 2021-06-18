@@ -22,10 +22,10 @@ This will return a fully constructed [Transaction](https://github.com/xdbfoundat
 The returned transaction will contain the sequence number of the source account. This transaction is unsigned. You must sign it before it will be accepted by the DigitalBits network.
 
 
-```js
+```javascript
 // DigitalBitsBase.Network.usePublicNetwork(); if this transaction is for the public network
 // Create an Account object from an address and sequence number.
-var account=new DigitalBitsBase.Account("GD6WU64OEP5C4LRBH6NK3MHYIA2ADN6K6II6EXPNVUR3ERBXT4AN4ACD","2319149195853854");
+var account=new DigitalBitsBase.Account("GDFOHLMYCXVZD2CDXZLMW6W6TMU4YO27XFF2IBAFAV66MSTPDDSK2LAY","4113023891406862");
 
 var transaction = new DigitalBitsBase.TransactionBuilder(account, {
         fee: DigitalBitsBase.BASE_FEE,
@@ -33,7 +33,7 @@ var transaction = new DigitalBitsBase.TransactionBuilder(account, {
     })
         // add a payment operation to the transaction
         .addOperation(DigitalBitsBase.Operation.payment({
-                destination: "GASOCNHNNLYFNMDJYQ3XFMI7BYHIOCFW3GJEOWRPEGK2TDPGTG2E5EDW",
+                destination: "GBIJCW2HLOHWES26FWTYWFIEMTOLXGC3JVYSZGL2IDVMJ5VCFKAV6DJM",
                 asset: DigitalBitsBase.Asset.native(),
                 amount: "100.50"  // 100.50 XDB
             }))
@@ -75,15 +75,15 @@ There are 5 types of memos:
 - `Memo.hash` - 32-byte hash - ex. hash of an item in a content server,
 - `Memo.returnHash` - 32-byte hash used for returning payments - contains hash of the transaction being rejected.
 
-```js
-var memo = Memo.text('Happy birthday!');
+```javascript
+var memo = Memo.text('Hello World!');
 var transaction = new DigitalBitsBase.TransactionBuilder(account, {
     memo: memo,
     fee: DigitalBitsBase.BASE_FEE,
     networkPassphrase: Networks.TESTNET
 })
         .addOperation(DigitalBitsBase.Operation.payment({
-                destination: "GASOCNHNNLYFNMDJYQ3XFMI7BYHIOCFW3GJEOWRPEGK2TDPGTG2E5EDW",
+                destination: "GBIJCW2HLOHWES26FWTYWFIEMTOLXGC3JVYSZGL2IDVMJ5VCFKAV6DJM",
                 asset: DigitalBitsBase.Asset.native(),
                 amount: "2000"
             }))
@@ -97,7 +97,7 @@ var transaction = new DigitalBitsBase.TransactionBuilder(account, {
 You probably won't instantiate `Transaction` objects directly. Objects of this class are returned after `TransactionBuilder`
 builds a transaction. However, you can create a new `Transaction` object from a base64 representation of a transaction envelope.
 
-```js
+```javascript
 var transaction = new Transaction(envelope);
 ```
 
@@ -119,17 +119,17 @@ You add signatures to a transaction with the `Transaction.sign()` function. You 
 
 If `Keypair` object does not contain private key it can't be used to sign transactions. The most convenient method of creating new keypair is by passing the account's secret seed:
 
-```js
-var keypair = Keypair.fromSecret('SBK2VIYYSVG76E7VC3QHYARNFLY2EAQXDHRC7BMXBBGIFG74ARPRMNQM');
-var address = keypair.publicKey(); // GDHMW6QZOL73SHKG2JA3YHXFDHM46SS5ZRWEYF5BCYHX2C5TVO6KZBYL
+```javascript
+var keypair = Keypair.fromSecret('SCCCQQFNTF3RRIQYWIWLJUN6HEANTHASMIU57B6EESA2IBFYZFTN6Z3C');
+var address = keypair.publicKey(); // GBIJCW2HLOHWES26FWTYWFIEMTOLXGC3JVYSZGL2IDVMJ5VCFKAV6DJM
 var canSign = keypair.canSign(); // true
 ```
 
 You can create `Keypair` object from secret seed raw bytes:
 
 ```js
-var keypair = Keypair.fromRawSeed([0xdc, 0x9c, 0xbf, 0xb5, 0xd7, 0x12, 0x83, 0x6a, 0xbf, 0x7d, 0x5d, 0xd8, 0xc4, 0xc4, 0x3e, 0x9d, 0xc7, 0x81, 0x85, 0xf1, 0x4b, 0x12, 0x0e, 0x9b, 0x59, 0x5d, 0x62, 0x65, 0x52, 0xa8, 0xcb, 0xcc]);
-var address = keypair.publicKey(); // GADMPH2LB7VDK4UHNGKMJIJBXC5WTWTQMXYWSPVWPMNVVR4MGWLI2IXN
+var keypair = Keypair.fromRawSeed([0xdc, 0x9c, 0xaf, 0xbc, 0xa7, 0x42, 0x83, 0xaa, 0xbb, 0x76, 0x5d, 0xd8, 0xc4, 0xc4, 0x3e, 0x8a, 0xb7, 0x11, 0x85, 0xf1, 0x7b, 0x18, 0x0e, 0xab, 0x59, 0x5d, 0x62, 0x65, 0x52, 0xa8, 0xcb, 0xc2]);
+var address = keypair.publicKey(); // GBIJCW2HLOHWES26FWTYWFIEMTOLXGC3JVYSZGL2IDVMJ5VCFKAV6DJM
 var canSign = keypair.canSign(); // true
 ```
 
@@ -141,18 +141,18 @@ var keypair = Keypair.random();
 
 
 ```js
-var key1 = Keypair.fromSecret('SBK2VIYYSVG76E7VC3QHYARNFLY2EAQXDHRC7BMXBBGIFG74ARPRMNQM');
-var key2 = Keypair.fromSecret('SAMZUAAPLRUH62HH3XE7NVD6ZSMTWPWGM6DS4X47HLVRHEBKP4U2H5E7');
+var key1 = Keypair.fromSecret('SCCCQQFNTF3RRIQYWIWLJUN6HEANTHASMIU57B6EESA2IBFYZFTN6Z3C');
+var key2 = Keypair.fromSecret('SD3BAE2CI7YYYLE46PI2JTGLVVBLZQYGXKOMJ7RS4OWDKASTYVNY7HMT');
 
 // Create an Account object from an address and sequence number.
-var account=new DigitalBitsBase.Account("GD6WU64OEP5C4LRBH6NK3MHYIA2ADN6K6II6EXPNVUR3ERBXT4AN4ACD","2319149195853854");
+var account=new DigitalBitsBase.Account("GDFOHLMYCXVZD2CDXZLMW6W6TMU4YO27XFF2IBAFAV66MSTPDDSK2LAY","4113023891406862");
 
 var transaction = new DigitalBitsBase.TransactionBuilder(account, {
     fee: DigitalBitsBase.BASE_FEE,
     networkPassphrase: Networks.TESTNET
 })
         .addOperation(DigitalBitsBase.Operation.payment({
-                destination: "GASOCNHNNLYFNMDJYQ3XFMI7BYHIOCFW3GJEOWRPEGK2TDPGTG2E5EDW",
+                destination: "GDPTTMKY7BQDV346TY34Q535SOBNBII6ROUIOOUX34LRJ3EBV5OTB3BZ",
                 asset: DigitalBitsBase.Asset.native(),
                 amount: "2000"  // 2000 XDB
             }))
@@ -161,7 +161,7 @@ var transaction = new DigitalBitsBase.TransactionBuilder(account, {
 
 transaction.sign(key1);
 transaction.sign(key2);
-// submit tx to Horizon...
+// submit tx to Frontier...
 ```
 
 
