@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>network.js - Documentation</title>
+    <title>operations/allow_trust.js - Documentation</title>
 
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
@@ -29,7 +29,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">network.js</h1>
+    <h1 class="page-title">operations/allow_trust.js</h1>
     
 
     
@@ -39,16 +39,62 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>/**
- * Contains passphrases for common networks:
- * * `Networks.PUBLIC`: `LiveNet Global DigitalBits Network ; February 2021`
- * * `Networks.TESTNET`: `TestNet Global DigitalBits Network ; December 2020`
- * @type {{PUBLIC: string, TESTNET: string}}
+            <pre class="prettyprint source linenums"><code>import padEnd from 'lodash/padEnd';
+import xdr from '../generated/digitalbits-xdr_generated';
+import { Keypair } from '../keypair';
+import { StrKey } from '../strkey';
+
+/**
+ * @deprecated since v5.0
+ *
+ * Returns an XDR AllowTrustOp. An "allow trust" operation authorizes another
+ * account to hold your account's credit for a given asset.
+ *
+ * @function
+ * @alias Operation.allowTrust
+ *
+ * @param {object} opts Options object
+ * @param {string} opts.trustor - The trusting account (the one being authorized)
+ * @param {string} opts.assetCode - The asset code being authorized.
+ * @param {(0|1|2)} opts.authorize - `1` to authorize, `2` to authorize to maintain liabilities, and `0` to deauthorize.
+ * @param {string} [opts.source] - The source account (defaults to transaction source).
+ *
+ * @returns {xdr.AllowTrustOp} Allow Trust operation
  */
-export const Networks = {
-  PUBLIC: 'LiveNet Global DigitalBits Network ; February 2021',
-  TESTNET: 'TestNet Global DigitalBits Network ; December 2020'
-};
+export function allowTrust(opts) {
+  if (!StrKey.isValidEd25519PublicKey(opts.trustor)) {
+    throw new Error('trustor is invalid');
+  }
+  const attributes = {};
+  attributes.trustor = Keypair.fromPublicKey(opts.trustor).xdrAccountId();
+  if (opts.assetCode.length &lt;= 4) {
+    const code = padEnd(opts.assetCode, 4, '\0');
+    attributes.asset = xdr.AssetCode.assetTypeCreditAlphanum4(code);
+  } else if (opts.assetCode.length &lt;= 12) {
+    const code = padEnd(opts.assetCode, 12, '\0');
+    attributes.asset = xdr.AssetCode.assetTypeCreditAlphanum12(code);
+  } else {
+    throw new Error('Asset code must be 12 characters at max.');
+  }
+
+  if (typeof opts.authorize === 'boolean') {
+    if (opts.authorize) {
+      attributes.authorize = xdr.TrustLineFlags.authorizedFlag().value;
+    } else {
+      attributes.authorize = 0;
+    }
+  } else {
+    attributes.authorize = opts.authorize;
+  }
+
+  const allowTrustOp = new xdr.AllowTrustOp(attributes);
+
+  const opAttributes = {};
+  opAttributes.body = xdr.OperationBody.allowTrust(allowTrustOp);
+  this.setSourceAccount(opAttributes, opts);
+
+  return new xdr.Operation(opAttributes);
+}
 </code></pre>
         </article>
     </section>

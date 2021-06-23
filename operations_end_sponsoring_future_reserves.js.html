@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>network.js - Documentation</title>
+    <title>operations/end_sponsoring_future_reserves.js - Documentation</title>
 
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
@@ -29,7 +29,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">network.js</h1>
+    <h1 class="page-title">operations/end_sponsoring_future_reserves.js</h1>
     
 
     
@@ -39,16 +39,27 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>/**
- * Contains passphrases for common networks:
- * * `Networks.PUBLIC`: `LiveNet Global DigitalBits Network ; February 2021`
- * * `Networks.TESTNET`: `TestNet Global DigitalBits Network ; December 2020`
- * @type {{PUBLIC: string, TESTNET: string}}
+            <pre class="prettyprint source linenums"><code>import xdr from '../generated/digitalbits-xdr_generated';
+
+/**
+ * Create an "end sponsoring future reserves" operation.
+ * @function
+ * @alias Operation.endSponsoringFutureReserves
+ * @param {object} opts Options object
+ * @param {string} [opts.source] - The source account for the operation. Defaults to the transaction's source account.
+ * @returns {xdr.Operation} xdr operation
+ *
+ * @example
+ * const op = Operation.endSponsoringFutureReserves();
+ *
  */
-export const Networks = {
-  PUBLIC: 'LiveNet Global DigitalBits Network ; February 2021',
-  TESTNET: 'TestNet Global DigitalBits Network ; December 2020'
-};
+export function endSponsoringFutureReserves(opts = {}) {
+  const opAttributes = {};
+  opAttributes.body = xdr.OperationBody.endSponsoringFutureReserves();
+  this.setSourceAccount(opAttributes, opts);
+
+  return new xdr.Operation(opAttributes);
+}
 </code></pre>
         </article>
     </section>

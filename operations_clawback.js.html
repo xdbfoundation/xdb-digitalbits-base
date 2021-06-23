@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>network.js - Documentation</title>
+    <title>operations/clawback.js - Documentation</title>
 
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
@@ -29,7 +29,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">network.js</h1>
+    <h1 class="page-title">operations/clawback.js</h1>
     
 
     
@@ -39,16 +39,42 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>/**
- * Contains passphrases for common networks:
- * * `Networks.PUBLIC`: `LiveNet Global DigitalBits Network ; February 2021`
- * * `Networks.TESTNET`: `TestNet Global DigitalBits Network ; December 2020`
- * @type {{PUBLIC: string, TESTNET: string}}
+            <pre class="prettyprint source linenums"><code>import xdr from '../generated/digitalbits-xdr_generated';
+import { decodeAddressToMuxedAccount } from '../util/decode_encode_muxed_account';
+
+/**
+ * Creates a clawback operation.
+ *
+ * @function
+ * @alias Operation.clawback
+ *
+ * @param {object} opts - Options object
+ * @param {Asset}  opts.asset - The asset being clawed back.
+ * @param {string} opts.amount - The amount of the asset to claw back.
+ * @param {string} opts.from - The public key of the (muxed) account to claw back from.
+ *
+ * @param {string} [opts.source] - The source account for the operation. Defaults to the transaction's source account.
+ *
+ * @return {xdr.ClawbackOp}
+ *
  */
-export const Networks = {
-  PUBLIC: 'LiveNet Global DigitalBits Network ; February 2021',
-  TESTNET: 'TestNet Global DigitalBits Network ; December 2020'
-};
+export function clawback(opts = {}) {
+  const attributes = {};
+
+  if (!this.isValidAmount(opts.amount)) {
+    throw new TypeError(this.constructAmountRequirementsError('amount'));
+  }
+  attributes.amount = this._toXDRAmount(opts.amount);
+  attributes.asset = opts.asset.toXDRObject();
+  attributes.from = decodeAddressToMuxedAccount(opts.from);
+
+  const opAttributes = {
+    body: xdr.OperationBody.clawback(new xdr.ClawbackOp(attributes))
+  };
+  this.setSourceAccount(opAttributes, opts);
+
+  return new xdr.Operation(opAttributes);
+}
 </code></pre>
         </article>
     </section>

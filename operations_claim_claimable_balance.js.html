@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>network.js - Documentation</title>
+    <title>operations/claim_claimable_balance.js - Documentation</title>
 
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
@@ -29,7 +29,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">network.js</h1>
+    <h1 class="page-title">operations/claim_claimable_balance.js</h1>
     
 
     
@@ -39,16 +39,47 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>/**
- * Contains passphrases for common networks:
- * * `Networks.PUBLIC`: `LiveNet Global DigitalBits Network ; February 2021`
- * * `Networks.TESTNET`: `TestNet Global DigitalBits Network ; December 2020`
- * @type {{PUBLIC: string, TESTNET: string}}
+            <pre class="prettyprint source linenums"><code>import xdr from '../generated/digitalbits-xdr_generated';
+
+/**
+ * Create a new claim claimable balance operation.
+ * @function
+ * @alias Operation.claimClaimableBalance
+ * @param {object} opts Options object
+ * @param {string} opts.balanceId - The claimable balance id to be claimed.
+ * @param {string} [opts.source] - The source account for the operation. Defaults to the transaction's source account.
+ * @returns {xdr.Operation} Claim claimable balance operation
+ *
+ * @example
+ * const op = Operation.claimClaimableBalance({
+ *   balanceId: '00000000da0d57da7d4850e7fc10d2a9d0ebc731f7afb40574c03395b17d49149b91f5be',
+ * });
+ *
  */
-export const Networks = {
-  PUBLIC: 'LiveNet Global DigitalBits Network ; February 2021',
-  TESTNET: 'TestNet Global DigitalBits Network ; December 2020'
-};
+export function claimClaimableBalance(opts = {}) {
+  validateClaimableBalanceId(opts.balanceId);
+
+  const attributes = {};
+  attributes.balanceId = xdr.ClaimableBalanceId.fromXDR(opts.balanceId, 'hex');
+  const claimClaimableBalanceOp = new xdr.ClaimClaimableBalanceOp(attributes);
+
+  const opAttributes = {};
+  opAttributes.body = xdr.OperationBody.claimClaimableBalance(
+    claimClaimableBalanceOp
+  );
+  this.setSourceAccount(opAttributes, opts);
+
+  return new xdr.Operation(opAttributes);
+}
+
+export function validateClaimableBalanceId(balanceId) {
+  if (
+    typeof balanceId !== 'string' ||
+    balanceId.length !== 8 + 64 /* 8b discriminant + 64b string */
+  ) {
+    throw new Error('must provide a valid claimable balance id');
+  }
+}
 </code></pre>
         </article>
     </section>

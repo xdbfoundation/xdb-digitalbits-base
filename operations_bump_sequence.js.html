@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>network.js - Documentation</title>
+    <title>operations/bump_sequence.js - Documentation</title>
 
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
@@ -29,7 +29,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">network.js</h1>
+    <h1 class="page-title">operations/bump_sequence.js</h1>
     
 
     
@@ -39,16 +39,44 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>/**
- * Contains passphrases for common networks:
- * * `Networks.PUBLIC`: `LiveNet Global DigitalBits Network ; February 2021`
- * * `Networks.TESTNET`: `TestNet Global DigitalBits Network ; December 2020`
- * @type {{PUBLIC: string, TESTNET: string}}
+            <pre class="prettyprint source linenums"><code>import { Hyper } from 'js-xdr';
+import BigNumber from 'bignumber.js';
+import isString from 'lodash/isString';
+import xdr from '../generated/digitalbits-xdr_generated';
+
+/**
+ * This operation bumps sequence number.
+ * @function
+ * @alias Operation.bumpSequence
+ * @param {object} opts Options object
+ * @param {string} opts.bumpTo - Sequence number to bump to.
+ * @param {string} [opts.source] - The optional source account.
+ * @returns {xdr.BumpSequenceOp} Operation
  */
-export const Networks = {
-  PUBLIC: 'LiveNet Global DigitalBits Network ; February 2021',
-  TESTNET: 'TestNet Global DigitalBits Network ; December 2020'
-};
+export function bumpSequence(opts) {
+  const attributes = {};
+
+  if (!isString(opts.bumpTo)) {
+    throw new Error('bumpTo must be a string');
+  }
+
+  try {
+    // eslint-disable-next-line no-new
+    new BigNumber(opts.bumpTo);
+  } catch (e) {
+    throw new Error('bumpTo must be a stringified number');
+  }
+
+  attributes.bumpTo = Hyper.fromString(opts.bumpTo);
+
+  const bumpSequenceOp = new xdr.BumpSequenceOp(attributes);
+
+  const opAttributes = {};
+  opAttributes.body = xdr.OperationBody.bumpSequence(bumpSequenceOp);
+  this.setSourceAccount(opAttributes, opts);
+
+  return new xdr.Operation(opAttributes);
+}
 </code></pre>
         </article>
     </section>

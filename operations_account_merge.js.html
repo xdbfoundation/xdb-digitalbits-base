@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>network.js - Documentation</title>
+    <title>operations/account_merge.js - Documentation</title>
 
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
@@ -29,7 +29,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">network.js</h1>
+    <h1 class="page-title">operations/account_merge.js</h1>
     
 
     
@@ -39,16 +39,37 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>/**
- * Contains passphrases for common networks:
- * * `Networks.PUBLIC`: `LiveNet Global DigitalBits Network ; February 2021`
- * * `Networks.TESTNET`: `TestNet Global DigitalBits Network ; December 2020`
- * @type {{PUBLIC: string, TESTNET: string}}
+            <pre class="prettyprint source linenums"><code>import xdr from '../generated/digitalbits-xdr_generated';
+import { decodeAddressToMuxedAccount } from '../util/decode_encode_muxed_account';
+
+/**
+ * Transfers native balance to destination account.
+ *
+ * @function
+ * @alias Operation.accountMerge
+ *
+ * @param {object} opts - options object
+ * @param {string} opts.destination - destination to merge the source account into
+ * @param {bool}  [opts.withMuxing] - indicates that opts.destination is an
+ *     M... address and should be interpreted fully as a muxed account. By
+ *     default, this option is disabled until muxed accounts are mature.*
+ * @param {string} [opts.source]    - operation source account (defaults to
+ *     transaction source)
+ * @returns {xdr.Operation} an Account Merge operation (xdr.AccountMergeOp)
  */
-export const Networks = {
-  PUBLIC: 'LiveNet Global DigitalBits Network ; February 2021',
-  TESTNET: 'TestNet Global DigitalBits Network ; December 2020'
-};
+export function accountMerge(opts) {
+  const opAttributes = {};
+  try {
+    opAttributes.body = xdr.OperationBody.accountMerge(
+      decodeAddressToMuxedAccount(opts.destination, opts.withMuxing)
+    );
+  } catch (e) {
+    throw new Error('destination is invalid');
+  }
+  this.setSourceAccount(opAttributes, opts);
+
+  return new xdr.Operation(opAttributes);
+}
 </code></pre>
         </article>
     </section>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>network.js - Documentation</title>
+    <title>operations/manage_data.js - Documentation</title>
 
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
@@ -29,7 +29,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">network.js</h1>
+    <h1 class="page-title">operations/manage_data.js</h1>
     
 
     
@@ -39,16 +39,53 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>/**
- * Contains passphrases for common networks:
- * * `Networks.PUBLIC`: `LiveNet Global DigitalBits Network ; February 2021`
- * * `Networks.TESTNET`: `TestNet Global DigitalBits Network ; December 2020`
- * @type {{PUBLIC: string, TESTNET: string}}
+            <pre class="prettyprint source linenums"><code>import isString from 'lodash/isString';
+import xdr from '../generated/digitalbits-xdr_generated';
+
+/**
+ * This operation adds data entry to the ledger.
+ * @function
+ * @alias Operation.manageData
+ * @param {object} opts Options object
+ * @param {string} opts.name - The name of the data entry.
+ * @param {string|Buffer} opts.value - The value of the data entry.
+ * @param {string} [opts.source] - The optional source account.
+ * @returns {xdr.ManageDataOp} Manage Data operation
  */
-export const Networks = {
-  PUBLIC: 'LiveNet Global DigitalBits Network ; February 2021',
-  TESTNET: 'TestNet Global DigitalBits Network ; December 2020'
-};
+export function manageData(opts) {
+  const attributes = {};
+
+  if (!(isString(opts.name) &amp;&amp; opts.name.length &lt;= 64)) {
+    throw new Error('name must be a string, up to 64 characters');
+  }
+  attributes.dataName = opts.name;
+
+  if (
+    !isString(opts.value) &amp;&amp;
+    !Buffer.isBuffer(opts.value) &amp;&amp;
+    opts.value !== null
+  ) {
+    throw new Error('value must be a string, Buffer or null');
+  }
+
+  if (isString(opts.value)) {
+    attributes.dataValue = Buffer.from(opts.value);
+  } else {
+    attributes.dataValue = opts.value;
+  }
+
+  if (attributes.dataValue !== null &amp;&amp; attributes.dataValue.length > 64) {
+    throw new Error('value cannot be longer that 64 bytes');
+  }
+
+  const manageDataOp = new xdr.ManageDataOp(attributes);
+
+  const opAttributes = {};
+  opAttributes.body = xdr.OperationBody.manageData(manageDataOp);
+  this.setSourceAccount(opAttributes, opts);
+
+  return new xdr.Operation(opAttributes);
+}
 </code></pre>
         </article>
     </section>
