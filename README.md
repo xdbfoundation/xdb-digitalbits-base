@@ -5,7 +5,7 @@ of classes to read, write, hash, and sign the xdr structures that are used in
 [digitalbits-core](https://github.com/xdbfoundation/DigitalBits). This is an
 implementation in JavaScript that can be used on either Node.js or web browsers.
 
-- **[API Reference](https://digitalbitsorg.github.io/js-digitalbits-base/)**
+- **[API Reference](https://xdbfoundation.github.io/js-digitalbits-base/)**
 
 > **Warning!** Node version of this package is using [`sodium-native`](https://www.npmjs.com/package/sodium-native) package, a native implementation of [Ed25519](https://ed25519.cr.yp.to/) in Node.js, as an [optional dependency](https://docs.npmjs.com/files/package.json#optionaldependencies).
 > This means that if for any reason installation of this package fails, `digitalbits-base` will fallback to the much slower implementation contained in [`tweetnacl`](https://www.npmjs.com/package/tweetnacl).
