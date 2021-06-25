@@ -2,7 +2,7 @@
 They include sending payments, creating offers, making account configuration changes, etc.
 
 Every transaction has a source [account](https://github.com/xdbfoundation/docs/blob/master/guides/concepts/accounts.md). This is the account
-that pays the [fee](hhttps://github.com/xdbfoundation/docs/blob/master/guides/concepts/fees.md) and uses up a sequence number for the transaction.
+that pays the [fee](https://github.com/xdbfoundation/docs/blob/master/guides/concepts/fees.md) and uses up a sequence number for the transaction.
 
 Transactions are made up of one or more [operations](https://github.com/xdbfoundation/docs/blob/master/guides/concepts/operations.md). Each operation also has a source account, which defaults to the transaction's source account.
 
