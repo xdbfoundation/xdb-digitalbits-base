@@ -1,3 +1,6 @@
+---
+title: Transaction Examples
+---
 
 - [Creating an account](#creating-an-account)
 - [Assets](#assets)
