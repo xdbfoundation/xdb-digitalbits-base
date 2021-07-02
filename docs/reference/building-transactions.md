@@ -1,3 +1,7 @@
+---
+title: Building Transactions
+---
+
 [Transactions](https://github.com/xdbfoundation/docs/blob/master/guides/concepts/transactions.md) are the commands that modify the state of the ledger.
 They include sending payments, creating offers, making account configuration changes, etc.
 
