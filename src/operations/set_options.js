@@ -46,7 +46,7 @@ function weightCheckFunction(value, name) {
  * @param {string} [opts.source] - The source account (defaults to transaction source).
  *
  * @returns {xdr.SetOptionsOp}  XDR operation
- * @see [Account flags](https://developers.digitalbits.io/guides/docs/guides/concepts/accounts#flags)
+ * @see [Account flags](https://developers.digitalbits.io/guides/concepts/accounts.html#flags)
  */
 export function setOptions(opts) {
   const attributes = {};

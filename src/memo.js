@@ -31,7 +31,7 @@ export const MemoReturn = 'return';
  *
  * @param {string} type - `MemoNone`, `MemoID`, `MemoText`, `MemoHash` or `MemoReturn`
  * @param {*} value - `string` for `MemoID`, `MemoText`, buffer of hex string for `MemoHash` or `MemoReturn`
- * @see [Transactions concept](https://developers.digitalbits.io/guides/docs/guides/concepts/transactions)
+ * @see [Transactions concept](https://developers.digitalbits.io/guides/concepts/transactions.html)
  * @class Memo
  */
 export class Memo {

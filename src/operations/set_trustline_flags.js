@@ -35,7 +35,7 @@ import { Keypair } from '../keypair';
  *
  * @link xdr.AccountFlags
  * @link xdr.TrustLineFlags
- * @see https://developers.digitalbits.io/guides/docs/guides/concepts/list-of-operations#set-options
+ * @see https://developers.digitalbits.io/guides/concepts/list-of-operations.html#set-options
  */
 export function setTrustLineFlags(opts = {}) {
   const attributes = {};
