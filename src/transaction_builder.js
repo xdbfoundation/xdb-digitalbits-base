@@ -18,7 +18,7 @@ import { decodeAddressToMuxedAccount } from './util/decode_encode_muxed_account'
  * fee on the network.
  *
  * @constant
- * @see [Fees](https://developers.digitalbits.io/guides/docs/guides/concepts/fees)
+ * @see [Fees](https://developers.digitalbits.io/guides/concepts/fees.html)
  */
 export const BASE_FEE = '100'; // nibbs
 
