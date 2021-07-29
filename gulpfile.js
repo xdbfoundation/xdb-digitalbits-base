@@ -42,7 +42,7 @@ gulp.task(
     return gulp
       .src('src/browser.js')
       .pipe(webpack(webpackConfigBrowser))
-      .pipe(plugins.rename('digitalbits-base.js'))
+      .pipe(plugins.rename('xdb-digitalbits-base.js'))
       .pipe(gulp.dest('dist'))
       .pipe(
         plugins.uglify({
@@ -51,7 +51,7 @@ gulp.task(
           }
         })
       )
-      .pipe(plugins.rename('digitalbits-base.min.js'))
+      .pipe(plugins.rename('xdb-digitalbits-base.min.js'))
       .pipe(gulp.dest('dist'));
   })
 );
