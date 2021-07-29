@@ -26,7 +26,7 @@ module.exports = function(config) {
 
   config.set({
     sauceLabs: {
-      testName: 'js-digitalbits-base',
+      testName: 'xdb-digitalbits-base',
       recordScreenshots: false,
       recordVideo: false
     },
@@ -34,7 +34,7 @@ module.exports = function(config) {
     customLaunchers: customLaunchers,
     browsers: Object.keys(customLaunchers),
 
-    files: ['dist/digitalbits-base.min.js', 'test/unit/**/*.js'],
+    files: ['dist/xdb-digitalbits-base.min.js', 'test/unit/**/*.js'],
 
     preprocessors: {
       'test/unit/**/*.js': ['webpack']

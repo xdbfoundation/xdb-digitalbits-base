@@ -1,4 +1,4 @@
-import * as DigitalBitsSdk from 'digitalbits-base';
+import * as DigitalBitsSdk from 'xdb-digitalbits-base';
 
 const masterKey = DigitalBitsSdk.Keypair.master(DigitalBitsSdk.Networks.TESTNET); // $ExpectType Keypair
 const sourceKey = DigitalBitsSdk.Keypair.random(); // $ExpectType Keypair
