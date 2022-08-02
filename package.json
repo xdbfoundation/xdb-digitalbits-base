@@ -1,5 +1,5 @@
 {
-  "name": "xdb-digitalbits-base",
+  "name": "@digitalbits-blockchain/xdb-digitalbits-base",
   "version": "5.3.0",
   "description": "Low level digitalbits support library",
   "main": "./lib/index.js",
