@@ -1,12 +1,16 @@
 import map from 'lodash/map';
-import xdr from './generated/digitalbits-xdr_generated';
+
+import xdr from './xdr';
 import { hash } from './hashing';
 
 import { StrKey } from './strkey';
 import { Operation } from './operation';
 import { Memo } from './memo';
 import { TransactionBase } from './transaction_base';
-import { encodeMuxedAccountToAddress } from './util/decode_encode_muxed_account';
+import {
+  extractBaseAddress,
+  encodeMuxedAccountToAddress
+} from './util/decode_encode_muxed_account';
 
 /**
  * Use {@link TransactionBuilder} to build a transaction object. If you have an
@@ -22,17 +26,13 @@ import { encodeMuxedAccountToAddress } from './util/decode_encode_muxed_account'
  *
  * @param {string|xdr.TransactionEnvelope} envelope - transaction envelope
  *     object or base64 encoded string
- * @param {string}  [networkPassphrase] - passphrase of the target DigitalBits
- *     network (e.g. "LiveNet Global DigitalBits Network ; February 2021")
- * @param {bool}    [opts.withMuxing] - Indicates that this.sourceAccount is a
- *     muxed account (i.e. came from an M... address) and should be interpreted
- *     fully as such. By default, this option is disabled until muxed accounts
- *     are mature.
+ * @param {string}  [networkPassphrase] - passphrase of the target digitalbits
+ *     network (e.g. "Public Global DigitalBits Network ; September 2015")
  *
  * @extends TransactionBase
  */
 export class Transaction extends TransactionBase {
-  constructor(envelope, networkPassphrase, withMuxing) {
+  constructor(envelope, networkPassphrase) {
     if (typeof envelope === 'string') {
       const buffer = Buffer.from(envelope, 'base64');
       envelope = xdr.TransactionEnvelope.fromXDR(buffer);
@@ -68,20 +68,63 @@ export class Transaction extends TransactionBase {
         );
         break;
       default:
-        this._source = encodeMuxedAccountToAddress(
-          this.tx.sourceAccount(),
-          withMuxing
-        );
+        this._source = encodeMuxedAccountToAddress(this.tx.sourceAccount());
         break;
     }
 
-    const timeBounds = tx.timeBounds();
+    let cond = null;
+    let timeBounds = null;
+    switch (this._envelopeType) {
+      case xdr.EnvelopeType.envelopeTypeTxV0():
+        timeBounds = tx.timeBounds();
+        break;
+
+      case xdr.EnvelopeType.envelopeTypeTx():
+        switch (tx.cond().switch()) {
+          case xdr.PreconditionType.precondTime():
+            timeBounds = tx.cond().timeBounds();
+            break;
+
+          case xdr.PreconditionType.precondV2():
+            cond = tx.cond().v2();
+            timeBounds = cond.timeBounds();
+            break;
+
+          default:
+            break;
+        }
+        break;
+
+      default:
+        break;
+    }
+
     if (timeBounds) {
       this._timeBounds = {
         minTime: timeBounds.minTime().toString(),
         maxTime: timeBounds.maxTime().toString()
       };
     }
+
+    if (cond) {
+      const ledgerBounds = cond.ledgerBounds();
+      if (ledgerBounds) {
+        this._ledgerBounds = {
+          minLedger: ledgerBounds.minLedger(),
+          maxLedger: ledgerBounds.maxLedger()
+        };
+      }
+
+      const minSeq = cond.minSeqNum();
+      if (minSeq) {
+        this._minAccountSequence = minSeq.toString();
+      }
+
+      this._minAccountSequenceAge = cond.minSeqAge();
+      this._minAccountSequenceLedgerGap = cond.minSeqLedgerGap();
+      this._extraSigners = cond.extraSigners();
+    }
+
     const operations = tx.operations() || [];
     this._operations = map(operations, (op) => Operation.fromXDRObject(op));
   }
@@ -95,8 +138,64 @@ export class Transaction extends TransactionBase {
   get timeBounds() {
     return this._timeBounds;
   }
-
   set timeBounds(value) {
+    throw new Error('Transaction is immutable');
+  }
+
+  /**
+   * @type {object}
+   * @property {number} minLedger - smallest ledger bound (uint32)
+   * @property {number} maxLedger - largest ledger bound (or 0 for inf)
+   * @readonly
+   */
+  get ledgerBounds() {
+    return this._ledgerBounds;
+  }
+  set ledgerBounds(value) {
+    throw new Error('Transaction is immutable');
+  }
+
+  /**
+   * @type {string} 64 bit account sequence
+   * @readonly
+   */
+  get minAccountSequence() {
+    return this._minAccountSequence;
+  }
+  set minAccountSequence(value) {
+    throw new Error('Transaction is immutable');
+  }
+
+  /**
+   * @type {number} 64 bit number of seconds
+   * @readonly
+   */
+  get minAccountSequenceAge() {
+    return this._minAccountSequenceAge;
+  }
+  set minAccountSequenceAge(value) {
+    throw new Error('Transaction is immutable');
+  }
+
+  /**
+   * @type {number} 32 bit number of ledgers
+   * @readonly
+   */
+  get minAccountSequenceLedgerGap() {
+    return this._minAccountSequenceLedgerGap;
+  }
+  set minAccountSequenceLedgerGap(value) {
+    throw new Error('Transaction is immutable');
+  }
+
+  /**
+   * @type {string[]}   array of extra signers (@{link StrKey}s)
+   * @readonly
+   */
+  get extraSigners() {
+    return this._extraSigners;
+  }
+  set extraSigners(value) {
     throw new Error('Transaction is immutable');
   }
 
@@ -219,5 +318,54 @@ export class Transaction extends TransactionBase {
     }
 
     return envelope;
+  }
+
+  /**
+   * Calculate the claimable balance ID for an operation within the transaction.
+   *
+   * @param   {integer}  opIndex   the index of the CreateClaimableBalance op
+   * @returns {string}   a hex string representing the claimable balance ID
+   *
+   * @throws {RangeError}   for invalid `opIndex` value
+   * @throws {TypeError}    if op at `opIndex` is not `CreateClaimableBalance`
+   * @throws for general XDR un/marshalling failures
+   *
+   * @see https://github.com/xdbfoundation/go/blob/d712346e61e288d450b0c08038c158f8848cc3e4/txnbuild/transaction.go#L392-L435
+   *
+   */
+  getClaimableBalanceId(opIndex) {
+    // Validate and then extract the operation from the transaction.
+    if (
+      !Number.isInteger(opIndex) ||
+      opIndex < 0 ||
+      opIndex >= this.operations.length
+    ) {
+      throw new RangeError('invalid operation index');
+    }
+
+    let op = this.operations[opIndex];
+    try {
+      op = Operation.createClaimableBalance(op);
+    } catch (err) {
+      throw new TypeError(
+        `expected createClaimableBalance, got ${op.type}: ${err}`
+      );
+    }
+
+    // Always use the transaction's *unmuxed* source.
+    const account = StrKey.decodeEd25519PublicKey(
+      extractBaseAddress(this.source)
+    );
+    const operationId = xdr.HashIdPreimage.envelopeTypeOpId(
+      new xdr.HashIdPreimageOperationId({
+        sourceAccount: xdr.AccountId.publicKeyTypeEd25519(account),
+        seqNum: xdr.SequenceNumber.fromString(this.sequence),
+        opNum: opIndex
+      })
+    );
+
+    const opIdHash = hash(operationId.toXDR('raw'));
+    const balanceId = xdr.ClaimableBalanceId.claimableBalanceIdTypeV0(opIdHash);
+    return balanceId.toXDR('hex');
   }
 }

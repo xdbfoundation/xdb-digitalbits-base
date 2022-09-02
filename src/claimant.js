@@ -1,4 +1,4 @@
-import xdr from './generated/digitalbits-xdr_generated';
+import xdr from './xdr';
 import { Keypair } from './keypair';
 import { StrKey } from './strkey';
 

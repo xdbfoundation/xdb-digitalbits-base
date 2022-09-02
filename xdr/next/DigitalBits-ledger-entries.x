@@ -1,8 +1,9 @@
-// Copyright 2021 XDB Foundation and contributors. Licensed
+// Copyright 2015 DigitalBits Development Foundation and contributors. Licensed
 // under the Apache License, Version 2.0. See the COPYING file at the root
 // of this distribution or at http://www.apache.org/licenses/LICENSE-2.0
 
 %#include "xdr/DigitalBits-types.h"
+%#include "xdr/DigitalBits-contract.h"
 
 namespace digitalbits
 {
@@ -13,7 +14,9 @@ typedef string string32<32>;
 typedef string string64<64>;
 typedef int64 SequenceNumber;
 typedef uint64 TimePoint;
+typedef uint64 Duration;
 typedef opaque DataValue<64>;
+typedef Hash PoolID; // SHA256(LiquidityPoolParameters)
 
 // 1-4 alphanumeric characters right-padded with 0 bytes
 typedef opaque AssetCode4[4];
@@ -25,7 +28,8 @@ enum AssetType
 {
     ASSET_TYPE_NATIVE = 0,
     ASSET_TYPE_CREDIT_ALPHANUM4 = 1,
-    ASSET_TYPE_CREDIT_ALPHANUM12 = 2
+    ASSET_TYPE_CREDIT_ALPHANUM12 = 2,
+    ASSET_TYPE_POOL_SHARE = 3
 };
 
 union AssetCode switch (AssetType type)
@@ -39,24 +43,28 @@ case ASSET_TYPE_CREDIT_ALPHANUM12:
     // add other asset types here in the future
 };
 
+struct AlphaNum4
+{
+    AssetCode4 assetCode;
+    AccountID issuer;
+};
+
+struct AlphaNum12
+{
+    AssetCode12 assetCode;
+    AccountID issuer;
+};
+
 union Asset switch (AssetType type)
 {
 case ASSET_TYPE_NATIVE: // Not credit
     void;
 
 case ASSET_TYPE_CREDIT_ALPHANUM4:
-    struct
-    {
-        AssetCode4 assetCode;
-        AccountID issuer;
-    } alphaNum4;
+    AlphaNum4 alphaNum4;
 
 case ASSET_TYPE_CREDIT_ALPHANUM12:
-    struct
-    {
-        AssetCode12 assetCode;
-        AccountID issuer;
-    } alphaNum12;
+    AlphaNum12 alphaNum12;
 
     // add other asset types here in the future
 };
@@ -90,7 +98,10 @@ enum LedgerEntryType
     TRUSTLINE = 1,
     OFFER = 2,
     DATA = 3,
-    CLAIMABLE_BALANCE = 4
+    CLAIMABLE_BALANCE = 4,
+    LIQUIDITY_POOL = 5,
+    CONTRACT_DATA = 6,
+    CONFIG_SETTING = 7
 };
 
 struct Signer
@@ -119,12 +130,25 @@ enum AccountFlags
 
 // mask for all valid flags
 const MASK_ACCOUNT_FLAGS = 0x7;
-const MASK_ACCOUNT_FLAGS_V16 = 0xF;
+const MASK_ACCOUNT_FLAGS_V17 = 0xF;
 
 // maximum number of signers
 const MAX_SIGNERS = 20;
 
 typedef AccountID* SponsorshipDescriptor;
+
+struct AccountEntryExtensionV3
+{
+    // We can use this to add more fields, or because it is first, to
+    // change AccountEntryExtensionV3 into a union.
+    ExtensionPoint ext;
+
+    // Ledger number at which `seqNum` took on its present value.
+    uint32 seqLedger;
+
+    // Time at which `seqNum` took on its present value.
+    TimePoint seqTime;
+};
 
 struct AccountEntryExtensionV2
 {
@@ -136,6 +160,8 @@ struct AccountEntryExtensionV2
     {
     case 0:
         void;
+    case 3:
+        AccountEntryExtensionV3 v3;
     }
     ext;
 };
@@ -165,7 +191,7 @@ struct AccountEntryExtensionV1
 struct AccountEntry
 {
     AccountID accountID;      // master public key for this account
-    int64 balance;            // in nibbs
+    int64 balance;            // in stroops
     SequenceNumber seqNum;    // last sequence number used for this account
     uint32 numSubEntries;     // number of sub-entries this account has
                               // drives the reserve
@@ -212,14 +238,48 @@ enum TrustLineFlags
 // mask for all trustline flags
 const MASK_TRUSTLINE_FLAGS = 1;
 const MASK_TRUSTLINE_FLAGS_V13 = 3;
-const MASK_TRUSTLINE_FLAGS_V16 = 7;
+const MASK_TRUSTLINE_FLAGS_V17 = 7;
+
+enum LiquidityPoolType
+{
+    LIQUIDITY_POOL_CONSTANT_PRODUCT = 0
+};
+
+union TrustLineAsset switch (AssetType type)
+{
+case ASSET_TYPE_NATIVE: // Not credit
+    void;
+
+case ASSET_TYPE_CREDIT_ALPHANUM4:
+    AlphaNum4 alphaNum4;
+
+case ASSET_TYPE_CREDIT_ALPHANUM12:
+    AlphaNum12 alphaNum12;
+
+case ASSET_TYPE_POOL_SHARE:
+    PoolID liquidityPoolID;
+
+    // add other asset types here in the future
+};
+
+struct TrustLineEntryExtensionV2
+{
+    int32 liquidityPoolUseCount;
+
+    union switch (int v)
+    {
+    case 0:
+        void;
+    }
+    ext;
+};
 
 struct TrustLineEntry
 {
-    AccountID accountID; // account this trustline belongs to
-    Asset asset;         // type of asset (with issuer)
-    int64 balance;       // how much of this asset the user has.
-                         // Asset defines the unit for this;
+    AccountID accountID;  // account this trustline belongs to
+    TrustLineAsset asset; // type of asset (with issuer)
+    int64 balance;        // how much of this asset the user has.
+                          // Asset defines the unit for this;
 
     int64 limit;  // balance cannot be above this
     uint32 flags; // see TrustLineFlags
@@ -238,6 +298,8 @@ struct TrustLineEntry
             {
             case 0:
                 void;
+            case 2:
+                TrustLineEntryExtensionV2 v2;
             }
             ext;
         } v1;
@@ -247,7 +309,8 @@ struct TrustLineEntry
 
 enum OfferEntryFlags
 {
-    // issuer has authorized account to perform transactions with its credit
+    // an offer with this flag will not act on and take a reverse offer of equal
+    // price
     PASSIVE_FLAG = 1
 };
 
@@ -403,6 +466,69 @@ struct ClaimableBalanceEntry
     ext;
 };
 
+struct LiquidityPoolConstantProductParameters
+{
+    Asset assetA; // assetA < assetB
+    Asset assetB;
+    int32 fee; // Fee is in basis points, so the actual rate is (fee/100)%
+};
+
+struct LiquidityPoolEntry
+{
+    PoolID liquidityPoolID;
+
+    union switch (LiquidityPoolType type)
+    {
+    case LIQUIDITY_POOL_CONSTANT_PRODUCT:
+        struct
+        {
+            LiquidityPoolConstantProductParameters params;
+
+            int64 reserveA;        // amount of A in the pool
+            int64 reserveB;        // amount of B in the pool
+            int64 totalPoolShares; // total number of pool shares issued
+            int64 poolSharesTrustLineCount; // number of trust lines for the
+                                            // associated pool shares
+        } constantProduct;
+    }
+    body;
+};
+
+struct ContractDataEntry {
+    Hash contractID;
+    SCVal key;
+    SCVal val;
+};
+
+enum ConfigSettingType
+{
+    CONFIG_SETTING_TYPE_UINT32 = 0
+};
+
+union ConfigSetting switch (ConfigSettingType type)
+{
+case CONFIG_SETTING_TYPE_UINT32:
+    uint32 uint32Val;
+};
+
+enum ConfigSettingID
+{
+    CONFIG_SETTING_CONTRACT_MAX_SIZE = 0
+};
+
+struct ConfigSettingEntry
+{
+    union switch (int v)
+    {
+    case 0:
+        void;
+    }
+    ext;
+
+    ConfigSettingID configSettingID;
+    ConfigSetting setting;
+};
+
 struct LedgerEntryExtensionV1
 {
     SponsorshipDescriptor sponsoringID;
@@ -431,6 +557,12 @@ struct LedgerEntry
         DataEntry data;
     case CLAIMABLE_BALANCE:
         ClaimableBalanceEntry claimableBalance;
+    case LIQUIDITY_POOL:
+        LiquidityPoolEntry liquidityPool;
+    case CONTRACT_DATA:
+        ContractDataEntry contractData;
+    case CONFIG_SETTING:
+        ConfigSettingEntry configSetting;
     }
     data;
 
@@ -457,7 +589,7 @@ case TRUSTLINE:
     struct
     {
         AccountID accountID;
-        Asset asset;
+        TrustLineAsset asset;
     } trustLine;
 
 case OFFER:
@@ -479,6 +611,23 @@ case CLAIMABLE_BALANCE:
     {
         ClaimableBalanceID balanceID;
     } claimableBalance;
+
+case LIQUIDITY_POOL:
+    struct
+    {
+        PoolID liquidityPoolID;
+    } liquidityPool;
+case CONTRACT_DATA:
+    struct
+    {
+        Hash contractID;
+        SCVal key;
+    } contractData;
+case CONFIG_SETTING:
+    struct
+    {
+        ConfigSettingID configSettingID;
+    } configSetting;
 };
 
 // list of all envelope types used in the application
@@ -492,6 +641,9 @@ enum EnvelopeType
     ENVELOPE_TYPE_AUTH = 3,
     ENVELOPE_TYPE_SCPVALUE = 4,
     ENVELOPE_TYPE_TX_FEE_BUMP = 5,
-    ENVELOPE_TYPE_OP_ID = 6
+    ENVELOPE_TYPE_OP_ID = 6,
+    ENVELOPE_TYPE_POOL_REVOKE_OP_ID = 7,
+    ENVELOPE_TYPE_CONTRACT_ID_FROM_ED25519 = 8,
+    ENVELOPE_TYPE_CONTRACT_ID_FROM_CONTRACT = 9
 };
 }

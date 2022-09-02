@@ -1,4 +1,4 @@
-// Copyright 2021 XDB Foundation and contributors. Licensed
+// Copyright 2015 DigitalBits Development Foundation and contributors. Licensed
 // under the Apache License, Version 2.0. See the COPYING file at the root
 // of this distribution or at http://www.apache.org/licenses/LICENSE-2.0
 
@@ -47,6 +47,27 @@ struct DigitalBitsValue
     ext;
 };
 
+const MASK_LEDGER_HEADER_FLAGS = 0x7;
+
+enum LedgerHeaderFlags
+{
+    DISABLE_LIQUIDITY_POOL_TRADING_FLAG = 0x1,
+    DISABLE_LIQUIDITY_POOL_DEPOSIT_FLAG = 0x2,
+    DISABLE_LIQUIDITY_POOL_WITHDRAWAL_FLAG = 0x4
+};
+
+struct LedgerHeaderExtensionV1
+{
+    uint32 flags; // LedgerHeaderFlags
+
+    union switch (int v)
+    {
+    case 0:
+        void;
+    }
+    ext;
+};
+
 /* The LedgerHeader is the highest level structure representing the
  * state of a ledger, cryptographically linked to previous ledgers.
  */
@@ -60,16 +81,16 @@ struct LedgerHeader
 
     uint32 ledgerSeq; // sequence number of this ledger
 
-    int64 totalCoins; // total number of nibbs in existence.
-                      // 10,000,000 nibbs in 1 XDB
+    int64 totalCoins; // total number of stroops in existence.
+                      // 10,000,000 stroops in 1 XDB
 
     int64 feePool;       // fees burned since last inflation run
     uint32 inflationSeq; // inflation sequence number
 
     uint64 idPool; // last used global ID, used for generating objects
 
-    uint32 baseFee;     // base fee per operation in nibbs
-    uint32 baseReserve; // account base reserve in nibbs
+    uint32 baseFee;     // base fee per operation in stroops
+    uint32 baseReserve; // account base reserve in stroops
 
     uint32 maxTxSetSize; // maximum size a transaction set can be
 
@@ -84,6 +105,8 @@ struct LedgerHeader
     {
     case 0:
         void;
+    case 1:
+        LedgerHeaderExtensionV1 v1;
     }
     ext;
 };
@@ -98,7 +121,8 @@ enum LedgerUpgradeType
     LEDGER_UPGRADE_VERSION = 1,
     LEDGER_UPGRADE_BASE_FEE = 2,
     LEDGER_UPGRADE_MAX_TX_SET_SIZE = 3,
-    LEDGER_UPGRADE_BASE_RESERVE = 4
+    LEDGER_UPGRADE_BASE_RESERVE = 4,
+    LEDGER_UPGRADE_FLAGS = 5
 };
 
 union LedgerUpgrade switch (LedgerUpgradeType type)
@@ -111,6 +135,8 @@ case LEDGER_UPGRADE_MAX_TX_SET_SIZE:
     uint32 newMaxTxSetSize; // update maxTxSetSize
 case LEDGER_UPGRADE_BASE_RESERVE:
     uint32 newBaseReserve; // update baseReserve
+case LEDGER_UPGRADE_FLAGS:
+    uint32 newFlags; // update flags
 };
 
 /* Entries used to define the bucket list */
@@ -150,12 +176,48 @@ case METAENTRY:
     BucketMetadata metaEntry;
 };
 
+enum TxSetComponentType
+{
+  // txs with effective fee <= bid derived from a base fee (if any).
+  // If base fee is not specified, no discount is applied.
+  TXSET_COMP_TXS_MAYBE_DISCOUNTED_FEE = 0
+};
+
+union TxSetComponent switch (TxSetComponentType type)
+{
+case TXSET_COMP_TXS_MAYBE_DISCOUNTED_FEE:
+  struct
+  {
+    int64* baseFee;
+    TransactionEnvelope txs<>;
+  } txsMaybeDiscountedFee;
+};
+
+union TransactionPhase switch (int v)
+{
+case 0:
+    TxSetComponent v0Components<>;
+};
+
 // Transaction sets are the unit used by SCP to decide on transitions
 // between ledgers
 struct TransactionSet
 {
     Hash previousLedgerHash;
     TransactionEnvelope txs<>;
+};
+
+struct TransactionSetV1
+{
+    Hash previousLedgerHash;
+    TransactionPhase phases<>;
+};
+
+union GeneralizedTransactionSet switch (int v)
+{
+// We consider the legacy TransactionSet to be v0.
+case 1:
+    TransactionSetV1 v1TxSet;
 };
 
 struct TransactionResultPair
@@ -177,11 +239,13 @@ struct TransactionHistoryEntry
     uint32 ledgerSeq;
     TransactionSet txSet;
 
-    // reserved for future use
+    // when v != 0, txSet must be empty
     union switch (int v)
     {
     case 0:
         void;
+    case 1:
+        GeneralizedTransactionSet generalizedTxSet;
     }
     ext;
 };
@@ -332,9 +396,29 @@ struct LedgerCloseMetaV0
     SCPHistoryEntry scpInfo<>;
 };
 
+struct LedgerCloseMetaV1
+{
+    LedgerHeaderHistoryEntry ledgerHeader;
+
+    GeneralizedTransactionSet txSet;
+
+    // NB: transactions are sorted in apply order here
+    // fees for all transactions are processed first
+    // followed by applying transactions
+    TransactionResultMeta txProcessing<>;
+
+    // upgrades are applied last
+    UpgradeEntryMeta upgradesProcessing<>;
+
+    // other misc information attached to the ledger close
+    SCPHistoryEntry scpInfo<>;
+};
+
 union LedgerCloseMeta switch (int v)
 {
 case 0:
     LedgerCloseMetaV0 v0;
+case 1:
+    LedgerCloseMetaV1 v1;
 };
 }

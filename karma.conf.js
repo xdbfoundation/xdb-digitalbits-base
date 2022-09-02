@@ -5,7 +5,7 @@ delete webpackConfig.output;
 module.exports = function(config) {
   config.set({
     frameworks: ['mocha', 'sinon-chai'],
-    browsers: ['Firefox'],
+    browsers: ['FirefoxHeadless', 'ChromeHeadless'],
 
     files: ['dist/xdb-digitalbits-base.js', 'test/unit/**/*.js'],
 

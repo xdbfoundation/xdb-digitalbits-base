@@ -3,7 +3,7 @@
 import isUndefined from 'lodash/isUndefined';
 import isString from 'lodash/isString';
 
-import xdr from '../generated/digitalbits-xdr_generated';
+import xdr from '../xdr';
 import { Keypair } from '../keypair';
 import { StrKey } from '../strkey';
 
@@ -46,7 +46,7 @@ function weightCheckFunction(value, name) {
  * @param {string} [opts.source] - The source account (defaults to transaction source).
  *
  * @returns {xdr.SetOptionsOp}  XDR operation
- * @see [Account flags](https://developers.digitalbits.io/guides/concepts/accounts.html#flags)
+ * @see [Account flags](https://developers.digitalbits.io/docs/glossary/accounts/#flags)
  */
 export function setOptions(opts) {
   const attributes = {};

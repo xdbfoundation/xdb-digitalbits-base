@@ -3,7 +3,7 @@ import isString from 'lodash/isString';
 import clone from 'lodash/clone';
 import { UnsignedHyper } from 'js-xdr';
 import BigNumber from 'bignumber.js';
-import xdr from './generated/digitalbits-xdr_generated';
+import xdr from './xdr';
 
 /**
  * Type of {@link Memo}.
@@ -31,7 +31,7 @@ export const MemoReturn = 'return';
  *
  * @param {string} type - `MemoNone`, `MemoID`, `MemoText`, `MemoHash` or `MemoReturn`
  * @param {*} value - `string` for `MemoID`, `MemoText`, buffer of hex string for `MemoHash` or `MemoReturn`
- * @see [Transactions concept](https://developers.digitalbits.io/guides/concepts/transactions.html)
+ * @see [Transactions concept](https://developers.digitalbits.io/docs/glossary/transactions/)
  * @class Memo
  */
 export class Memo {

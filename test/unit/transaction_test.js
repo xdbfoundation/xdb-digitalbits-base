@@ -1,3 +1,4 @@
+import { UnsignedHyper } from 'js-xdr';
 import randomBytes from 'randombytes';
 
 describe('Transaction', function() {
@@ -532,25 +533,19 @@ describe('Transaction', function() {
         )
         .addMemo(DigitalBitsBase.Memo.text('Happy birthday!'))
         .build();
-      let med25519 = new DigitalBitsBase.xdr.MuxedAccountMed25519({
-        id: DigitalBitsBase.xdr.Uint64.fromString('0'),
-        ed25519: source.rawPublicKey()
-      });
-      let muxedAccount = DigitalBitsBase.xdr.MuxedAccount.keyTypeMuxedEd25519(
-        med25519
-      );
+
+      // force the source to be muxed in the envelope
+      const muxedSource = new DigitalBitsBase.MuxedAccount(account, '0');
       const envelope = tx.toEnvelope();
       envelope
         .v1()
         .tx()
-        .sourceAccount(muxedAccount);
+        .sourceAccount(muxedSource.toXDRObject());
 
-      let destMed25519 = new DigitalBitsBase.xdr.MuxedAccountMed25519({
-        id: DigitalBitsBase.xdr.Uint64.fromString('0'),
-        ed25519: DigitalBitsBase.StrKey.decodeEd25519PublicKey(destination)
-      });
-      let destMuxedAccount = DigitalBitsBase.xdr.MuxedAccount.keyTypeMuxedEd25519(
-        destMed25519
+      // force the payment destination to be muxed in the envelope
+      const destinationMuxed = new DigitalBitsBase.MuxedAccount(
+        new DigitalBitsBase.Account(destination, '1'),
+        '0'
       );
       envelope
         .v1()
@@ -558,16 +553,261 @@ describe('Transaction', function() {
         .operations()[0]
         .body()
         .value()
-        .destination(destMuxedAccount);
+        .destination(destinationMuxed.toXDRObject());
 
-      const txWithMuxedAccount = new DigitalBitsBase.Transaction(
-        envelope,
-        networkPassphrase
-      );
-      expect(txWithMuxedAccount.source).to.equal(source.publicKey());
+      // muxed properties should decode
+      const muxedTx = new DigitalBitsBase.Transaction(envelope, networkPassphrase);
       expect(tx.source).to.equal(source.publicKey());
-      var operation = txWithMuxedAccount.operations[0];
-      expect(operation.destination).to.be.equal(destination);
+      expect(muxedTx.source).to.be.equal(muxedSource.accountId());
+      expect(muxedTx.operations[0].destination).to.be.equal(
+        destinationMuxed.accountId()
+      );
+    });
+  });
+
+  describe('knows how to calculate claimable balance IDs', function() {
+    const address = 'GA7QYNF7SOWQ3GLR2BGMZEHXAVIRZA4KVWLTJJFC7MGXUA74P7UJVSGZ';
+
+    const makeBuilder = function(source) {
+      return new DigitalBitsBase.TransactionBuilder(source, {
+        fee: DigitalBitsBase.BASE_FEE,
+        networkPassphrase: DigitalBitsBase.Networks.TESTNET,
+        withMuxing: true
+      }).setTimeout(DigitalBitsBase.TimeoutInfinite);
+    };
+
+    const makeClaimableBalance = function() {
+      return DigitalBitsBase.Operation.createClaimableBalance({
+        asset: DigitalBitsBase.Asset.native(),
+        amount: '100',
+        claimants: [
+          new DigitalBitsBase.Claimant(
+            address,
+            DigitalBitsBase.Claimant.predicateUnconditional()
+          )
+        ]
+      });
+    };
+
+    const paymentOp = DigitalBitsBase.Operation.payment({
+      destination: address,
+      asset: DigitalBitsBase.Asset.native(),
+      amount: '100'
+    });
+
+    it('calculates from transaction src', function() {
+      let gSource = new DigitalBitsBase.Account(address, '1234');
+
+      let tx = makeBuilder(gSource)
+        .addOperation(makeClaimableBalance())
+        .build();
+      const balanceId = tx.getClaimableBalanceId(0);
+      expect(balanceId).to.be.equal(
+        '00000000536af35c666a28d26775008321655e9eda2039154270484e3f81d72c66d5c26f'
+      );
+    });
+
+    // See https://github.com/xdbfoundation/xdb-digitalbits-base/issues/529
+    it('calculates from transaction src (big number sequence)', function() {
+      let gSource = new DigitalBitsBase.Account(address, '114272277834498050');
+
+      let tx = makeBuilder(gSource)
+        .addOperation(makeClaimableBalance())
+        .build();
+      const balanceId = tx.getClaimableBalanceId(0);
+      expect(balanceId).to.be.equal(
+        '000000001cd1e39f422a864b4efca661e11ffaa1c54e69b23aaf096e0cfd361bb4a275bf'
+      );
+    });
+
+    it('calculates from muxed transaction src as if unmuxed', function() {
+      let gSource = new DigitalBitsBase.Account(address, '1234');
+      let mSource = new DigitalBitsBase.MuxedAccount(gSource, '5678');
+      let tx = makeBuilder(mSource)
+        .addOperation(makeClaimableBalance())
+        .build();
+
+      const balanceId = tx.getClaimableBalanceId(0);
+      expect(balanceId).to.be.equal(
+        '00000000536af35c666a28d26775008321655e9eda2039154270484e3f81d72c66d5c26f'
+      );
+    });
+
+    it('throws on invalid operations', function() {
+      let gSource = new DigitalBitsBase.Account(address, '1234');
+      let tx = makeBuilder(gSource)
+        .addOperation(paymentOp)
+        .addOperation(makeClaimableBalance())
+        .build();
+
+      expect(() => tx.getClaimableBalanceId(0)).to.throw(
+        /createClaimableBalance/
+      );
+      expect(() => tx.getClaimableBalanceId(1)).to.not.throw();
+      expect(() => tx.getClaimableBalanceId(2)).to.throw(/index/);
+      expect(() => tx.getClaimableBalanceId(-1)).to.throw(/index/);
+    });
+  });
+
+  describe('preconditions', function() {
+    const address = 'GA7QYNF7SOWQ3GLR2BGMZEHXAVIRZA4KVWLTJJFC7MGXUA74P7UJVSGZ';
+
+    const source = new DigitalBitsBase.Account(address, '1234');
+    const makeBuilder = function() {
+      return new DigitalBitsBase.TransactionBuilder(source, {
+        fee: DigitalBitsBase.BASE_FEE,
+        networkPassphrase: DigitalBitsBase.Networks.TESTNET,
+        withMuxing: true
+      });
+    };
+
+    describe('timebounds', function() {
+      it('Date', function() {
+        let now = new Date();
+        let tx = makeBuilder()
+          .setTimebounds(now, now)
+          .build();
+        const expMin = `${Math.floor(now.valueOf() / 1000)}`;
+        const expMax = `${Math.floor(now.valueOf() / 1000)}`;
+        expect(tx.timeBounds.minTime).to.equal(expMin);
+        expect(tx.timeBounds.maxTime).to.equal(expMax);
+
+        const tb = tx
+          .toEnvelope()
+          .v1()
+          .tx()
+          .cond()
+          .timeBounds();
+
+        expect(tb.minTime().toString()).to.equal(expMin);
+        expect(tb.maxTime().toString()).to.equal(expMax);
+      });
+
+      it('number', function() {
+        let tx = makeBuilder()
+          .setTimebounds(5, 10)
+          .build();
+        expect(tx.timeBounds.minTime).to.eql('5');
+        expect(tx.timeBounds.maxTime).to.eql('10');
+
+        const tb = tx
+          .toEnvelope()
+          .v1()
+          .tx()
+          .cond()
+          .timeBounds();
+        expect(tb.minTime().toString()).to.equal('5');
+        expect(tb.maxTime().toString()).to.equal('10');
+      });
+    });
+
+    it('ledgerbounds', function() {
+      let tx = makeBuilder()
+        .setTimeout(5)
+        .setLedgerbounds(5, 10)
+        .build();
+
+      expect(tx.ledgerBounds.minLedger).to.equal(5);
+      expect(tx.ledgerBounds.maxLedger).to.equal(10);
+
+      const lb = tx
+        .toEnvelope()
+        .v1()
+        .tx()
+        .cond()
+        .v2()
+        .ledgerBounds();
+      expect(lb.minLedger()).to.equal(5);
+      expect(lb.maxLedger()).to.equal(10);
+    });
+
+    it('minAccountSequence', function() {
+      let tx = makeBuilder()
+        .setTimeout(5)
+        .setMinAccountSequence('5')
+        .build();
+      expect(tx.minAccountSequence).to.eql('5');
+
+      const val = tx
+        .toEnvelope()
+        .v1()
+        .tx()
+        .cond()
+        .v2()
+        .minSeqNum();
+      expect(val.toString()).to.equal('5');
+    });
+
+    it('minAccountSequence (big number)', function() {
+      let tx = makeBuilder()
+        .setTimeout(5)
+        .setMinAccountSequence('103420918407103888')
+        .build();
+      expect(tx.minAccountSequence).to.eql('103420918407103888');
+
+      const val = tx
+        .toEnvelope()
+        .v1()
+        .tx()
+        .cond()
+        .v2()
+        .minSeqNum();
+      expect(val.toString()).to.equal('103420918407103888');
+    });
+
+    it('minAccountSequenceAge', function() {
+      let tx = makeBuilder()
+        .setTimeout(5)
+        .setMinAccountSequenceAge(5)
+        .build();
+      expect(tx.minAccountSequenceAge.toString()).to.equal('5');
+
+      const val = tx
+        .toEnvelope()
+        .v1()
+        .tx()
+        .cond()
+        .v2()
+        .minSeqAge();
+      expect(val.toString()).to.equal('5');
+    });
+
+    it('minAccountSequenceLedgerGap', function() {
+      let tx = makeBuilder()
+        .setTimeout(5)
+        .setMinAccountSequenceLedgerGap(5)
+        .build();
+      expect(tx.minAccountSequenceLedgerGap).to.equal(5);
+
+      const val = tx
+        .toEnvelope()
+        .v1()
+        .tx()
+        .cond()
+        .v2()
+        .minSeqLedgerGap();
+      expect(val.toString()).to.equal('5');
+    });
+
+    it('extraSigners', function() {
+      let tx = makeBuilder()
+        .setTimeout(5)
+        .setExtraSigners([address])
+        .build();
+      expect(tx.extraSigners).to.have.lengthOf(1);
+      expect(
+        tx.extraSigners.map(DigitalBitsBase.SignerKey.encodeSignerKey)
+      ).to.eql([address]);
+
+      const signers = tx
+        .toEnvelope()
+        .v1()
+        .tx()
+        .cond()
+        .v2()
+        .extraSigners();
+      expect(signers).to.have.lengthOf(1);
+      expect(signers[0]).to.eql(DigitalBitsBase.SignerKey.decodeAddress(address));
     });
   });
 });
