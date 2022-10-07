@@ -1,6 +1,6 @@
 {
   "name": "@digitalbits-blockchain/xdb-digitalbits-base",
-  "version": "8.1.0-beta.1",
+  "version": "8.1.0-beta.2",
   "description": "Low level digitalbits support library",
   "main": "./lib/index.js",
   "types": "./types/index.d.ts",
