@@ -33,7 +33,7 @@ var account=new DigitalBitsBase.Account("GD6WU64OEP5C4LRBH6NK3MHYIA2ADN6K6II6EXP
 
 var transaction = new DigitalBitsBase.TransactionBuilder(account, {
         fee: DigitalBitsBase.BASE_FEE,
-        networkPassphrase: Networks.TESTNET
+        networkPassphrase: DigitalBitsBase.Networks.TESTNET
     })
         // add a payment operation to the transaction
         .addOperation(DigitalBitsBase.Operation.payment({
@@ -83,7 +83,7 @@ var memo = Memo.text('Happy birthday!');
 var transaction = new DigitalBitsBase.TransactionBuilder(account, {
     memo: memo,
     fee: DigitalBitsBase.BASE_FEE,
-    networkPassphrase: Networks.TESTNET
+    networkPassphrase: DigitalBitsBase.Networks.TESTNET
 })
         .addOperation(DigitalBitsBase.Operation.payment({
                 destination: "GASOCNHNNLYFNMDJYQ3XFMI7BYHIOCFW3GJEOWRPEGK2TDPGTG2E5EDW",
@@ -151,7 +151,7 @@ var account=new DigitalBitsBase.Account("GD6WU64OEP5C4LRBH6NK3MHYIA2ADN6K6II6EXP
 
 var transaction = new DigitalBitsBase.TransactionBuilder(account, {
     fee: DigitalBitsBase.BASE_FEE,
-    networkPassphrase: Networks.TESTNET
+    networkPassphrase: DigitalBitsBase.Networks.TESTNET
 })
         .addOperation(DigitalBitsBase.Operation.payment({
                 destination: "GASOCNHNNLYFNMDJYQ3XFMI7BYHIOCFW3GJEOWRPEGK2TDPGTG2E5EDW",
