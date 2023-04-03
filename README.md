@@ -54,7 +54,7 @@ yarn add digitalbits-base
 2. require/import it in your JavaScript:
 
 ```js
-var DigitalBitsBase = require('xdb-digitalbits-base');
+var DigitalBitsBase = require('@digitalbits-blockchain/xdb-digitalbits-base');
 ```
 
 ### To self host for use in the browser
