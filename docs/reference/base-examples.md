@@ -27,7 +27,7 @@ server.accounts()
     const account = new DigitalBitsSdk.Account(source.publicKey(), sequence)
     const transaction = new DigitalBitsSdk.TransactionBuilder(account, {
       fee: DigitalBitsSdk.BASE_FEE,
-      networkPassphrase: Networks.TESTNET
+      networkPassphrase: DigitalBitsSdk.Networks.TESTNET
     })
       .addOperation(DigitalBitsSdk.Operation.createAccount({
         destination: destination.publicKey(),
@@ -84,7 +84,7 @@ var keypair = DigitalBitsSdk.Keypair.fromSecret(secretString);
 var source = new DigitalBitsSdk.Account(keypair.publicKey(), "46316927324160");
 var transaction = new DigitalBitsSdk.TransactionBuilder(source, {
     fee: DigitalBitsSdk.BASE_FEE,
-    networkPassphrase: Networks.TESTNET
+    networkPassphrase: DigitalBitsSdk.Networks.TESTNET
   })
   .addOperation(DigitalBitsSdk.Operation.pathPayment({
       sendAsset: DigitalBitsSdk.Asset.native(),
@@ -133,7 +133,7 @@ var secondaryAddress = "GC6HHHS7SH7KNUAOBKVGT2QZIQLRB5UA7QAGLA3IROWPH4TN65UKNJPK
 
 var transaction = new DigitalBitsSdk.TransactionBuilder(account, {
     fee: DigitalBitsSdk.BASE_FEE,
-    networkPassphrase: Networks.TESTNET
+    networkPassphrase: DigitalBitsSdk.Networks.TESTNET
   })
   .addOperation(DigitalBitsSdk.Operation.setOptions({
     signer: {
@@ -156,7 +156,7 @@ transaction.sign(rootKeypair); // only need to sign with the root signer as the 
 
 var transaction = new DigitalBitsSdk.TransactionBuilder(account, {
       fee: DigitalBitsSdk.BASE_FEE,
-      networkPassphrase: Networks.TESTNET
+      networkPassphrase: DigitalBitsSdk.Networks.TESTNET
     })
     .addOperation(DigitalBitsSdk.Operation.payment({
         destination: "GBTVUCDT5CNSXIHJTDHYSZG3YJFXBAJ6FM4CKS5GKSAWJOLZW6XX7NVC",
