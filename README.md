@@ -42,6 +42,67 @@ Then require/import it in your JavaScript:
 ```js
 var DigitalBitsBase = require('xdb-digitalbits-base');
 ```
+### Updating XDR definitions
+
+1. Make sure you have [Ruby](https://www.ruby-lang.org) installed 3.1.0 version. You can either use a global installation, or use a version manager.
+  - https://www.ruby-lang.org/en/downloads/
+  - https://github.com/rbenv/rbenv
+
+2. Make sure you have [Bundler](https://bundler.io/) installed.
+
+3. Install all Bundler's depedencies
+```shell
+bundle install
+```
+
+4. Install all nvm's depedencies
+```shell
+yarn
+```
+
+5. Copy xdr files from [DigitalBits/xdr](https://github.com/xdbfoundation/DigitalBits/tree/master/src/xdr) to ./xdr.
+
+6. Run
+```shell
+yarn xdr
+```
+from xdb-digitalbits-base folder
+
+7. If src/generated/digitalbits-xdr_generated.js changed, then:
+Transform the newly-generated JS into TypeScript using [dts-xdr](https://github.com/stellar/dts-xdr):
+Clone dts-xdr into root folder and setup
+```shell
+git clone https://github.com/stellar/dts-xdr.git
+cd dts-xdr
+yarn install
+```
+then generate new TypeScript types:
+```shell
+OUT=digitalbits-xdr_generated.d.ts npx jscodeshift -t src/transform.js ../src/generated/digitalbits-xdr_generated.js
+cp digitalbits-xdr_generated.d.ts ../types/xdr.d.ts
+cd ../
+yarn run prettier --write types/xdr.d.ts
+```
+then at types/xdr.d.ts leave necessary only changes  
+
+In short here are the steps one by one:
+```shell
+git clone https://github.com/xdbfoundation/xdb-digitalbits-base
+cd xdb-digitalbits-base
+bundle install
+yarn
+# If src/generated/stellar-xdr_generated.js changed, then:
+git clone https://github.com/stellar/dts-xdr.git
+cd dts-xdr
+yarn install
+OUT=digitalbits-xdr_generated.d.ts npx jscodeshift -t src/transform.js ../src/generated/digitalbits-xdr_generated.js
+cp digitalbits-xdr_generated.d.ts ../types/xdr.d.ts
+cd ../
+yarn run prettier --write types/xdr.d.ts
+# then at types/xdr.d.ts leave necessary only changes
+yarn gulp
+```
+
 ## Usage
 
 For information on how to use xdb-digitalbits-base, take a look at the docs in the

@@ -2968,6 +2968,7 @@ export namespace xdr {
       overlayVersion: number;
       overlayMinVersion: number;
       networkId: Buffer;
+      feePoolPublicKey: PublicKey;
       versionStr: string | Buffer;
       listeningPort: number;
       peerId: NodeId;
@@ -2982,6 +2983,8 @@ export namespace xdr {
     overlayMinVersion(value?: number): number;
 
     networkId(value?: Buffer): Buffer;
+
+    feePoolPublicKey(value?: PublicKey): PublicKey;
 
     versionStr(value?: string | Buffer): string | Buffer;
 

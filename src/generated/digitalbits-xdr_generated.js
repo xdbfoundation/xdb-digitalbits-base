@@ -2092,6 +2092,7 @@ xdr.struct("AuthCert", [
 //       uint32 overlayVersion;
 //       uint32 overlayMinVersion;
 //       Hash networkID;
+//       PublicKey feePoolPublicKey;
 //       string versionStr<100>;
 //       int listeningPort;
 //       NodeID peerID;
@@ -2105,6 +2106,7 @@ xdr.struct("Hello", [
   ["overlayVersion", xdr.lookup("Uint32")],
   ["overlayMinVersion", xdr.lookup("Uint32")],
   ["networkId", xdr.lookup("Hash")],
+  ["feePoolPublicKey", xdr.lookup("PublicKey")],
   ["versionStr", xdr.string(100)],
   ["listeningPort", xdr.int()],
   ["peerId", xdr.lookup("NodeId")],
