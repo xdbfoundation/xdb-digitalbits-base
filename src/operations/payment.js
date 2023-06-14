@@ -6,7 +6,7 @@ import { decodeAddressToMuxedAccount } from '../util/decode_encode_muxed_account
  *
  * @function
  * @alias Operation.payment
- * @see https://developers.digitalbits.io/docs/start/list-of-operations/#payment
+ * @see https://developers.digitalbits.io/guides/concepts/list-of-operations.html#payment
  *
  * @param {object}  opts - Options object
  * @param {string}  opts.destination  - destination account ID

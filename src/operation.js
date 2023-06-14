@@ -29,7 +29,7 @@ const MAX_INT64 = '9223372036854775807';
  * account’s credit.
  *
  * @constant
- * @see [Account flags](https://developers.digitalbits.io/docs/glossary/accounts/#flags)
+ * @see [Account flags](https://developers.digitalbits.io/guides/concepts/accounts.html#flags)
  */
 export const AuthRequiredFlag = 1 << 0;
 /**
@@ -37,7 +37,7 @@ export const AuthRequiredFlag = 1 << 0;
  * account to revoke its credit held by other accounts.
  *
  * @constant
- * @see [Account flags](https://developers.digitalbits.io/docs/glossary/accounts/#flags)
+ * @see [Account flags](https://developers.digitalbits.io/guides/concepts/accounts.html#flags)
  */
 export const AuthRevocableFlag = 1 << 1;
 /**
@@ -45,7 +45,7 @@ export const AuthRevocableFlag = 1 << 1;
  * authorization flags can be set and the account can never be deleted.
  *
  * @constant
- * @see [Account flags](https://developers.digitalbits.io/docs/glossary/accounts/#flags)
+ * @see [Account flags](https://developers.digitalbits.io/guides/concepts/accounts.html#flags)
  */
 export const AuthImmutableFlag = 1 << 2;
 
@@ -55,12 +55,12 @@ export const AuthImmutableFlag = 1 << 2;
  * corresponding asset.
  *
  * @constant
- * @see [Account flags](https://developers.digitalbits.io/docs/glossary/accounts/#flags)
+ * @see [Account flags](https://developers.digitalbits.io/guides/concepts/accounts.html#flags)
  */
 export const AuthClawbackEnabledFlag = 1 << 3;
 
 /**
- * `Operation` class represents [operations](https://developers.digitalbits.io/docs/glossary/operations/) in DigitalBits network.
+ * `Operation` class represents [operations](https://developers.digitalbits.io/guides/concepts/operations.html) in DigitalBits network.
  * Use one of static methods to create operations:
  * * `{@link Operation.createAccount}`
  * * `{@link Operation.payment}`

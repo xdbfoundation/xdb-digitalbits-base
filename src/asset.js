@@ -139,7 +139,7 @@ export class Asset {
   }
 
   /**
-   * @see [Assets concept](https://developers.digitalbits.io/docs/glossary/assets/)
+   * @see [Assets concept](https://developers.digitalbits.io/guides/concepts/assets.html)
    * @returns {string} Asset type. Can be one of following types:
    *
    *  - `native`,

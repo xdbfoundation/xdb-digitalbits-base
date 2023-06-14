@@ -9,7 +9,7 @@ import { StrKey } from './strkey';
  * `Account` represents a single account in the DigitalBits network and its sequence
  * number. Account tracks the sequence number as it is used by {@link
  * TransactionBuilder}. See
- * [Accounts](https://developers.digitalbits.io/docs/glossary/accounts/) for
+ * [Accounts](https://developers.digitalbits.io/guides/concepts/accounts.html) for
  * more information about how accounts work in DigitalBits.
  *
  * @constructor

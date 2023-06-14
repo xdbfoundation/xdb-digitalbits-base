@@ -45,7 +45,7 @@ import {
  * @param {string}    id      - a stringified uint64 value that represents the
  *                              ID of the muxed account
  *
- * @link https://developers.digitalbits.io/docs/glossary/muxed-accounts/
+ * @link https://developers.digitalbits.io/guides/concepts/muxed-accounts.html
  */
 export class MuxedAccount {
   constructor(baseAccount, id) {

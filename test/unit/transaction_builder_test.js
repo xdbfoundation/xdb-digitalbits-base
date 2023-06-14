@@ -751,7 +751,7 @@ describe('TransactionBuilder', function() {
       expect(clawbackOp.from).to.equal(destination);
     });
 
-    it('does not regress js-digitalbits-sdk#646', function() {
+    it('does not regress @digitalbits-blockchain/xdb-digitalbits-sdk#646', function() {
       expect(() => {
         DigitalBitsBase.TransactionBuilder.fromXDR(
           'AAAAAgAAAABg/GhKJU5ut52ih6Klx0ymGvsac1FPJig1CHYqyesIHQAAJxACBmMCAAAADgAAAAAAAAABAAAAATMAAAAAAAABAAAAAQAAAABg/GhKJU5ut52ih6Klx0ymGvsac1FPJig1CHYqyesIHQAAAAAAAAAAqdkSiA5dzNXstOtkPkHd6dAMPMA+MSXwK8OlrAGCKasAAAAAAcnDgAAAAAAAAAAByesIHQAAAEAuLrTfW6D+HYlUD9y+JolF1qrb40hIRATzsQaQjchKJuhOZJjLO0d7oaTD3JZ4UL4vVKtV7TvV17rQgCQnuz8F',

@@ -11,7 +11,7 @@ import { decodeAddressToMuxedAccount } from '../util/decode_encode_muxed_account
  *
  * @function
  * @alias Operation.pathPaymentStrictSend
- * @see https://developers.digitalbits.io/docs/start/list-of-operations/#path-payment-strict-send
+ * @see https://developers.digitalbits.io/frontier/reference/endpoints/path-finding-strict-send.html
  *
  * @param {object}  opts - Options object
  * @param {Asset}   opts.sendAsset    - asset to pay with

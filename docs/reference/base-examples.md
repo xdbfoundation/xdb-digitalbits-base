@@ -76,7 +76,7 @@ In the example below we're sending 1000 XDB (at max) from `GABJLI6IVBKJ7HIC5NN7H
 * `USD` issued by `GBBM6BKZPEHWYO3E3YKREDPQXMS4VK35YLNU7NFBRI26RAN7GI5POFBB`,
 * `EUR` issued by `GDTNXRLOJD2YEBPKK7KCMR7J33AAG5VZXHAJTHIG736D6LVEFLLLKPDL`.
 
-The [path payment](https://developers.digitalbits.io/docs/start/list-of-operations/#path-payment-strict-receive) will cause the destination address to get 5.5 GBP. It will cost the sender no more than 1000 XDB. In this example there will be 3 exchanges, XDB -> USD, USD-> EUR, EUR->GBP.
+The [path payment](https://developers.digitalbits.io/frontier/reference/endpoints/path-finding-strict-receive.html) will cause the destination address to get 5.5 GBP. It will cost the sender no more than 1000 XDB. In this example there will be 3 exchanges, XDB -> USD, USD-> EUR, EUR->GBP.
 
 ```js
 var keypair = DigitalBitsSdk.Keypair.fromSecret(secretString);
@@ -105,7 +105,7 @@ transaction.sign(keypair);
 
 ## Multi-signature account
 
-[Multi-signature accounts](https://developers.digitalbits.io/docs/glossary/multisig/) can be used to require that transactions require multiple public keys to sign before they are considered valid.
+[Multi-signature accounts](https://developers.digitalbits.io/guides/concepts/multi-sig.html) can be used to require that transactions require multiple public keys to sign before they are considered valid.
 This is done by first configuring your account's "threshold" levels. Each operation has a threshold level of either low, medium,
 or high. You give each threshold level a number between 1-255 in your account. Then, for each key in your account, you
 assign it a weight (1-255, setting a 0 weight deletes the key). Any transaction must be signed with enough keys to meet the threshold.

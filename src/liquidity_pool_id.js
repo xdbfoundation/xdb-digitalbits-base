@@ -57,7 +57,7 @@ export class LiquidityPoolId {
   }
 
   /**
-   * @see [Assets concept](https://developers.digitalbits.io/docs/glossary/assets/)
+   * @see [Assets concept](https://developers.digitalbits.io/guides/concepts/assets.html)
    * @returns {AssetType.liquidityPoolShares} asset type. Can only be `liquidity_pool_shares`.
    */
   getAssetType() {

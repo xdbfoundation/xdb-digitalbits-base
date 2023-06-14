@@ -20,14 +20,14 @@ import { decodeAddressToMuxedAccount } from './util/decode_encode_muxed_account'
  * fee on the network.
  *
  * @constant
- * @see [Fees](https://developers.digitalbits.io/docs/glossary/fees/)
+ * @see [Fees](https://developers.digitalbits.io/guides/concepts/fees.html)
  */
 export const BASE_FEE = '100'; // Stroops
 
 /**
  * @constant
  * @see {@link TransactionBuilder#setTimeout}
- * @see [Timeout](https://developers.digitalbits.io/api/resources/transactions/post/)
+ * @see [Timeout](https://developers.digitalbits.io/frontier/reference/endpoints/transactions-create.html)
  */
 export const TimeoutInfinite = 0;
 
@@ -48,12 +48,12 @@ export const TimeoutInfinite = 0;
  * source account.</p>
  *
  * <p><strong>Be careful about unsubmitted transactions!</strong> When you build
- * a transaction, digitalbits-sdk automatically increments the source account's
+ * a transaction, @digitalbits-blockchain/xdb-digitalbits-sdk automatically increments the source account's
  * sequence number. If you end up not submitting this transaction and submitting
  * another one instead, it'll fail due to the sequence number being wrong. So if
  * you decide not to use a built transaction, make sure to update the source
  * account's sequence number with
- * [Server.loadAccount](https://digitalbits.github.io/js-digitalbits-sdk/Server.html#loadAccount)
+ * [Server.loadAccount](https://xdbfoundation.github.io/xdb-digitalbits-sdk/Server.html#loadAccount)
  * before creating another transaction.</p>
  *
  * <p>The following code example creates a new transaction with {@link
@@ -187,7 +187,6 @@ export class TransactionBuilder {
    * @returns {TransactionBuilder}
    *
    * @see {@link TimeoutInfinite}
-   * @see https://developers.digitalbits.io/docs/tutorials/handling-errors/
    */
   setTimeout(timeoutSeconds) {
     if (this.timebounds !== null && this.timebounds.maxTime > 0) {
@@ -562,7 +561,7 @@ export class TransactionBuilder {
    *       rather than a keypair or string.
    *
    * @note Your fee-bump amount should be >= 10x the original fee.
-   * @see  https://developers.digitalbits.io/docs/glossary/fee-bumps/#replace-by-fee
+   * @see  https://developers.digitalbits.io/guides/concepts/fees.html
    *
    * @returns {FeeBumpTransaction}
    */
