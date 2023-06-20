@@ -27,7 +27,7 @@ import {
  * @param {string|xdr.TransactionEnvelope} envelope - transaction envelope
  *     object or base64 encoded string
  * @param {string}  [networkPassphrase] - passphrase of the target digitalbits
- *     network (e.g. "Public Global DigitalBits Network ; September 2015")
+ *     network (e.g. "LiveNet Global DigitalBits Network ; February 2021")
  *
  * @extends TransactionBase
  */

@@ -1,4 +1,4 @@
-XDR_BASE_URL_CURR=https://github.com/xdbfoundation/digitalbits-core/raw/master/src/protocol-curr/xdr
+XDR_BASE_URL_CURR=https://github.com/xdbfoundation/DigitalBits/raw/master/src/protocol-curr/xdr
 XDR_BASE_LOCAL_CURR=xdr/curr
 XDR_FILES_CURR= \
 	DigitalBits-SCP.x \

@@ -3,7 +3,7 @@ const { ENGINE_METHOD_PKEY_METHS } = require('constants');
 describe('StrKey', function() {
   beforeEach(function() {
     var keypair = DigitalBitsBase.Keypair.master(
-      'Test SDF Network ; September 2015'
+      'TestNet Global DigitalBits Network ; December 2020'
     );
     this.unencodedBuffer = keypair.rawPublicKey();
     this.unencoded = this.unencodedBuffer.toString();
@@ -121,13 +121,17 @@ describe('StrKey', function() {
 
       var strkeyEncoded;
 
-      strkeyEncoded = DigitalBitsBase.StrKey.encodePreAuthTx(this.unencodedBuffer);
+      strkeyEncoded = DigitalBitsBase.StrKey.encodePreAuthTx(
+        this.unencodedBuffer
+      );
       expect(strkeyEncoded).to.match(/^T/);
       expect(DigitalBitsBase.StrKey.decodePreAuthTx(strkeyEncoded)).to.eql(
         this.unencodedBuffer
       );
 
-      strkeyEncoded = DigitalBitsBase.StrKey.encodeSha256Hash(this.unencodedBuffer);
+      strkeyEncoded = DigitalBitsBase.StrKey.encodeSha256Hash(
+        this.unencodedBuffer
+      );
       expect(strkeyEncoded).to.match(/^X/);
       expect(DigitalBitsBase.StrKey.decodeSha256Hash(strkeyEncoded)).to.eql(
         this.unencodedBuffer
@@ -144,12 +148,12 @@ describe('StrKey', function() {
     });
 
     it('throws an error when the data is null', function() {
-      expect(() => DigitalBitsBase.StrKey.encodeEd25519SecretSeed(null)).to.throw(
-        /null data/
-      );
-      expect(() => DigitalBitsBase.StrKey.encodeEd25519PublicKey(null)).to.throw(
-        /null data/
-      );
+      expect(() =>
+        DigitalBitsBase.StrKey.encodeEd25519SecretSeed(null)
+      ).to.throw(/null data/);
+      expect(() =>
+        DigitalBitsBase.StrKey.encodeEd25519PublicKey(null)
+      ).to.throw(/null data/);
     });
   });
 
@@ -169,7 +173,8 @@ describe('StrKey', function() {
       ];
 
       for (var i in keys) {
-        expect(DigitalBitsBase.StrKey.isValidEd25519PublicKey(keys[i])).to.be.true;
+        expect(DigitalBitsBase.StrKey.isValidEd25519PublicKey(keys[i])).to.be
+          .true;
       }
     });
 
@@ -189,7 +194,8 @@ describe('StrKey', function() {
       ];
 
       for (var i in keys) {
-        expect(DigitalBitsBase.StrKey.isValidEd25519PublicKey(keys[i])).to.be.false;
+        expect(DigitalBitsBase.StrKey.isValidEd25519PublicKey(keys[i])).to.be
+          .false;
       }
     });
   });
@@ -206,7 +212,8 @@ describe('StrKey', function() {
       ];
 
       for (var i in keys) {
-        expect(DigitalBitsBase.StrKey.isValidEd25519SecretSeed(keys[i])).to.be.true;
+        expect(DigitalBitsBase.StrKey.isValidEd25519SecretSeed(keys[i])).to.be
+          .true;
       }
     });
 
@@ -237,11 +244,13 @@ describe('StrKey', function() {
 
   describe('#muxedAccounts', function() {
     it('encodes & decodes M... addresses correctly', function() {
-      expect(DigitalBitsBase.StrKey.encodeMed25519PublicKey(RAW_MPUBKEY)).to.equal(
-        MPUBKEY
-      );
       expect(
-        DigitalBitsBase.StrKey.decodeMed25519PublicKey(MPUBKEY).equals(RAW_MPUBKEY)
+        DigitalBitsBase.StrKey.encodeMed25519PublicKey(RAW_MPUBKEY)
+      ).to.equal(MPUBKEY);
+      expect(
+        DigitalBitsBase.StrKey.decodeMed25519PublicKey(MPUBKEY).equals(
+          RAW_MPUBKEY
+        )
       ).to.be.true;
     });
 
@@ -257,7 +266,9 @@ describe('StrKey', function() {
           .ed25519()
           .equals(DigitalBitsBase.StrKey.decodeEd25519PublicKey(PUBKEY))
       ).to.be.true;
-      expect(DigitalBitsBase.encodeMuxedAccountToAddress(unmuxed)).to.equal(PUBKEY);
+      expect(DigitalBitsBase.encodeMuxedAccountToAddress(unmuxed)).to.equal(
+        PUBKEY
+      );
     });
 
     it('decodes underlying G... address correctly', function() {
@@ -304,7 +315,9 @@ describe('StrKey', function() {
 
     CASES.forEach((testCase) => {
       it(`encodes & decodes muxed key w/ ID=${testCase.id}`, function() {
-        const muxed = DigitalBitsBase.decodeAddressToMuxedAccount(testCase.strkey);
+        const muxed = DigitalBitsBase.decodeAddressToMuxedAccount(
+          testCase.strkey
+        );
         expect(DigitalBitsBase.xdr.MuxedAccount.isValid(muxed)).to.be.true;
         expect(muxed.switch()).to.equal(
           DigitalBitsBase.xdr.CryptoKeyType.keyTypeMuxedEd25519()
@@ -342,13 +355,17 @@ describe('StrKey', function() {
 
     HAPPY_PATHS.forEach((testCase) => {
       it(testCase.desc, function() {
-        const spBuf = DigitalBitsBase.StrKey.decodeSignedPayload(testCase.strkey);
+        const spBuf = DigitalBitsBase.StrKey.decodeSignedPayload(
+          testCase.strkey
+        );
         const sp = DigitalBitsBase.xdr.SignerKeyEd25519SignedPayload.fromXDR(
           spBuf,
           'raw'
         );
 
-        const signer = DigitalBitsBase.StrKey.encodeEd25519PublicKey(sp.ed25519());
+        const signer = DigitalBitsBase.StrKey.encodeEd25519PublicKey(
+          sp.ed25519()
+        );
         expect(signer).to.equal(testCase.ed25519);
 
         const payload = sp.payload().toString('hex');
@@ -442,7 +459,9 @@ describe('StrKey', function() {
     BAD_STRKEYS.forEach((address) => {
       it(`fails in expected case ${address}`, function() {
         const vb = DigitalBitsBase.StrKey.getVersionByteForPrefix(address);
-        expect(() => DigitalBitsBase.StrKey.decodeCheck(vb, address)).to.throw();
+        expect(() =>
+          DigitalBitsBase.StrKey.decodeCheck(vb, address)
+        ).to.throw();
       });
     });
   });

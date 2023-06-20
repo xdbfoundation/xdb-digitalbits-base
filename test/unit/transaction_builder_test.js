@@ -56,7 +56,7 @@ describe('TransactionBuilder', function() {
       done();
     });
 
-    it('should have 100 stroops fee', function(done) {
+    it('should have 100 nibbs fee', function(done) {
       expect(transaction.fee).to.be.equal('100');
       done();
     });
@@ -126,7 +126,7 @@ describe('TransactionBuilder', function() {
       done();
     });
 
-    it('should have 200 stroops fee', function(done) {
+    it('should have 200 nibbs fee', function(done) {
       expect(transaction.fee).to.be.equal('200');
       done();
     });
@@ -174,7 +174,7 @@ describe('TransactionBuilder', function() {
         .build();
     });
 
-    it('should have 2000 stroops fee', function(done) {
+    it('should have 2000 nibbs fee', function(done) {
       expect(transaction.fee).to.be.equal('2000');
       done();
     });
@@ -518,7 +518,9 @@ describe('TransactionBuilder', function() {
         networkPassphrase
       );
 
-      expect(transaction).to.be.an.instanceof(DigitalBitsBase.FeeBumpTransaction);
+      expect(transaction).to.be.an.instanceof(
+        DigitalBitsBase.FeeBumpTransaction
+      );
 
       // The fee rate for fee bump is at least the fee rate of the inner transaction
       expect(() => {
@@ -528,7 +530,7 @@ describe('TransactionBuilder', function() {
           innerTx,
           networkPassphrase
         );
-      }).to.throw(/Invalid baseFee, it should be at least 200 stroops./);
+      }).to.throw(/Invalid baseFee, it should be at least 200 nibbs./);
 
       innerTx = new DigitalBitsBase.TransactionBuilder(innerAccount, {
         fee: '80',
@@ -556,7 +558,7 @@ describe('TransactionBuilder', function() {
           innerTx,
           networkPassphrase
         );
-      }).to.throw(/Invalid baseFee, it should be at least 100 stroops./);
+      }).to.throw(/Invalid baseFee, it should be at least 100 nibbs./);
 
       innerTx = new DigitalBitsBase.TransactionBuilder(innerAccount, {
         fee: '100',
@@ -575,7 +577,9 @@ describe('TransactionBuilder', function() {
         )
         .build();
 
-      const signer = DigitalBitsBase.Keypair.master(DigitalBitsBase.Networks.TESTNET);
+      const signer = DigitalBitsBase.Keypair.master(
+        DigitalBitsBase.Networks.TESTNET
+      );
       innerTx.sign(signer);
 
       const feeBumpTx = DigitalBitsBase.TransactionBuilder.buildFeeBumpTransaction(
@@ -682,7 +686,9 @@ describe('TransactionBuilder', function() {
     );
     const MUXED_SRC_ID = DigitalBitsBase.xdr.Uint64.fromString(source.id());
     const networkPassphrase = 'Standalone Network ; February 2017';
-    const signer = DigitalBitsBase.Keypair.master(DigitalBitsBase.Networks.TESTNET);
+    const signer = DigitalBitsBase.Keypair.master(
+      DigitalBitsBase.Networks.TESTNET
+    );
 
     it('works with muxed accounts by default', function() {
       const operations = [
@@ -755,20 +761,26 @@ describe('TransactionBuilder', function() {
       expect(() => {
         DigitalBitsBase.TransactionBuilder.fromXDR(
           'AAAAAgAAAABg/GhKJU5ut52ih6Klx0ymGvsac1FPJig1CHYqyesIHQAAJxACBmMCAAAADgAAAAAAAAABAAAAATMAAAAAAAABAAAAAQAAAABg/GhKJU5ut52ih6Klx0ymGvsac1FPJig1CHYqyesIHQAAAAAAAAAAqdkSiA5dzNXstOtkPkHd6dAMPMA+MSXwK8OlrAGCKasAAAAAAcnDgAAAAAAAAAAByesIHQAAAEAuLrTfW6D+HYlUD9y+JolF1qrb40hIRATzsQaQjchKJuhOZJjLO0d7oaTD3JZ4UL4vVKtV7TvV17rQgCQnuz8F',
-          'Public Global DigitalBits Network ; September 2015'
+          'LiveNet Global DigitalBits Network ; February 2021'
         );
       }).to.not.throw();
     });
 
     it('works with fee-bump transactions', function() {
       // We create a non-muxed transaction, then fee-bump with a muxed source.
-      let builder = new DigitalBitsBase.TransactionBuilder(source.baseAccount(), {
-        fee: '100',
-        timebounds: { minTime: 0, maxTime: 0 },
-        networkPassphrase: networkPassphrase
-      });
+      let builder = new DigitalBitsBase.TransactionBuilder(
+        source.baseAccount(),
+        {
+          fee: '100',
+          timebounds: { minTime: 0, maxTime: 0 },
+          networkPassphrase: networkPassphrase
+        }
+      );
 
-      const muxed = new DigitalBitsBase.MuxedAccount.fromAddress(destination, '0');
+      const muxed = new DigitalBitsBase.MuxedAccount.fromAddress(
+        destination,
+        '0'
+      );
       const gAddress = muxed.baseAccount().accountId();
       builder.addOperation(
         DigitalBitsBase.Operation.payment({

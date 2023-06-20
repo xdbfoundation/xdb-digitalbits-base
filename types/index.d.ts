@@ -218,8 +218,8 @@ export class Memo<T extends MemoType = MemoType> {
 }
 
 export enum Networks {
-  PUBLIC = 'Public Global DigitalBits Network ; September 2015',
-  TESTNET = 'Test SDF Network ; September 2015'
+  PUBLIC = 'LiveNet Global DigitalBits Network ; February 2021',
+  TESTNET = 'TestNet Global DigitalBits Network ; December 2020'
 }
 
 export const AuthRequiredFlag: 1;

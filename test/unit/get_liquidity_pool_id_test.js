@@ -29,7 +29,9 @@ describe('DigitalBitsBase#getLiquidityPoolId()', function() {
     ).to.throw(/assetA is invalid/);
 
     expect(() =>
-      DigitalBitsBase.getLiquidityPoolId('constant_product', { assetA: 'random' })
+      DigitalBitsBase.getLiquidityPoolId('constant_product', {
+        assetA: 'random'
+      })
     ).to.throw(/assetA is invalid/);
   });
 
@@ -81,7 +83,7 @@ describe('DigitalBitsBase#getLiquidityPoolId()', function() {
 });
 
 describe('DigitalBitsBase#getLiquidityPoolId() mirror digitalbits-core getPoolID() tests', function() {
-  // The tests below were copied from https://github.com/xdbfoundation/digitalbits-core/blob/c5f6349b240818f716617ca6e0f08d295a6fad9a/src/transactions/test/LiquidityPoolTradeTests.cpp#L430-L526
+  // The tests below were copied from https://github.com/xdbfoundation/DigitalBits/blob/c5f6349b240818f716617ca6e0f08d295a6fad9a/src/transactions/test/LiquidityPoolTradeTests.cpp#L430-L526
   const issuer1 = DigitalBitsBase.StrKey.encodeEd25519PublicKey(
     Buffer.from(
       '0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef',

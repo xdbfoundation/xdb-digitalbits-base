@@ -8,7 +8,7 @@ export const LiquidityPoolFeeV18 = 30;
 /**
  * getLiquidityPoolId computes the Pool ID for the given assets, fee and pool type.
  *
- * @see [digitalbits-core getPoolID](https://github.com/xdbfoundation/digitalbits-core/blob/9f3a48c6a8f1aa77b6043a055d0638661f718080/src/ledger/test/LedgerTxnTests.cpp#L3746-L3751)
+ * @see [digitalbits-core getPoolID](https://github.com/xdbfoundation/DigitalBits/blob/9f3a48c6a8f1aa77b6043a055d0638661f718080/src/ledger/test/LedgerTxnTests.cpp#L3746-L3751)
  *
  * @export
  * @param {string} liquidityPoolType – A string representing the liquidity pool type.

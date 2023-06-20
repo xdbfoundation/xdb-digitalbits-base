@@ -84,7 +84,7 @@ export class Keypair {
 
   /**
    * Returns `Keypair` object representing network master key.
-   * @param {string} networkPassphrase passphrase of the target digitalbits network (e.g. "Public Global DigitalBits Network ; September 2015").
+   * @param {string} networkPassphrase passphrase of the target digitalbits network (e.g. "LiveNet Global DigitalBits Network ; February 2021").
    * @returns {Keypair}
    */
   static master(networkPassphrase) {

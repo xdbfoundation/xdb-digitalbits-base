@@ -2,7 +2,7 @@
 
 The @digitalbits-blockchain/xdb-digitalbits-base library is the lowest-level digitalbits helper library. It consists
 of classes to read, write, hash, and sign the xdr structures that are used in
-[digitalbits-core](https://github.com/xdbfoundation/digitalbits-core). This is an
+[digitalbits-core](https://github.com/xdbfoundation/DigitalBits). This is an
 implementation in JavaScript that can be used on either Node.js or web browsers.
 
 - **[API Reference](https://xdbfoundation.github.io/xdb-digitalbits-base/)**

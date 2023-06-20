@@ -719,7 +719,7 @@ xdr.union("AccountEntryExt", {
 //   struct AccountEntry
 //   {
 //       AccountID accountID;      // master public key for this account
-//       int64 balance;            // in stroops
+//       int64 balance;            // in nibbs
 //       SequenceNumber seqNum;    // last sequence number used for this account
 //       uint32 numSubEntries;     // number of sub-entries this account has
 //                                 // drives the reserve
@@ -2161,16 +2161,16 @@ xdr.union("LedgerHeaderExt", {
 //   
 //       uint32 ledgerSeq; // sequence number of this ledger
 //   
-//       int64 totalCoins; // total number of stroops in existence.
-//                         // 10,000,000 stroops in 1 XDB
+//       int64 totalCoins; // total number of nibbs in existence.
+//                         // 10,000,000 nibbs in 1 XDB
 //   
 //       int64 feePool;       // fees burned since last inflation run
 //       uint32 inflationSeq; // inflation sequence number
 //   
 //       uint64 idPool; // last used global ID, used for generating objects
 //   
-//       uint32 baseFee;     // base fee per operation in stroops
-//       uint32 baseReserve; // account base reserve in stroops
+//       uint32 baseFee;     // base fee per operation in nibbs
+//       uint32 baseReserve; // account base reserve in nibbs
 //   
 //       uint32 maxTxSetSize; // maximum size a transaction set can be
 //   
