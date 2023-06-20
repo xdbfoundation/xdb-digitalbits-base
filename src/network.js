@@ -6,5 +6,6 @@
  */
 export const Networks = {
   PUBLIC: 'LiveNet Global DigitalBits Network ; February 2021',
-  TESTNET: 'TestNet Global DigitalBits Network ; December 2020'
+  TESTNET: 'TestNet Global DigitalBits Network ; December 2020',
+  DEVNET: 'LiveNet Global DigitalBits Network ; February 2021'
 };

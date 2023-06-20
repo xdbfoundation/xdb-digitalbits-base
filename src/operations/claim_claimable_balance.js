@@ -1,4 +1,4 @@
-import xdr from '../generated/digitalbits-xdr_generated';
+import xdr from '../xdr';
 
 /**
  * Create a new claim claimable balance operation.

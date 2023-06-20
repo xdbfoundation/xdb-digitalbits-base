@@ -28,7 +28,7 @@ describe('muxed account abstraction works', function() {
     ).to.be.true;
     expect(innerMux.id()).to.eql(DigitalBitsBase.xdr.Uint64.fromString('420'));
 
-    expect(DigitalBitsBase.encodeMuxedAccountToAddress(muxXdr, true)).to.equal(
+    expect(DigitalBitsBase.encodeMuxedAccountToAddress(muxXdr)).to.equal(
       mux.accountId()
     );
   });
@@ -61,11 +61,11 @@ describe('muxed account abstraction works', function() {
     expect(mux2.sequenceNumber()).to.equal('12348');
   });
 
-  it('lets subaccounts be created', function() {
+  it('lets virtual accounts be created', function() {
     let baseAccount = new DigitalBitsBase.Account(PUBKEY, '12345');
     const mux1 = new DigitalBitsBase.MuxedAccount(baseAccount, '1');
 
-    const mux2 = mux1.baseAccount().createSubaccount('420');
+    const mux2 = new DigitalBitsBase.MuxedAccount(mux1.baseAccount(), '420');
     expect(mux2.id()).to.equal('420');
     expect(mux2.accountId()).to.equal(MPUBKEY_ID);
     expect(mux2.sequenceNumber()).to.equal('12345');

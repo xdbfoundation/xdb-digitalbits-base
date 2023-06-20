@@ -15,10 +15,17 @@ const transaction = new DigitalBitsSdk.TransactionBuilder(account, {
   .addOperation(
     DigitalBitsSdk.Operation.beginSponsoringFutureReserves({
       sponsoredId: account.accountId(),
-      source: masterKey.publicKey()
+      source: masterKey.publicKey(),
     })
   ).addOperation(
     DigitalBitsSdk.Operation.accountMerge({ destination: destKey.publicKey() }),
+  ).addOperation(
+    DigitalBitsSdk.Operation.payment({
+      source: account.accountId(),
+      destination: muxedAccount.accountId(),
+      amount: "100",
+      asset: usd,
+    })
   ).addOperation(
     DigitalBitsSdk.Operation.createClaimableBalance({
       amount: "10",
@@ -58,6 +65,10 @@ const transaction = new DigitalBitsSdk.TransactionBuilder(account, {
   ).addOperation(
     DigitalBitsSdk.Operation.revokeClaimableBalanceSponsorship({
       balanceId: "00000000da0d57da7d4850e7fc10d2a9d0ebc731f7afb40574c03395b17d49149b91f5be",
+    })
+  ).addOperation(
+    DigitalBitsSdk.Operation.revokeLiquidityPoolSponsorship({
+      liquidityPoolId: "dd7b1ab831c273310ddbec6f97870aa83c2fbd78ce22aded37ecbf4f3380fac7",
     })
   ).addOperation(
     DigitalBitsSdk.Operation.revokeSignerSponsorship({
@@ -109,12 +120,33 @@ const transaction = new DigitalBitsSdk.TransactionBuilder(account, {
       },
     })
   ).addOperation(
+    DigitalBitsSdk.Operation.liquidityPoolDeposit({
+      liquidityPoolId: "dd7b1ab831c273310ddbec6f97870aa83c2fbd78ce22aded37ecbf4f3380fac7",
+      maxAmountA: "10000",
+      maxAmountB: "20000",
+      minPrice: "0.45",
+      maxPrice: "0.55",
+    })
+  ).addOperation(
+    DigitalBitsSdk.Operation.liquidityPoolWithdraw({
+      liquidityPoolId: "dd7b1ab831c273310ddbec6f97870aa83c2fbd78ce22aded37ecbf4f3380fac7",
+      amount: "100",
+      minAmountA: "10000",
+      minAmountB: "20000",
+    })
+  ).addOperation(
     DigitalBitsSdk.Operation.setOptions({
       setFlags:   (DigitalBitsSdk.AuthImmutableFlag | DigitalBitsSdk.AuthRequiredFlag) as DigitalBitsSdk.AuthFlag,
       clearFlags: (DigitalBitsSdk.AuthRevocableFlag | DigitalBitsSdk.AuthClawbackEnabledFlag) as DigitalBitsSdk.AuthFlag,
     })
   ).addMemo(new DigitalBitsSdk.Memo(DigitalBitsSdk.MemoText, 'memo'))
   .setTimeout(5)
+  .setTimebounds(Date.now(), Date.now() + 5000)
+  .setLedgerbounds(5, 10)
+  .setMinAccountSequence("5")
+  .setMinAccountSequenceAge(5)
+  .setMinAccountSequenceLedgerGap(5)
+  .setExtraSigners([sourceKey.publicKey()])
   .build(); // $ExpectType () => Transaction<Memo<MemoType>, Operation[]>
 
 const transactionFromXDR = new DigitalBitsSdk.Transaction(transaction.toEnvelope(), DigitalBitsSdk.Networks.TESTNET); // $ExpectType Transaction<Memo<MemoType>, Operation[]>
@@ -269,3 +301,50 @@ const trust = DigitalBitsSdk.xdr.SetTrustLineFlagsOp.fromXDR(
   'base64'
 );
 trust; // $ExpectType SetTrustLineFlagsOp
+
+const lpDeposit = DigitalBitsSdk.xdr.LiquidityPoolDepositOp.fromXDR(
+  // tslint:disable:max-line-length
+  '3XsauDHCczEN2+xvl4cKqDwvvXjOIq3tN+y/TzOA+scAAAAABfXhAAAAAAAL68IAAAAACQAAABQAAAALAAAAFA==',
+  'base64'
+);
+lpDeposit; // $ExpectType LiquidityPoolDepositOp
+
+const lpWithdraw = DigitalBitsSdk.xdr.LiquidityPoolWithdrawOp.fromXDR(
+  // tslint:disable:max-line-length
+  '3XsauDHCczEN2+xvl4cKqDwvvXjOIq3tN+y/TzOA+scAAAAAAvrwgAAAAAAF9eEAAAAAAAvrwgA=',
+  'base64'
+);
+lpWithdraw; // $ExpectType LiquidityPoolWithdrawOp
+
+const pubkey = masterKey.rawPublicKey(); // $ExpectType Buffer
+const seckey = masterKey.rawSecretKey(); // $ExpectType Buffer
+const muxed = DigitalBitsSdk.encodeMuxedAccount(masterKey.publicKey(), '1'); // $ExpectType MuxedAccount
+const muxkey = muxed.toXDR("raw"); // $ExpectType Buffer
+
+let result = DigitalBitsSdk.StrKey.encodeEd25519PublicKey(pubkey);  // $ExpectType string
+DigitalBitsSdk.StrKey.decodeEd25519PublicKey(result);               // $ExpectType Buffer
+DigitalBitsSdk.StrKey.isValidEd25519PublicKey(result);              // $ExpectType boolean
+
+result = DigitalBitsSdk.StrKey.encodeEd25519SecretSeed(seckey); // $ExpectType string
+DigitalBitsSdk.StrKey.decodeEd25519SecretSeed(result);          // $ExpectType Buffer
+DigitalBitsSdk.StrKey.isValidEd25519SecretSeed(result);         // $ExpectType boolean
+
+result = DigitalBitsSdk.StrKey.encodeMed25519PublicKey(muxkey);   // $ExpectType string
+DigitalBitsSdk.StrKey.decodeMed25519PublicKey(result);            // $ExpectType Buffer
+DigitalBitsSdk.StrKey.isValidMed25519PublicKey(result);           // $ExpectType boolean
+
+result = DigitalBitsSdk.StrKey.encodeSignedPayload(pubkey);   // $ExpectType string
+DigitalBitsSdk.StrKey.decodeSignedPayload(result);            // $ExpectType Buffer
+DigitalBitsSdk.StrKey.isValidSignedPayload(result);           // $ExpectType boolean
+
+const muxedAddr = DigitalBitsSdk.encodeMuxedAccountToAddress(muxed, true);  // $ExpectType string
+DigitalBitsSdk.decodeAddressToMuxedAccount(muxedAddr, true);                // $ExpectType MuxedAccount
+
+const sk = DigitalBitsSdk.xdr.SignerKey.signerKeyTypeEd25519SignedPayload(
+  new DigitalBitsSdk.xdr.SignerKeyEd25519SignedPayload({
+    ed25519: sourceKey.rawPublicKey(),
+    payload: Buffer.alloc(1)
+  })
+);
+DigitalBitsSdk.SignerKey.encodeSignerKey(sk);                   // $ExpectType string
+DigitalBitsSdk.SignerKey.decodeAddress(sourceKey.publicKey());  // $ExpectType SignerKey

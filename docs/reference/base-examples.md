@@ -11,12 +11,13 @@ title: Transaction Examples
 ## Creating an account
 
 In the example below a new account is created by the source account with secret 
-`SCCCQQFNTF3RRIQYWIWLJUN6HEANTHASMIU57B6EESA2IBFYZFTN6Z3C`. The source account 
+`SA3W53XXG64ITFFIYQSBIJDG26LMXYRIMEVMNQMFAQJOYCZACCYBA34L`. The source account 
 is giving the new account 25 XDB as its initial balance.
+
 
 ```javascript
 const server = new DigitalBitsSdk.Server('https://frontier.testnet.digitalbits.io')
-const source = DigitalBitsSdk.Keypair.fromSecret('SCCCQQFNTF3RRIQYWIWLJUN6HEANTHASMIU57B6EESA2IBFYZFTN6Z3C')
+const source = DigitalBitsSdk.Keypair.fromSecret('SA3W53XXG64ITFFIYQSBIJDG26LMXYRIMEVMNQMFAQJOYCZACCYBA34L')
 const destination = DigitalBitsSdk.Keypair.random()
 
 server.accounts()
@@ -26,11 +27,11 @@ server.accounts()
     const account = new DigitalBitsSdk.Account(source.publicKey(), sequence)
     const transaction = new DigitalBitsSdk.TransactionBuilder(account, {
       fee: DigitalBitsSdk.BASE_FEE,
-      networkPassphrase: Networks.TESTNET
+      networkPassphrase: DigitalBitsSdk.Networks.TESTNET
     })
       .addOperation(DigitalBitsSdk.Operation.createAccount({
         destination: destination.publicKey(),
-        startingBalance: '100'
+        startingBalance: '25'
       }))
       .setTimeout(30)
       .build()
@@ -46,57 +47,54 @@ server.accounts()
 
 ## Assets
 Object of the `Asset` class represents an asset in the DigitalBits network. Right now there are 3 possible types of assets in the DigitalBits network:
-
-- native `XDB` asset (`ASSET_TYPE_NATIVE`),
-- issued assets with asset code of maximum 4 characters (`ASSET_TYPE_CREDIT_ALPHANUM4`),
-- issued assets with asset code of maximum 12 characters (`ASSET_TYPE_CREDIT_ALPHANUM12`).
+* native `XDB` asset (`ASSET_TYPE_NATIVE`),
+* issued assets with asset code of maximum 4 characters (`ASSET_TYPE_CREDIT_ALPHANUM4`),
+* issued assets with asset code of maximum 12 characters (`ASSET_TYPE_CREDIT_ALPHANUM12`).
 
 To create a new native asset representation use static `native()` method:
-
-```javascript
+```js
 var nativeAsset = DigitalBitsSdk.Asset.native();
 var isNative = nativeAsset.isNative(); // true
 ```
 
 To represent an issued asset you need to create a new object of type `Asset` with an asset code and issuer:
-
-```javascript
-// Creates USD asset issued by GB4RZUSF3HZGCAKB3VBM2S7QOHHC5KTV3LLZXGBYR5ZO4B26CKHFZTSZ
-var testAsset = new DigitalBitsSdk.Asset('USD', 'GB4RZUSF3HZGCAKB3VBM2S7QOHHC5KTV3LLZXGBYR5ZO4B26CKHFZTSZ');
+```js
+// Creates TEST asset issued by GBBM6BKZPEHWYO3E3YKREDPQXMS4VK35YLNU7NFBRI26RAN7GI5POFBB
+var testAsset = new DigitalBitsSdk.Asset('TEST', 'GBBM6BKZPEHWYO3E3YKREDPQXMS4VK35YLNU7NFBRI26RAN7GI5POFBB');
 var isNative = testAsset.isNative(); // false
-// Creates EUR asset issued by GDCIQQY2UKVNLLWGIX74DMTEAFCMQKAKYUWPBO7PLTHIHRKSFZN7V2FC
-var googleStockAsset = new DigitalBitsSdk.Asset('EUR', 'GDCIQQY2UKVNLLWGIX74DMTEAFCMQKAKYUWPBO7PLTHIHRKSFZN7V2FC');
+// Creates Google stock asset issued by GBBM6BKZPEHWYO3E3YKREDPQXMS4VK35YLNU7NFBRI26RAN7GI5POFBB
+var googleStockAsset = new DigitalBitsSdk.Asset('US38259P7069', 'GBBM6BKZPEHWYO3E3YKREDPQXMS4VK35YLNU7NFBRI26RAN7GI5POFBB');
 ```
 
 
 ## Path payment
 
-In the example below we're sending 1000 XDB (at max) from `GDFOHLMYCXVZD2CDXZLMW6W6TMU4YO27XFF2IBAFAV66MSTPDDSK2LAY` to
-`GCSYKECRGY6VEF4F4KBZEEPXLYDLUGNZFCCXWR7SNRADN3NYYK67GQKF`. Destination Asset will be `EUR` issued by
-`GDCIQQY2UKVNLLWGIX74DMTEAFCMQKAKYUWPBO7PLTHIHRKSFZN7V2FC`. Assets will be exchanged using the following path:
+In the example below we're sending 1000 XDB (at max) from `GABJLI6IVBKJ7HIC5NN7HHDCIEW3CMWQ2DWYHREQQUFWSWZ2CDAMZZX4` to
+`GBBM6BKZPEHWYO3E3YKREDPQXMS4VK35YLNU7NFBRI26RAN7GI5POFBB`. Destination Asset will be `GBP` issued by
+`GASOCNHNNLYFNMDJYQ3XFMI7BYHIOCFW3GJEOWRPEGK2TDPGTG2E5EDW`. Assets will be exchanged using the following path:
 
-- `USD` issued by `GB4RZUSF3HZGCAKB3VBM2S7QOHHC5KTV3LLZXGBYR5ZO4B26CKHFZTSZ`
-- `UAH` issued by `GCKY3VKRJDSRORRMHRDHA6IKRXMGSBRZE42P64AHX4NHVGB3Y224WM3M`
+* `USD` issued by `GBBM6BKZPEHWYO3E3YKREDPQXMS4VK35YLNU7NFBRI26RAN7GI5POFBB`,
+* `EUR` issued by `GDTNXRLOJD2YEBPKK7KCMR7J33AAG5VZXHAJTHIG736D6LVEFLLLKPDL`.
 
-The [path payment](https://developers.digitalbits.io/guides/concepts/list-of-operations.html#path-payment) will cause the destination address to get 5.5 EUR. It will cost the sender no more than 1000 XDB. In this example there will be 2 exchanges, XDB -> USD, USD-> UAH, UAH->EUR.
+The [path payment](https://developers.digitalbits.io/frontier/reference/endpoints/path-finding-strict-receive.html) will cause the destination address to get 5.5 GBP. It will cost the sender no more than 1000 XDB. In this example there will be 3 exchanges, XDB -> USD, USD-> EUR, EUR->GBP.
 
-```javascript
+```js
 var keypair = DigitalBitsSdk.Keypair.fromSecret(secretString);
 
-var source = new DigitalBitsSdk.Account(keypair.publicKey(), "4113023891406862");
+var source = new DigitalBitsSdk.Account(keypair.publicKey(), "46316927324160");
 var transaction = new DigitalBitsSdk.TransactionBuilder(source, {
     fee: DigitalBitsSdk.BASE_FEE,
-    networkPassphrase: Networks.TESTNET
+    networkPassphrase: DigitalBitsSdk.Networks.TESTNET
   })
   .addOperation(DigitalBitsSdk.Operation.pathPayment({
       sendAsset: DigitalBitsSdk.Asset.native(),
       sendMax: "1000",
-      destination: 'GCSYKECRGY6VEF4F4KBZEEPXLYDLUGNZFCCXWR7SNRADN3NYYK67GQKF',
-      destAsset: new DigitalBitsSdk.Asset('EUR', 'GDCIQQY2UKVNLLWGIX74DMTEAFCMQKAKYUWPBO7PLTHIHRKSFZN7V2FC'),
+      destination: 'GBBM6BKZPEHWYO3E3YKREDPQXMS4VK35YLNU7NFBRI26RAN7GI5POFBB',
+      destAsset: new DigitalBitsSdk.Asset('GBP', 'GASOCNHNNLYFNMDJYQ3XFMI7BYHIOCFW3GJEOWRPEGK2TDPGTG2E5EDW'),
       destAmount: "5.50",
       path: [
-        new DigitalBitsSdk.Asset('USD', 'GB4RZUSF3HZGCAKB3VBM2S7QOHHC5KTV3LLZXGBYR5ZO4B26CKHFZTSZ'),
-        new DigitalBitsSdk.Asset('UAH', 'GCKY3VKRJDSRORRMHRDHA6IKRXMGSBRZE42P64AHX4NHVGB3Y224WM3M')
+        new DigitalBitsSdk.Asset('USD', 'GBBM6BKZPEHWYO3E3YKREDPQXMS4VK35YLNU7NFBRI26RAN7GI5POFBB'),
+        new DigitalBitsSdk.Asset('EUR', 'GDTNXRLOJD2YEBPKK7KCMR7J33AAG5VZXHAJTHIG736D6LVEFLLLKPDL')
       ]
   }))
   .setTimeout(30)
@@ -118,24 +116,24 @@ Now, the transaction you submit for this payment must include both signatures of
 
 In this example, we will:
 
-- Add a second signer to the account
-- Set our account's masterkey weight and threshold levels
-- Create a multi signature transaction that sends a payment
+* Add a second signer to the account
+* Set our account's masterkey weight and threshold levels
+* Create a multi signature transaction that sends a payment
 
 In each example, we'll use the root account.
 
 ### Set up multisig account
 
 
-```javascript
-var rootKeypair = DigitalBitsSdk.Keypair.fromSecret("SAWJP22ANOBDCY2BYVGXZRNHYXDNGAVDCCU4ULONKJI3J4LVYTCJTRWI")
+```js
+var rootKeypair = DigitalBitsSdk.Keypair.fromSecret("SBQWY3DNPFWGSZTFNV4WQZLBOJ2GQYLTMJSWK3TTMVQXEY3INFXGO52X")
 var account = new DigitalBitsSdk.Account(rootkeypair.publicKey(), "46316927324160");
 
-var secondaryAddress = "GCKY3VKRJDSRORRMHRDHA6IKRXMGSBRZE42P64AHX4NHVGB3Y224WM3M";
+var secondaryAddress = "GC6HHHS7SH7KNUAOBKVGT2QZIQLRB5UA7QAGLA3IROWPH4TN65UKNJPK";
 
 var transaction = new DigitalBitsSdk.TransactionBuilder(account, {
     fee: DigitalBitsSdk.BASE_FEE,
-    networkPassphrase: Networks.TESTNET
+    networkPassphrase: DigitalBitsSdk.Networks.TESTNET
   })
   .addOperation(DigitalBitsSdk.Operation.setOptions({
     signer: {
@@ -158,17 +156,17 @@ transaction.sign(rootKeypair); // only need to sign with the root signer as the 
 
 var transaction = new DigitalBitsSdk.TransactionBuilder(account, {
       fee: DigitalBitsSdk.BASE_FEE,
-      networkPassphrase: Networks.TESTNET
+      networkPassphrase: DigitalBitsSdk.Networks.TESTNET
     })
     .addOperation(DigitalBitsSdk.Operation.payment({
-        destination: "GCSYKECRGY6VEF4F4KBZEEPXLYDLUGNZFCCXWR7SNRADN3NYYK67GQKF",
+        destination: "GBTVUCDT5CNSXIHJTDHYSZG3YJFXBAJ6FM4CKS5GKSAWJOLZW6XX7NVC",
         asset: DigitalBitsSdk.Asset.native(),
-        amount: "1000" // 2000 XDB
+        amount: "2000" // 2000 XDB
     }))
     .setTimeout(30)
     .build();
 
-var secondKeypair = DigitalBitsSdk.Keypair.fromSecret("SCXVSZRGGKH3ZTWJWDRF2OPXSKSSYJ7LLZ7RJA4JHO2XEVSDE5HKRP7F");
+var secondKeypair = DigitalBitsSdk.Keypair.fromSecret("SAMZUAAPLRUH62HH3XE7NVD6ZSMTWPWGM6DS4X47HLVRHEBKP4U2H5E7");
 
 // now we need to sign the transaction with both the root and the secondaryAddress
 transaction.sign(rootKeypair);

@@ -10,7 +10,6 @@ export class Account {
   accountId(): string;
   sequenceNumber(): string;
   incrementSequenceNumber(): void;
-  createSubaccount(id: string): MuxedAccount;
 }
 
 export class MuxedAccount {
@@ -22,7 +21,6 @@ export class MuxedAccount {
   accountId(): string;
   sequenceNumber(): string;
   incrementSequenceNumber(): void;
-  createSubaccount(id: string): MuxedAccount;
 
   baseAccount(): Account;
   id(): string;
@@ -35,15 +33,18 @@ export namespace AssetType {
   type native = 'native';
   type credit4 = 'credit_alphanum4';
   type credit12 = 'credit_alphanum12';
+  type liquidityPoolShares = 'liquidity_pool_shares';
 }
 export type AssetType =
   | AssetType.native
   | AssetType.credit4
-  | AssetType.credit12;
+  | AssetType.credit12
+  | AssetType.liquidityPoolShares;
 
 export class Asset {
   static native(): Asset;
   static fromOperation(xdr: xdr.Asset): Asset;
+  static compare(assetA: Asset, assetB: Asset): -1 | 0 | 1;
 
   constructor(code: string, issuer?: string);
 
@@ -53,9 +54,38 @@ export class Asset {
   isNative(): boolean;
   equals(other: Asset): boolean;
   toXDRObject(): xdr.Asset;
+  toChangeTrustXDRObject(): xdr.ChangeTrustAsset;
+  toTrustLineXDRObject(): xdr.TrustLineAsset;
 
   code: string;
   issuer: string;
+}
+
+export class LiquidityPoolAsset {
+  constructor(assetA: Asset, assetB: Asset, fee: number);
+
+  static fromOperation(xdr: xdr.ChangeTrustAsset): LiquidityPoolAsset;
+
+  toXDRObject(): xdr.ChangeTrustAsset;
+  getLiquidityPoolParameters(): LiquidityPoolParameters;
+  getAssetType(): AssetType.liquidityPoolShares;
+  equals(other: LiquidityPoolAsset): boolean;
+
+  assetA: Asset;
+  assetB: Asset;
+  fee: number;
+}
+
+export class LiquidityPoolId {
+  constructor(liquidityPoolId: string);
+
+  static fromOperation(xdr: xdr.TrustLineAsset): LiquidityPoolId;
+
+  toXDRObject(): xdr.TrustLineAsset;
+  getLiquidityPoolId(): string;
+  equals(other: LiquidityPoolId): boolean;
+
+  liquidityPoolId: string;
 }
 
 export class Claimant {
@@ -87,8 +117,15 @@ export class Keypair {
 
   constructor(
     keys:
-      | { type: KeypairType; secretKey: string; publicKey?: string }
-      | { type: KeypairType; publicKey: string }
+      | {
+        type: KeypairType;
+        secretKey: string | Buffer;
+        publicKey?: string | Buffer
+      }
+      | {
+        type: KeypairType;
+        publicKey: string | Buffer
+      }
   );
 
   readonly type: KeypairType;
@@ -99,6 +136,7 @@ export class Keypair {
   canSign(): boolean;
   sign(data: Buffer): Buffer;
   signDecorated(data: Buffer): xdr.DecoratedSignature;
+  signPayloadDecorated(data: Buffer): xdr.DecoratedSignature;
   signatureHint(): Buffer;
   verify(data: Buffer, signature: Buffer): boolean;
 
@@ -106,6 +144,26 @@ export class Keypair {
   xdrPublicKey(): xdr.PublicKey;
   xdrMuxedAccount(id: string): xdr.MuxedAccount;
 }
+
+export const LiquidityPoolFeeV18 = 30;
+
+export function getLiquidityPoolId(liquidityPoolType: LiquidityPoolType, liquidityPoolParameters: LiquidityPoolParameters): Buffer;
+
+export namespace LiquidityPoolParameters {
+  interface ConstantProduct {
+    assetA: Asset;
+    assetB: Asset;
+    fee: number;
+  }
+}
+export type LiquidityPoolParameters =
+  | LiquidityPoolParameters.ConstantProduct;
+
+export namespace LiquidityPoolType {
+  type constantProduct = 'constant_product';
+}
+export type LiquidityPoolType =
+  | LiquidityPoolType.constantProduct;
 
 export const MemoNone = 'none';
 export const MemoID = 'id';
@@ -149,7 +207,7 @@ export class Memo<T extends MemoType = MemoType> {
     : T extends MemoType.ID
     ? string
     : T extends MemoType.Text
-    ? string | Buffer 
+    ? string | Buffer // github.com/xdbfoundation/xdb-digitalbits-base/issues/152
     : T extends MemoType.Hash
     ? Buffer
     : T extends MemoType.Return
@@ -267,6 +325,8 @@ export namespace OperationType {
   type Clawback = 'clawback';
   type ClawbackClaimableBalance = 'clawbackClaimableBalance';
   type SetTrustLineFlags = 'setTrustLineFlags';
+  type LiquidityPoolDeposit = 'liquidityPoolDeposit';
+  type LiquidityPoolWithdraw = 'liquidityPoolWithdraw';
 }
 export type OperationType =
   | OperationType.CreateAccount
@@ -290,7 +350,9 @@ export type OperationType =
   | OperationType.RevokeSponsorship
   | OperationType.Clawback
   | OperationType.ClawbackClaimableBalance
-  | OperationType.SetTrustLineFlags;
+  | OperationType.SetTrustLineFlags
+  | OperationType.LiquidityPoolDeposit
+  | OperationType.LiquidityPoolWithdraw;
 
 export namespace OperationOptions {
   interface BaseOptions {
@@ -305,7 +367,7 @@ export namespace OperationOptions {
     authorize?: boolean | TrustLineFlag;
   }
   interface ChangeTrust extends BaseOptions {
-    asset: Asset;
+    asset: Asset | LiquidityPoolAsset;
     limit?: string;
   }
   interface CreateAccount extends BaseOptions {
@@ -387,7 +449,7 @@ export namespace OperationOptions {
   }
   interface RevokeTrustlineSponsorship extends BaseOptions {
     account: string;
-    asset: Asset;
+    asset: Asset | LiquidityPoolId;
   }
   interface RevokeOfferSponsorship extends BaseOptions {
     seller: string;
@@ -399,6 +461,9 @@ export namespace OperationOptions {
   }
   interface RevokeClaimableBalanceSponsorship extends BaseOptions {
     balanceId: string;
+  }
+  interface RevokeLiquidityPoolSponsorship extends BaseOptions {
+    liquidityPoolId: string;
   }
   interface RevokeSignerSponsorship extends BaseOptions {
     account: string;
@@ -420,6 +485,19 @@ export namespace OperationOptions {
       authorizedToMaintainLiabilities?: boolean;
       clawbackEnabled?: boolean;
     };
+  }
+  interface LiquidityPoolDeposit extends BaseOptions {
+    liquidityPoolId: string;
+    maxAmountA: string;
+    maxAmountB: string;
+    minPrice: number | string | object /* bignumber.js */;
+    maxPrice: number | string | object /* bignumber.js */;
+  }
+  interface LiquidityPoolWithdraw extends BaseOptions {
+    liquidityPoolId: string;
+    amount: string;
+    minAmountA: string;
+    minAmountB: string;
   }
 }
 export type OperationOptions =
@@ -445,10 +523,13 @@ export type OperationOptions =
   | OperationOptions.RevokeOfferSponsorship
   | OperationOptions.RevokeDataSponsorship
   | OperationOptions.RevokeClaimableBalanceSponsorship
+  | OperationOptions.RevokeLiquidityPoolSponsorship
   | OperationOptions.RevokeSignerSponsorship
   | OperationOptions.Clawback
   | OperationOptions.ClawbackClaimableBalance
-  | OperationOptions.SetTrustLineFlags;
+  | OperationOptions.SetTrustLineFlags
+  | OperationOptions.LiquidityPoolDeposit
+  | OperationOptions.LiquidityPoolWithdraw;
 
 export namespace Operation {
   interface BaseOperation<T extends OperationType = OperationType> {
@@ -474,7 +555,7 @@ export namespace Operation {
   ): xdr.Operation<AllowTrust>;
 
   interface ChangeTrust extends BaseOperation<OperationType.ChangeTrust> {
-    line: Asset;
+    line: Asset | LiquidityPoolAsset;
     limit: string;
   }
   function changeTrust(
@@ -636,7 +717,7 @@ export namespace Operation {
 
   interface RevokeTrustlineSponsorship extends BaseOperation<OperationType.RevokeSponsorship> {
     account: string;
-    asset: Asset;
+    asset: Asset | LiquidityPoolId;
   }
   function revokeTrustlineSponsorship(
     options: OperationOptions.RevokeTrustlineSponsorship
@@ -664,6 +745,13 @@ export namespace Operation {
   function revokeClaimableBalanceSponsorship(
     options: OperationOptions.RevokeClaimableBalanceSponsorship
   ): xdr.Operation<RevokeClaimableBalanceSponsorship>;
+
+  interface RevokeLiquidityPoolSponsorship extends BaseOperation<OperationType.RevokeSponsorship> {
+    liquidityPoolId: string;
+  }
+  function revokeLiquidityPoolSponsorship(
+    options: OperationOptions.RevokeLiquidityPoolSponsorship
+  ): xdr.Operation<RevokeLiquidityPoolSponsorship>;
 
   interface RevokeSignerSponsorship extends BaseOperation<OperationType.RevokeSponsorship> {
     account: string;
@@ -701,6 +789,25 @@ export namespace Operation {
   function setTrustLineFlags(
     options: OperationOptions.SetTrustLineFlags
   ): xdr.Operation<SetTrustLineFlags>;
+  interface LiquidityPoolDeposit extends BaseOperation<OperationType.LiquidityPoolDeposit> {
+    liquidityPoolId: string;
+    maxAmountA: string;
+    maxAmountB: string;
+    minPrice: string;
+    maxPrice: string;
+  }
+  function liquidityPoolDeposit(
+    options: OperationOptions.LiquidityPoolDeposit
+  ): xdr.Operation<LiquidityPoolDeposit>;
+  interface LiquidityPoolWithdraw extends BaseOperation<OperationType.LiquidityPoolWithdraw> {
+    liquidityPoolId: string;
+    amount: string;
+    minAmountA: string;
+    minAmountB: string;
+  }
+  function liquidityPoolWithdraw(
+    options: OperationOptions.LiquidityPoolWithdraw
+  ): xdr.Operation<LiquidityPoolWithdraw>;
 
   function fromXDRObject<T extends Operation = Operation>(
     xdrOperation: xdr.Operation<T>
@@ -730,29 +837,47 @@ export type Operation =
   | Operation.RevokeOfferSponsorship
   | Operation.RevokeDataSponsorship
   | Operation.RevokeClaimableBalanceSponsorship
+  | Operation.RevokeLiquidityPoolSponsorship
   | Operation.RevokeSignerSponsorship
   | Operation.Clawback
   | Operation.ClawbackClaimableBalance
-  | Operation.SetTrustLineFlags;
+  | Operation.SetTrustLineFlags
+  | Operation.LiquidityPoolDeposit
+  | Operation.LiquidityPoolWithdraw;
 
 export namespace StrKey {
   function encodeEd25519PublicKey(data: Buffer): string;
-  function decodeEd25519PublicKey(data: string): Buffer;
+  function decodeEd25519PublicKey(address: string): Buffer;
   function isValidEd25519PublicKey(Key: string): boolean;
 
   function encodeEd25519SecretSeed(data: Buffer): string;
-  function decodeEd25519SecretSeed(data: string): Buffer;
+  function decodeEd25519SecretSeed(address: string): Buffer;
   function isValidEd25519SecretSeed(seed: string): boolean;
 
+  function encodeMed25519PublicKey(data: Buffer): string;
+  function decodeMed25519PublicKey(address: string): Buffer;
+  function isValidMed25519PublicKey(publicKey: string): boolean;
+
+  function encodeSignedPayload(data: Buffer): string;
+  function decodeSignedPayload(address: string): Buffer;
+  function isValidSignedPayload(address: string): boolean;
+
   function encodePreAuthTx(data: Buffer): string;
-  function decodePreAuthTx(data: string): Buffer;
+  function decodePreAuthTx(address: string): Buffer;
 
   function encodeSha256Hash(data: Buffer): string;
-  function decodeSha256Hash(data: string): Buffer;
+  function decodeSha256Hash(address: string): Buffer;
+}
+
+export namespace SignerKey {
+  function decodeAddress(address: string): xdr.SignerKey;
+  function encodeSignerKey(signerKey: xdr.SignerKey): string;
 }
 
 export class TransactionI {
   addSignature(publicKey: string, signature: string): void;
+  addDecoratedSignature(signature: xdr.DecoratedSignature): void;
+
   fee: string;
   getKeypairSignature(keypair: Keypair): string;
   hash(): Buffer;
@@ -768,8 +893,7 @@ export class TransactionI {
 export class FeeBumpTransaction extends TransactionI {
   constructor(
     envelope: string | xdr.TransactionEnvelope,
-    networkPassphrase: string,
-    withMuxing?: boolean
+    networkPassphrase: string
   );
   feeSource: string;
   innerTransaction: Transaction;
@@ -781,8 +905,7 @@ export class Transaction<
 > extends TransactionI {
   constructor(
     envelope: string | xdr.TransactionEnvelope,
-    networkPassphrase: string,
-    withMuxing?: boolean
+    networkPassphrase: string
   );
   memo: TMemo;
   operations: TOps;
@@ -792,6 +915,16 @@ export class Transaction<
     minTime: string;
     maxTime: string;
   };
+  ledgerBounds?: {
+    minLedger: number;
+    maxLedger: number;
+  };
+  minAccountSequence?: string;
+  minAccountSequenceAge?: number;
+  minAccountSequenceLedgerGap?: number;
+  extraSigners?: string[];
+
+  getClaimableBalanceId(opIndex: number): string;
 }
 
 export const BASE_FEE = '100';
@@ -805,34 +938,44 @@ export class TransactionBuilder {
   addOperation(operation: xdr.Operation): this;
   addMemo(memo: Memo): this;
   setTimeout(timeoutInSeconds: number): this;
+  setTimebounds(min: Date | number, max: Date | number): this;
+  setLedgerbounds(minLedger: number, maxLedger: number): this;
+  setMinAccountSequence(minAccountSequence: string): this;
+  setMinAccountSequenceAge(durationInSeconds: number): this;
+  setMinAccountSequenceLedgerGap(gap: number): this;
+  setExtraSigners(extraSigners: string[]): this;
   build(): Transaction;
   setNetworkPassphrase(networkPassphrase: string): this;
   static buildFeeBumpTransaction(
     feeSource: Keypair | string,
     baseFee: string,
     innerTx: Transaction,
-    networkPassphrase: string,
-    withMuxing?: boolean
+    networkPassphrase: string
   ): FeeBumpTransaction;
   static fromXDR(
     envelope: string | xdr.TransactionEnvelope,
     networkPassphrase: string
   ): Transaction | FeeBumpTransaction;
-
-  supportMuxedAccounts: boolean;
 }
 
 export namespace TransactionBuilder {
   interface TransactionBuilderOptions {
     fee: string;
-    timebounds?: {
-      minTime?: number | string;
-      maxTime?: number | string;
-    };
     memo?: Memo;
     networkPassphrase?: string;
-    v1?: boolean;
-    withMuxing?: boolean;
+    // preconditions:
+    timebounds?: {
+      minTime?: Date | number | string;
+      maxTime?: Date | number | string;
+    };
+    ledgerbounds?: {
+      minLedger?: number;
+      maxLedger?: number;
+    };
+    minAccountSequence?: string;
+    minAccountSequenceAge?: number;
+    minAccountSequenceLedgerGap?: number;
+    extraSigners?: string[];
   }
 }
 
@@ -843,3 +986,8 @@ export function verify(
   signature: Buffer,
   rawPublicKey: Buffer
 ): boolean;
+
+export function decodeAddressToMuxedAccount(address: string, supportMuxing: boolean): xdr.MuxedAccount;
+export function encodeMuxedAccountToAddress(account: xdr.MuxedAccount, supportMuxing: boolean): string;
+export function encodeMuxedAccount(gAddress: string, id: string): xdr.MuxedAccount;
+export function extractBaseAddress(address: string): string;

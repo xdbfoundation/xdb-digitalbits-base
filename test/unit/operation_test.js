@@ -1,6 +1,11 @@
 import BigNumber from 'bignumber.js';
 import isString from 'lodash/isString';
 
+import {
+  encodeMuxedAccountToAddress,
+  encodeMuxedAccount
+} from '../../src/util/decode_encode_muxed_account.js';
+
 describe('Operation', function() {
   describe('.createAccount()', function() {
     it('creates a createAccountOp', function() {
@@ -104,25 +109,9 @@ describe('Operation', function() {
     const asset = DigitalBitsBase.Asset.native();
     const source =
       'MA7QYNF7SOWQ3GLR2BGMZEHXAVIRZA4KVWLTJJFC7MGXUA74P7UJUAAAAAAAAAAAALIWQ';
+    const base = 'GA7QYNF7SOWQ3GLR2BGMZEHXAVIRZA4KVWLTJJFC7MGXUA74P7UJVSGZ';
 
-    it('does not support muxed accounts by default', function() {
-      expect(() => {
-        DigitalBitsBase.Operation.payment({
-          destination,
-          asset,
-          amount,
-          source
-        });
-      }).to.throw(/destination is invalid/);
-    });
-    it('optionally supports muxed accounts', function() {
-      const opts = {
-        destination,
-        asset,
-        amount,
-        source
-      };
-      opts.withMuxing = true;
+    function paymentPacksCorrectly(opts) {
       const packed = DigitalBitsBase.Operation.payment(opts);
 
       // Ensure we can convert to and from the raw XDR:
@@ -133,11 +122,30 @@ describe('Operation', function() {
 
       const unpacked = DigitalBitsBase.Operation.fromXDRObject(packed, true);
 
+      // Ensure the properties match the inputs:
       expect(unpacked.type).to.equal('payment');
       expect(unpacked.source).to.equal(opts.source);
       expect(unpacked.destination).to.equal(opts.destination);
       expect(unpacked.asset).to.eql(opts.asset);
+    }
+
+    let opts = { destination, asset, amount, source };
+
+    it('supports muxed accounts', function() {
+      opts.source = opts.destination = base;
+      paymentPacksCorrectly(opts);
     });
+
+    it('supports mixing muxed and unmuxed properties', function() {
+      opts.source = base;
+      opts.destination = destination;
+      paymentPacksCorrectly(opts);
+
+      opts.source = source;
+      opts.destination = base;
+      paymentPacksCorrectly(opts);
+    });
+
     it('fails to create payment operation with an invalid destination address', function() {
       let opts = {
         destination: 'GCEZW',
@@ -228,28 +236,16 @@ describe('Operation', function() {
       );
     });
 
-    // Destination:
-    //  MA7QYNF7SOWQ3GLR2BGMZEHXAVIRZA4KVWLTJJFC7MGXUA74P7UJUAAAAAAAAAAAAGZFQ
-    //  Address: GA7QYNF7SOWQ3GLR2BGMZEHXAVIRZA4KVWLTJJFC7MGXUA74P7UJVSGZ
-    //  ID:      1
-    //
-    // Source:
-    //  MA7QYNF7SOWQ3GLR2BGMZEHXAVIRZA4KVWLTJJFC7MGXUA74P7UJUAAAAAAAAAAAALIWQ
-    //  Address: GA7QYNF7SOWQ3GLR2BGMZEHXAVIRZA4KVWLTJJFC7MGXUA74P7UJVSGZ
-    //  ID:      2
-
-    const destination =
-      'MA7QYNF7SOWQ3GLR2BGMZEHXAVIRZA4KVWLTJJFC7MGXUA74P7UJUAAAAAAAAAAAAGZFQ';
+    const base = 'GA7QYNF7SOWQ3GLR2BGMZEHXAVIRZA4KVWLTJJFC7MGXUA74P7UJVSGZ';
+    const source = encodeMuxedAccountToAddress(encodeMuxedAccount(base, '1'));
+    const destination = encodeMuxedAccountToAddress(
+      encodeMuxedAccount(base, '2')
+    );
     const sendAsset = new DigitalBitsBase.Asset(
       'USD',
       'GDGU5OAPHNPU5UCLE5RDJHG7PXZFQYWKCFOEXSXNMR6KRQRI5T6XXCD7'
     );
-    const destAsset = new DigitalBitsBase.Asset(
-      'USD',
-      'GDGU5OAPHNPU5UCLE5RDJHG7PXZFQYWKCFOEXSXNMR6KRQRI5T6XXCD7'
-    );
-    const source =
-      'MA7QYNF7SOWQ3GLR2BGMZEHXAVIRZA4KVWLTJJFC7MGXUA74P7UJUAAAAAAAAAAAALIWQ';
+    const destAsset = sendAsset;
 
     const sendMax = '3.0070000';
     const destAmount = '3.1415000';
@@ -273,14 +269,7 @@ describe('Operation', function() {
       source
     };
 
-    it('does not support muxed accounts by default', function() {
-      expect(() => {
-        DigitalBitsBase.Operation.pathPaymentStrictReceive(opts);
-      }).to.throw(/destination is invalid/);
-    });
-    it('optionally supports muxed accounts', function() {
-      opts.withMuxing = true;
-
+    it('supports muxed accounts', function() {
       const packed = DigitalBitsBase.Operation.pathPaymentStrictReceive(opts);
 
       // Ensure we can convert to and from the raw XDR:
@@ -289,40 +278,21 @@ describe('Operation', function() {
         DigitalBitsBase.xdr.Operation.fromXDR(packed.toXDR('hex'), 'hex');
       }).to.not.throw();
 
-      const unpacked = DigitalBitsBase.Operation.fromXDRObject(packed, true);
-
+      const unpacked = DigitalBitsBase.Operation.fromXDRObject(packed);
       expect(unpacked.type).to.equal('pathPaymentStrictReceive');
       expect(unpacked.source).to.equal(opts.source);
       expect(unpacked.destination).to.equal(opts.destination);
     });
 
     it('fails to create path payment operation with an invalid destination address', function() {
-      let opts = {
-        destination: 'GCEZW',
-        sendMax: '20',
-        destAmount: '50',
-        sendAsset: DigitalBitsBase.Asset.native(),
-        destAsset: new DigitalBitsBase.Asset(
-          'USD',
-          'GDGU5OAPHNPU5UCLE5RDJHG7PXZFQYWKCFOEXSXNMR6KRQRI5T6XXCD7'
-        )
-      };
+      opts.destination = 'GCEZW';
       expect(() =>
         DigitalBitsBase.Operation.pathPaymentStrictReceive(opts)
       ).to.throw(/destination is invalid/);
     });
 
     it('fails to create path payment operation with an invalid sendMax', function() {
-      let opts = {
-        destination: 'GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ',
-        sendMax: 20,
-        destAmount: '50',
-        sendAsset: DigitalBitsBase.Asset.native(),
-        destAsset: new DigitalBitsBase.Asset(
-          'USD',
-          'GDGU5OAPHNPU5UCLE5RDJHG7PXZFQYWKCFOEXSXNMR6KRQRI5T6XXCD7'
-        )
-      };
+      opts.sendMax = 20;
       expect(() =>
         DigitalBitsBase.Operation.pathPaymentStrictReceive(opts)
       ).to.throw(/sendMax argument must be of type String/);
@@ -412,36 +382,27 @@ describe('Operation', function() {
       );
     });
 
-    let opts = {
-      sendAsset: new DigitalBitsBase.Asset(
-        'USD',
-        'GDGU5OAPHNPU5UCLE5RDJHG7PXZFQYWKCFOEXSXNMR6KRQRI5T6XXCD7'
-      ),
-      sendAmount: '3.0070000',
-      destination:
-        'MAAAAAAAAAAAAAB7BQ2L7E5NBWMXDUCMZSIPOBKRDSBYVLMXGSSKF6YNPIB7Y77ITLVL6',
-      source:
-        'MAAAAAAAAAAAAAB7BQ2L7E5NBWMXDUCMZSIPOBKRDSBYVLMXGSSKF6YNPIB7Y77ITLVL6',
-      destAsset: new DigitalBitsBase.Asset(
-        'USD',
-        'GDGU5OAPHNPU5UCLE5RDJHG7PXZFQYWKCFOEXSXNMR6KRQRI5T6XXCD7'
-      ),
-      destMin: '3.1415000',
-      path: [
-        new DigitalBitsBase.Asset(
-          'USD',
-          'GBBM6BKZPEHWYO3E3YKREDPQXMS4VK35YLNU7NFBRI26RAN7GI5POFBB'
-        )
-      ]
-    };
+    const base = 'GA7QYNF7SOWQ3GLR2BGMZEHXAVIRZA4KVWLTJJFC7MGXUA74P7UJVSGZ';
+    const source = encodeMuxedAccountToAddress(encodeMuxedAccount(base, '1'));
+    const destination = encodeMuxedAccountToAddress(
+      encodeMuxedAccount(base, '2')
+    );
 
-    it('does not support muxed accounts by default', function() {
-      expect(() => {
-        DigitalBitsBase.Operation.pathPaymentStrictSend(opts);
-      }).to.throw(/destination is invalid/);
-    });
-    it('optionally supports muxed accounts', function() {
-      opts.withMuxing = true;
+    let opts = { source, destination };
+    opts.sendAsset = opts.destAsset = new DigitalBitsBase.Asset(
+      'USD',
+      'GDGU5OAPHNPU5UCLE5RDJHG7PXZFQYWKCFOEXSXNMR6KRQRI5T6XXCD7'
+    );
+    opts.destMin = '3.1415000';
+    opts.sendAmount = '3.0070000';
+    opts.path = [
+      new DigitalBitsBase.Asset(
+        'USD',
+        'GBBM6BKZPEHWYO3E3YKREDPQXMS4VK35YLNU7NFBRI26RAN7GI5POFBB'
+      )
+    ];
+
+    it('supports muxed accounts', function() {
       const packed = DigitalBitsBase.Operation.pathPaymentStrictSend(opts);
 
       // Ensure we can convert to and from the raw XDR:
@@ -450,8 +411,7 @@ describe('Operation', function() {
         DigitalBitsBase.xdr.Operation.fromXDR(packed.toXDR('hex'), 'hex');
       }).to.not.throw();
 
-      const unpacked = DigitalBitsBase.Operation.fromXDRObject(packed, true);
-
+      const unpacked = DigitalBitsBase.Operation.fromXDRObject(packed);
       expect(unpacked.type).to.equal('pathPaymentStrictSend');
       expect(unpacked.source).to.equal(opts.source);
       expect(unpacked.destination).to.equal(opts.destination);
@@ -507,12 +467,12 @@ describe('Operation', function() {
   });
 
   describe('.changeTrust()', function() {
-    it('creates a changeTrustOp', function() {
+    it('creates a changeTrustOp with Asset', function() {
       let asset = new DigitalBitsBase.Asset(
         'USD',
         'GDGU5OAPHNPU5UCLE5RDJHG7PXZFQYWKCFOEXSXNMR6KRQRI5T6XXCD7'
       );
-      let op = DigitalBitsBase.Operation.changeTrust({ asset: asset });
+      let op = DigitalBitsBase.Operation.changeTrust({ asset });
       var xdr = op.toXDR('hex');
       var operation = DigitalBitsBase.xdr.Operation.fromXDR(
         Buffer.from(xdr, 'hex')
@@ -530,13 +490,13 @@ describe('Operation', function() {
       expect(obj.limit).to.be.equal('922337203685.4775807');
     });
 
-    it('creates a changeTrustOp with limit', function() {
+    it('creates a changeTrustOp with Asset and limit', function() {
       let asset = new DigitalBitsBase.Asset(
         'USD',
         'GDGU5OAPHNPU5UCLE5RDJHG7PXZFQYWKCFOEXSXNMR6KRQRI5T6XXCD7'
       );
       let op = DigitalBitsBase.Operation.changeTrust({
-        asset: asset,
+        asset,
         limit: '50.0000000'
       });
       var xdr = op.toXDR('hex');
@@ -556,13 +516,68 @@ describe('Operation', function() {
       expect(obj.limit).to.be.equal('50.0000000');
     });
 
-    it('deletes a trustline', function() {
+    it('creates a changeTrustOp to a liquidity pool', function() {
+      const assetA = new DigitalBitsBase.Asset(
+        'ARST',
+        'GBBM6BKZPEHWYO3E3YKREDPQXMS4VK35YLNU7NFBRI26RAN7GI5POFBB'
+      );
+      const assetB = new DigitalBitsBase.Asset(
+        'USD',
+        'GDGU5OAPHNPU5UCLE5RDJHG7PXZFQYWKCFOEXSXNMR6KRQRI5T6XXCD7'
+      );
+      const fee = DigitalBitsBase.LiquidityPoolFeeV18;
+      const asset = new DigitalBitsBase.LiquidityPoolAsset(assetA, assetB, fee);
+      const op = DigitalBitsBase.Operation.changeTrust({ asset });
+      expect(op).to.be.instanceof(DigitalBitsBase.xdr.Operation);
+
+      const opXdr = op.toXDR('hex');
+      const opXdrObj = DigitalBitsBase.xdr.Operation.fromXDR(opXdr, 'hex');
+      const operation = DigitalBitsBase.Operation.fromXDRObject(opXdrObj);
+
+      expect(operation.type).to.be.equal('changeTrust');
+      expect(operation.line).to.be.deep.equal(asset);
+      expect(
+        opXdrObj
+          .body()
+          .value()
+          .limit()
+          .toString()
+      ).to.be.equal('9223372036854775807'); // MAX_INT64
+      expect(operation.limit).to.be.equal('922337203685.4775807');
+    });
+
+    it('deletes an Asset trustline', function() {
       let asset = new DigitalBitsBase.Asset(
         'USD',
         'GDGU5OAPHNPU5UCLE5RDJHG7PXZFQYWKCFOEXSXNMR6KRQRI5T6XXCD7'
       );
       let op = DigitalBitsBase.Operation.changeTrust({
         asset: asset,
+        limit: '0.0000000'
+      });
+      var xdr = op.toXDR('hex');
+      var operation = DigitalBitsBase.xdr.Operation.fromXDR(
+        Buffer.from(xdr, 'hex')
+      );
+      var obj = DigitalBitsBase.Operation.fromXDRObject(operation);
+      expect(obj.type).to.be.equal('changeTrust');
+      expect(obj.line).to.be.deep.equal(asset);
+      expect(obj.limit).to.be.equal('0.0000000');
+    });
+
+    it('deletes a LiquidityPoolAsset trustline', function() {
+      const assetA = new DigitalBitsBase.Asset(
+        'ARST',
+        'GBBM6BKZPEHWYO3E3YKREDPQXMS4VK35YLNU7NFBRI26RAN7GI5POFBB'
+      );
+      const assetB = new DigitalBitsBase.Asset(
+        'USD',
+        'GDGU5OAPHNPU5UCLE5RDJHG7PXZFQYWKCFOEXSXNMR6KRQRI5T6XXCD7'
+      );
+      const fee = DigitalBitsBase.LiquidityPoolFeeV18;
+      const asset = new DigitalBitsBase.LiquidityPoolAsset(assetA, assetB, fee);
+      let op = DigitalBitsBase.Operation.changeTrust({
+        asset,
         limit: '0.0000000'
       });
       var xdr = op.toXDR('hex');
@@ -1592,33 +1607,38 @@ describe('Operation', function() {
   });
 
   describe('.accountMerge', function() {
-    it('creates a accountMergeOp', function() {
-      var opts = {};
-      opts.destination =
-        'GDGU5OAPHNPU5UCLE5RDJHG7PXZFQYWKCFOEXSXNMR6KRQRI5T6XXCD7';
-      let op = DigitalBitsBase.Operation.accountMerge(opts);
-      var xdr = op.toXDR('hex');
-      var operation = DigitalBitsBase.xdr.Operation.fromXDR(
-        Buffer.from(xdr, 'hex')
-      );
-      var obj = DigitalBitsBase.Operation.fromXDRObject(operation);
+    const base = 'GDGU5OAPHNPU5UCLE5RDJHG7PXZFQYWKCFOEXSXNMR6KRQRI5T6XXCD7';
+
+    const checkMergeOp = function(opts) {
+      const xdr = DigitalBitsBase.Operation.accountMerge(opts).toXDR('hex');
+      const op = DigitalBitsBase.xdr.Operation.fromXDR(xdr, 'hex');
+      const obj = DigitalBitsBase.Operation.fromXDRObject(op);
+
       expect(obj.type).to.be.equal('accountMerge');
       expect(obj.destination).to.be.equal(opts.destination);
+      return obj;
+    };
+
+    it('creates an accountMergeOp', function() {
+      let opts = { destination: base };
+      checkMergeOp(opts);
     });
-    it('does not support muxed accounts', function() {
-      var opts = {};
-      opts.destination =
-        'MAAAAAAAAAAAAAB7BQ2L7E5NBWMXDUCMZSIPOBKRDSBYVLMXGSSKF6YNPIB7Y77ITLVL6';
-      opts.source =
-        'MAAAAAAAAAAAAAB7BQ2L7E5NBWMXDUCMZSIPOBKRDSBYVLMXGSSKF6YNPIB7Y77ITLVL6';
-      expect(() => {
-        DigitalBitsBase.Operation.accountMerge(opts);
-      }).to.throw(/destination is invalid/);
+
+    it('supports muxed accounts', function() {
+      const dest = encodeMuxedAccountToAddress(encodeMuxedAccount(base, '1'));
+      const source = encodeMuxedAccountToAddress(encodeMuxedAccount(base, '2'));
+
+      let opts = { destination: dest, source: source };
+      let obj = checkMergeOp(opts);
+      expect(obj.source).to.equal(source);
+
+      opts.destination = opts.source = base;
+      obj = checkMergeOp(opts);
+      expect(obj.source).to.equal(base);
     });
-    it('fails to create accountMerge operation with an invalid destination address', function() {
-      let opts = {
-        destination: 'GCEZW'
-      };
+
+    it('fails to create accountMergeOp with invalid destination', function() {
+      let opts = { destination: 'GCEZW' };
       expect(() => DigitalBitsBase.Operation.accountMerge(opts)).to.throw(
         /destination is invalid/
       );
@@ -2057,6 +2077,23 @@ describe('Operation', function() {
       var obj = DigitalBitsBase.Operation.fromXDRObject(operation);
       expect(obj.type).to.be.equal('revokeTrustlineSponsorship');
     });
+    it('creates a revokeTrustlineSponsorship for a liquidity pool', function() {
+      const account =
+        'GDGU5OAPHNPU5UCLE5RDJHG7PXZFQYWKCFOEXSXNMR6KRQRI5T6XXCD7';
+      const asset = new DigitalBitsBase.LiquidityPoolId(
+        'dd7b1ab831c273310ddbec6f97870aa83c2fbd78ce22aded37ecbf4f3380fac7'
+      );
+      const op = DigitalBitsBase.Operation.revokeTrustlineSponsorship({
+        account,
+        asset
+      });
+      const xdr = op.toXDR('hex');
+
+      const operation = DigitalBitsBase.xdr.Operation.fromXDR(xdr, 'hex');
+      expect(operation.body().switch().name).to.equal('revokeSponsorship');
+      const obj = DigitalBitsBase.Operation.fromXDRObject(operation);
+      expect(obj.type).to.be.equal('revokeTrustlineSponsorship');
+    });
     it('throws an error when account is invalid', function() {
       expect(() =>
         DigitalBitsBase.Operation.revokeTrustlineSponsorship({})
@@ -2072,7 +2109,7 @@ describe('Operation', function() {
         DigitalBitsBase.Operation.revokeTrustlineSponsorship({
           account: 'GDGU5OAPHNPU5UCLE5RDJHG7PXZFQYWKCFOEXSXNMR6KRQRI5T6XXCD7'
         })
-      ).to.throw(/asset is invalid/);
+      ).to.throw(/asset must be an Asset or LiquidityPoolId/);
     });
   });
 
@@ -2168,6 +2205,30 @@ describe('Operation', function() {
       expect(() =>
         DigitalBitsBase.Operation.revokeClaimableBalanceSponsorship({})
       ).to.throw(/balanceId is invalid/);
+    });
+  });
+
+  describe('revokeLiquidityPoolSponsorship()', function() {
+    it('creates a revokeLiquidityPoolSponsorship', function() {
+      const liquidityPoolId =
+        'dd7b1ab831c273310ddbec6f97870aa83c2fbd78ce22aded37ecbf4f3380fac7';
+      const op = DigitalBitsBase.Operation.revokeLiquidityPoolSponsorship({
+        liquidityPoolId
+      });
+      const xdr = op.toXDR('hex');
+
+      const operation = DigitalBitsBase.xdr.Operation.fromXDR(xdr, 'hex');
+      expect(operation.body().switch().name).to.equal('revokeSponsorship');
+
+      const obj = DigitalBitsBase.Operation.fromXDRObject(operation);
+      expect(obj.type).to.be.equal('revokeLiquidityPoolSponsorship');
+      expect(obj.liquidityPoolId).to.be.equal(liquidityPoolId);
+    });
+
+    it('throws an error when liquidityPoolId is invalid', function() {
+      expect(() =>
+        DigitalBitsBase.Operation.revokeLiquidityPoolSponsorship({})
+      ).to.throw(/liquidityPoolId is invalid/);
     });
   });
 
@@ -2363,6 +2424,296 @@ describe('Operation', function() {
       expect(() => {
         DigitalBitsBase.Operation.setTrustLineFlags({});
       }).to.throw();
+    });
+  });
+
+  describe('liquidityPoolDeposit()', function() {
+    it('throws an error if a required parameter is missing', function() {
+      expect(() => DigitalBitsBase.Operation.liquidityPoolDeposit()).to.throw(
+        /liquidityPoolId argument is required/
+      );
+
+      let opts = {};
+      expect(() => DigitalBitsBase.Operation.liquidityPoolDeposit(opts)).to.throw(
+        /liquidityPoolId argument is required/
+      );
+
+      opts.liquidityPoolId =
+        'dd7b1ab831c273310ddbec6f97870aa83c2fbd78ce22aded37ecbf4f3380fac7';
+      expect(() => DigitalBitsBase.Operation.liquidityPoolDeposit(opts)).to.throw(
+        /maxAmountA argument is required/
+      );
+
+      opts.maxAmountA = '10';
+      expect(() => DigitalBitsBase.Operation.liquidityPoolDeposit(opts)).to.throw(
+        /maxAmountB argument is required/
+      );
+
+      opts.maxAmountB = '20';
+      expect(() => DigitalBitsBase.Operation.liquidityPoolDeposit(opts)).to.throw(
+        /minPrice argument is required/
+      );
+
+      opts.minPrice = '0.45';
+      expect(() => DigitalBitsBase.Operation.liquidityPoolDeposit(opts)).to.throw(
+        /maxPrice argument is required/
+      );
+
+      opts.maxPrice = '0.55';
+      expect(() => DigitalBitsBase.Operation.liquidityPoolDeposit(opts)).to.not
+        .throw;
+    });
+
+    it('throws an error if prices are negative', function() {
+      const opts = {
+        liquidityPoolId:
+          'dd7b1ab831c273310ddbec6f97870aa83c2fbd78ce22aded37ecbf4f3380fac7',
+        maxAmountA: '10.0000000',
+        maxAmountB: '20.0000000',
+        minPrice: '-0.45',
+        maxPrice: '0.55'
+      };
+      expect(() => DigitalBitsBase.Operation.liquidityPoolDeposit(opts)).to.throw(
+        /price must be positive/
+      );
+    });
+
+    it('creates a liquidityPoolDeposit (string prices)', function() {
+      const opts = {
+        liquidityPoolId:
+          'dd7b1ab831c273310ddbec6f97870aa83c2fbd78ce22aded37ecbf4f3380fac7',
+        maxAmountA: '10.0000000',
+        maxAmountB: '20.0000000',
+        minPrice: '0.45',
+        maxPrice: '0.55'
+      };
+      const op = DigitalBitsBase.Operation.liquidityPoolDeposit(opts);
+      const xdr = op.toXDR('hex');
+
+      const xdrObj = DigitalBitsBase.xdr.Operation.fromXDR(Buffer.from(xdr, 'hex'));
+      expect(xdrObj.body().switch().name).to.equal('liquidityPoolDeposit');
+      expect(
+        xdrObj
+          .body()
+          .value()
+          .maxAmountA()
+          .toString()
+      ).to.equal('100000000');
+      expect(
+        xdrObj
+          .body()
+          .value()
+          .maxAmountB()
+          .toString()
+      ).to.equal('200000000');
+
+      const operation = DigitalBitsBase.Operation.fromXDRObject(xdrObj);
+      expect(operation.type).to.be.equal('liquidityPoolDeposit');
+      expect(operation.liquidityPoolId).to.be.equals(opts.liquidityPoolId);
+      expect(operation.maxAmountA).to.be.equals(opts.maxAmountA);
+      expect(operation.maxAmountB).to.be.equals(opts.maxAmountB);
+      expect(operation.minPrice).to.be.equals(opts.minPrice);
+      expect(operation.maxPrice).to.be.equals(opts.maxPrice);
+    });
+
+    it('creates a liquidityPoolDeposit (fraction prices)', function() {
+      const opts = {
+        liquidityPoolId:
+          'dd7b1ab831c273310ddbec6f97870aa83c2fbd78ce22aded37ecbf4f3380fac7',
+        maxAmountA: '10.0000000',
+        maxAmountB: '20.0000000',
+        minPrice: {
+          n: 9,
+          d: 20
+        },
+        maxPrice: {
+          n: 11,
+          d: 20
+        }
+      };
+      const op = DigitalBitsBase.Operation.liquidityPoolDeposit(opts);
+      const xdr = op.toXDR('hex');
+
+      const xdrObj = DigitalBitsBase.xdr.Operation.fromXDR(Buffer.from(xdr, 'hex'));
+      expect(xdrObj.body().switch().name).to.equal('liquidityPoolDeposit');
+      expect(
+        xdrObj
+          .body()
+          .value()
+          .maxAmountA()
+          .toString()
+      ).to.equal('100000000');
+      expect(
+        xdrObj
+          .body()
+          .value()
+          .maxAmountB()
+          .toString()
+      ).to.equal('200000000');
+
+      const operation = DigitalBitsBase.Operation.fromXDRObject(xdrObj);
+      expect(operation.type).to.be.equal('liquidityPoolDeposit');
+      expect(operation.liquidityPoolId).to.be.equals(opts.liquidityPoolId);
+      expect(operation.maxAmountA).to.be.equals(opts.maxAmountA);
+      expect(operation.maxAmountB).to.be.equals(opts.maxAmountB);
+      expect(operation.minPrice).to.be.equals(
+        new BigNumber(opts.minPrice.n).div(opts.minPrice.d).toString()
+      );
+      expect(operation.maxPrice).to.be.equals(
+        new BigNumber(opts.maxPrice.n).div(opts.maxPrice.d).toString()
+      );
+    });
+
+    it('creates a liquidityPoolDeposit (number prices)', function() {
+      const opts = {
+        liquidityPoolId:
+          'dd7b1ab831c273310ddbec6f97870aa83c2fbd78ce22aded37ecbf4f3380fac7',
+        maxAmountA: '10.0000000',
+        maxAmountB: '20.0000000',
+        minPrice: 0.45,
+        maxPrice: 0.55
+      };
+      const op = DigitalBitsBase.Operation.liquidityPoolDeposit(opts);
+      const xdr = op.toXDR('hex');
+
+      const xdrObj = DigitalBitsBase.xdr.Operation.fromXDR(Buffer.from(xdr, 'hex'));
+      expect(xdrObj.body().switch().name).to.equal('liquidityPoolDeposit');
+      expect(
+        xdrObj
+          .body()
+          .value()
+          .maxAmountA()
+          .toString()
+      ).to.equal('100000000');
+      expect(
+        xdrObj
+          .body()
+          .value()
+          .maxAmountB()
+          .toString()
+      ).to.equal('200000000');
+
+      const operation = DigitalBitsBase.Operation.fromXDRObject(xdrObj);
+      expect(operation.type).to.be.equal('liquidityPoolDeposit');
+      expect(operation.liquidityPoolId).to.be.equals(opts.liquidityPoolId);
+      expect(operation.maxAmountA).to.be.equals(opts.maxAmountA);
+      expect(operation.maxAmountB).to.be.equals(opts.maxAmountB);
+      expect(operation.minPrice).to.be.equals(opts.minPrice.toString());
+      expect(operation.maxPrice).to.be.equals(opts.maxPrice.toString());
+    });
+
+    it('creates a liquidityPoolDeposit (BigNumber prices)', function() {
+      const opts = {
+        liquidityPoolId:
+          'dd7b1ab831c273310ddbec6f97870aa83c2fbd78ce22aded37ecbf4f3380fac7',
+        maxAmountA: '10.0000000',
+        maxAmountB: '20.0000000',
+        minPrice: new BigNumber(9).dividedBy(20),
+        maxPrice: new BigNumber(11).dividedBy(20)
+      };
+      const op = DigitalBitsBase.Operation.liquidityPoolDeposit(opts);
+      const xdr = op.toXDR('hex');
+
+      const xdrObj = DigitalBitsBase.xdr.Operation.fromXDR(Buffer.from(xdr, 'hex'));
+      expect(xdrObj.body().switch().name).to.equal('liquidityPoolDeposit');
+      expect(
+        xdrObj
+          .body()
+          .value()
+          .maxAmountA()
+          .toString()
+      ).to.equal('100000000');
+      expect(
+        xdrObj
+          .body()
+          .value()
+          .maxAmountB()
+          .toString()
+      ).to.equal('200000000');
+
+      const operation = DigitalBitsBase.Operation.fromXDRObject(xdrObj);
+      expect(operation.type).to.be.equal('liquidityPoolDeposit');
+      expect(operation.liquidityPoolId).to.be.equals(opts.liquidityPoolId);
+      expect(operation.maxAmountA).to.be.equals(opts.maxAmountA);
+      expect(operation.maxAmountB).to.be.equals(opts.maxAmountB);
+      expect(operation.minPrice).to.be.equals(opts.minPrice.toString());
+      expect(operation.maxPrice).to.be.equals(opts.maxPrice.toString());
+    });
+  });
+
+  describe('liquidityPoolWithdraw()', function() {
+    it('throws an error if a required parameter is missing', function() {
+      expect(() => DigitalBitsBase.Operation.liquidityPoolWithdraw()).to.throw(
+        /liquidityPoolId argument is required/
+      );
+
+      let opts = {};
+      expect(() => DigitalBitsBase.Operation.liquidityPoolWithdraw(opts)).to.throw(
+        /liquidityPoolId argument is required/
+      );
+
+      opts.liquidityPoolId =
+        'dd7b1ab831c273310ddbec6f97870aa83c2fbd78ce22aded37ecbf4f3380fac7';
+      expect(() => DigitalBitsBase.Operation.liquidityPoolWithdraw(opts)).to.throw(
+        /amount argument is required/
+      );
+
+      opts.amount = '10';
+      expect(() => DigitalBitsBase.Operation.liquidityPoolWithdraw(opts)).to.throw(
+        /minAmountA argument is required/
+      );
+
+      opts.minAmountA = '10000';
+      expect(() => DigitalBitsBase.Operation.liquidityPoolWithdraw(opts)).to.throw(
+        /minAmountB argument is required/
+      );
+
+      opts.minAmountB = '20000';
+      expect(() => DigitalBitsBase.Operation.liquidityPoolWithdraw(opts)).to.not
+        .throw;
+    });
+
+    it('creates a liquidityPoolWithdraw', function() {
+      const opts = {
+        liquidityPoolId:
+          'dd7b1ab831c273310ddbec6f97870aa83c2fbd78ce22aded37ecbf4f3380fac7',
+        amount: '5.0000000',
+        minAmountA: '10.0000000',
+        minAmountB: '20.0000000'
+      };
+      const op = DigitalBitsBase.Operation.liquidityPoolWithdraw(opts);
+      const xdr = op.toXDR('hex');
+
+      const xdrObj = DigitalBitsBase.xdr.Operation.fromXDR(Buffer.from(xdr, 'hex'));
+      expect(xdrObj.body().switch().name).to.equal('liquidityPoolWithdraw');
+      expect(
+        xdrObj
+          .body()
+          .value()
+          .amount()
+          .toString()
+      ).to.equal('50000000');
+      expect(
+        xdrObj
+          .body()
+          .value()
+          .minAmountA()
+          .toString()
+      ).to.equal('100000000');
+      expect(
+        xdrObj
+          .body()
+          .value()
+          .minAmountB()
+          .toString()
+      ).to.equal('200000000');
+
+      const operation = DigitalBitsBase.Operation.fromXDRObject(xdrObj);
+      expect(operation.type).to.be.equal('liquidityPoolWithdraw');
+      expect(operation.liquidityPoolId).to.be.equals(opts.liquidityPoolId);
+      expect(operation.amount).to.be.equals(opts.amount);
+      expect(operation.minAmountA).to.be.equals(opts.minAmountA);
+      expect(operation.minAmountB).to.be.equals(opts.minAmountB);
     });
   });
 

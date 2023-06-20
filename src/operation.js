@@ -9,9 +9,11 @@ import isNumber from 'lodash/isNumber';
 import isFinite from 'lodash/isFinite';
 import { best_r } from './util/continued_fraction';
 import { Asset } from './asset';
+import { LiquidityPoolAsset } from './liquidity_pool_asset';
 import { Claimant } from './claimant';
 import { StrKey } from './strkey';
-import xdr from './generated/digitalbits-xdr_generated';
+import { LiquidityPoolId } from './liquidity_pool_id';
+import xdr from './xdr';
 import * as ops from './operations/index';
 import {
   decodeAddressToMuxedAccount,
@@ -27,7 +29,7 @@ const MAX_INT64 = '9223372036854775807';
  * account’s credit.
  *
  * @constant
- * @see [Account flags](https://developers.digitalbits.ioguides/concepts/accounts.html#flags)
+ * @see [Account flags](https://developers.digitalbits.io/guides/concepts/accounts.html#flags)
  */
 export const AuthRequiredFlag = 1 << 0;
 /**
@@ -83,10 +85,13 @@ export const AuthClawbackEnabledFlag = 1 << 3;
  * * `{@link Operation.revokeOfferSponsorship}`
  * * `{@link Operation.revokeDataSponsorship}`
  * * `{@link Operation.revokeClaimableBalanceSponsorship}`
+ * * `{@link Operation.revokeLiquidityPoolSponsorship}`
  * * `{@link Operation.revokeSignerSponsorship}`
  * * `{@link Operation.clawback}`
  * * `{@link Operation.clawbackClaimableBalance}`
  * * `{@link Operation.setTrustLineFlags}`
+ * * `{@link Operation.liquidityPoolDeposit}`
+ * * `{@link Operation.liquidityPoolWithdraw}`
  *
  * @class Operation
  */
@@ -94,10 +99,7 @@ export class Operation {
   static setSourceAccount(opAttributes, opts) {
     if (opts.source) {
       try {
-        opAttributes.sourceAccount = decodeAddressToMuxedAccount(
-          opts.source,
-          opts.withMuxing
-        );
+        opAttributes.sourceAccount = decodeAddressToMuxedAccount(opts.source);
       } catch (e) {
         throw new Error('Source address is invalid');
       }
@@ -109,20 +111,12 @@ export class Operation {
    * was used to create the operation (i.e. the `opts` parameter to most ops).
    *
    * @param {xdr.Operation}   operation - An XDR Operation.
-   * @param {boolean}         [withMuxing] - Indicates that the operation
-   *     contains M... addresses which should be interpreted fully as muxed
-   *     accounts. By default, this option is disabled until muxed accounts are
-   *     mature.
-   *
    * @return {Operation}
    */
-  static fromXDRObject(operation, withMuxing) {
+  static fromXDRObject(operation) {
     const result = {};
     if (operation.sourceAccount()) {
-      result.source = encodeMuxedAccountToAddress(
-        operation.sourceAccount(),
-        withMuxing
-      );
+      result.source = encodeMuxedAccountToAddress(operation.sourceAccount());
     }
 
     const attrs = operation.body().value();
@@ -137,10 +131,7 @@ export class Operation {
       }
       case 'payment': {
         result.type = 'payment';
-        result.destination = encodeMuxedAccountToAddress(
-          attrs.destination(),
-          withMuxing
-        );
+        result.destination = encodeMuxedAccountToAddress(attrs.destination());
         result.asset = Asset.fromOperation(attrs.asset());
         result.amount = this._fromXDRAmount(attrs.amount());
         break;
@@ -149,10 +140,7 @@ export class Operation {
         result.type = 'pathPaymentStrictReceive';
         result.sendAsset = Asset.fromOperation(attrs.sendAsset());
         result.sendMax = this._fromXDRAmount(attrs.sendMax());
-        result.destination = encodeMuxedAccountToAddress(
-          attrs.destination(),
-          withMuxing
-        );
+        result.destination = encodeMuxedAccountToAddress(attrs.destination());
         result.destAsset = Asset.fromOperation(attrs.destAsset());
         result.destAmount = this._fromXDRAmount(attrs.destAmount());
         result.path = [];
@@ -169,10 +157,7 @@ export class Operation {
         result.type = 'pathPaymentStrictSend';
         result.sendAsset = Asset.fromOperation(attrs.sendAsset());
         result.sendAmount = this._fromXDRAmount(attrs.sendAmount());
-        result.destination = encodeMuxedAccountToAddress(
-          attrs.destination(),
-          withMuxing
-        );
+        result.destination = encodeMuxedAccountToAddress(attrs.destination());
         result.destAsset = Asset.fromOperation(attrs.destAsset());
         result.destMin = this._fromXDRAmount(attrs.destMin());
         result.path = [];
@@ -187,7 +172,14 @@ export class Operation {
       }
       case 'changeTrust': {
         result.type = 'changeTrust';
-        result.line = Asset.fromOperation(attrs.line());
+        switch (attrs.line().switch()) {
+          case xdr.AssetType.assetTypePoolShare():
+            result.line = LiquidityPoolAsset.fromOperation(attrs.line());
+            break;
+          default:
+            result.line = Asset.fromOperation(attrs.line());
+            break;
+        }
         result.limit = this._fromXDRAmount(attrs.limit());
         break;
       }
@@ -277,7 +269,7 @@ export class Operation {
       }
       case 'accountMerge': {
         result.type = 'accountMerge';
-        result.destination = encodeMuxedAccountToAddress(attrs, withMuxing);
+        result.destination = encodeMuxedAccountToAddress(attrs);
         break;
       }
       case 'manageData': {
@@ -368,6 +360,23 @@ export class Operation {
           result.flags[flagName] = getFlagValue(flagName);
         });
 
+        break;
+      }
+      case 'liquidityPoolDeposit': {
+        result.type = 'liquidityPoolDeposit';
+        result.liquidityPoolId = attrs.liquidityPoolId().toString('hex');
+        result.maxAmountA = this._fromXDRAmount(attrs.maxAmountA());
+        result.maxAmountB = this._fromXDRAmount(attrs.maxAmountB());
+        result.minPrice = this._fromXDRPrice(attrs.minPrice());
+        result.maxPrice = this._fromXDRPrice(attrs.maxPrice());
+        break;
+      }
+      case 'liquidityPoolWithdraw': {
+        result.type = 'liquidityPoolWithdraw';
+        result.liquidityPoolId = attrs.liquidityPoolId().toString('hex');
+        result.amount = this._fromXDRAmount(attrs.amount());
+        result.minAmountA = this._fromXDRAmount(attrs.minAmountA());
+        result.minAmountB = this._fromXDRAmount(attrs.minAmountB());
         break;
       }
       default: {
@@ -517,7 +526,15 @@ function extractRevokeSponshipDetails(attrs, result) {
           result.account = accountIdtoAddress(
             ledgerKey.trustLine().accountId()
           );
-          result.asset = Asset.fromOperation(ledgerKey.trustLine().asset());
+          const xdrAsset = ledgerKey.trustLine().asset();
+          switch (xdrAsset.switch()) {
+            case xdr.AssetType.assetTypePoolShare():
+              result.asset = LiquidityPoolId.fromOperation(xdrAsset);
+              break;
+            default:
+              result.asset = Asset.fromOperation(xdrAsset);
+              break;
+          }
           break;
         }
         case xdr.LedgerEntryType.offer().name: {
@@ -544,6 +561,14 @@ function extractRevokeSponshipDetails(attrs, result) {
             .claimableBalance()
             .balanceId()
             .toXDR('hex');
+          break;
+        }
+        case xdr.LedgerEntryType.liquidityPool().name: {
+          result.type = 'revokeLiquidityPoolSponsorship';
+          result.liquidityPoolId = ledgerKey
+            .liquidityPool()
+            .liquidityPoolId()
+            .toString('hex');
           break;
         }
         default: {
@@ -619,6 +644,9 @@ Operation.revokeOfferSponsorship = ops.revokeOfferSponsorship;
 Operation.revokeDataSponsorship = ops.revokeDataSponsorship;
 Operation.revokeClaimableBalanceSponsorship =
   ops.revokeClaimableBalanceSponsorship;
+Operation.revokeLiquidityPoolSponsorship = ops.revokeLiquidityPoolSponsorship;
 Operation.revokeSignerSponsorship = ops.revokeSignerSponsorship;
 Operation.clawback = ops.clawback;
 Operation.setTrustLineFlags = ops.setTrustLineFlags;
+Operation.liquidityPoolDeposit = ops.liquidityPoolDeposit;
+Operation.liquidityPoolWithdraw = ops.liquidityPoolWithdraw;

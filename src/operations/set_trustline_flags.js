@@ -1,4 +1,4 @@
-import xdr from '../generated/digitalbits-xdr_generated';
+import xdr from '../xdr';
 import { Keypair } from '../keypair';
 
 /**
@@ -35,13 +35,14 @@ import { Keypair } from '../keypair';
  *
  * @link xdr.AccountFlags
  * @link xdr.TrustLineFlags
+ * @see https://github.com/xdbfoundation/digitalbits-protocol/blob/master/core/cap-0035.md#set-trustline-flags-operation
  * @see https://developers.digitalbits.io/guides/concepts/list-of-operations.html#set-options
  */
 export function setTrustLineFlags(opts = {}) {
   const attributes = {};
 
   if (typeof opts.flags !== 'object' || Object.keys(opts.flags).length === 0) {
-    throw new Error('opts.flags must be an map of boolean flags to modify');
+    throw new Error('opts.flags must be a map of boolean flags to modify');
   }
 
   const mapping = {

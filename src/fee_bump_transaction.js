@@ -1,4 +1,4 @@
-import xdr from './generated/digitalbits-xdr_generated';
+import xdr from './xdr';
 import { hash } from './hashing';
 
 import { Transaction } from './transaction';
@@ -18,14 +18,11 @@ import { encodeMuxedAccountToAddress } from './util/decode_encode_muxed_account'
  *     object or base64 encoded string.
  * @param {string} networkPassphrase - passphrase of the target DigitalBits network
  *     (e.g. "LiveNet Global DigitalBits Network ; February 2021").
- * @param {bool}    [opts.withMuxing] - indicates that the fee source of this
- *     transaction is a proper muxed account (i.e. coming from an M... address).
- *     By default, this option is disabled until muxed accounts are mature.
  *
  * @extends TransactionBase
  */
 export class FeeBumpTransaction extends TransactionBase {
-  constructor(envelope, networkPassphrase, withMuxing) {
+  constructor(envelope, networkPassphrase) {
     if (typeof envelope === 'string') {
       const buffer = Buffer.from(envelope, 'base64');
       envelope = xdr.TransactionEnvelope.fromXDR(buffer);
@@ -49,10 +46,7 @@ export class FeeBumpTransaction extends TransactionBase {
     const innerTxEnvelope = xdr.TransactionEnvelope.envelopeTypeTx(
       tx.innerTx().v1()
     );
-    this._feeSource = encodeMuxedAccountToAddress(
-      this.tx.feeSource(),
-      withMuxing
-    );
+    this._feeSource = encodeMuxedAccountToAddress(this.tx.feeSource());
     this._innerTransaction = new Transaction(
       innerTxEnvelope,
       networkPassphrase

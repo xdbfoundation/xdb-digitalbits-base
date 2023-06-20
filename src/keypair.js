@@ -1,3 +1,5 @@
+/* eslint no-bitwise: ["error", {"allow": ["^"]}] */
+
 import nacl from 'tweetnacl';
 import isUndefined from 'lodash/isUndefined';
 import isString from 'lodash/isString';
@@ -6,7 +8,7 @@ import { sign, verify, generate } from './signing';
 import { StrKey } from './strkey';
 import { hash } from './hashing';
 
-import xdr from './generated/digitalbits-xdr_generated';
+import xdr from './xdr';
 
 /**
  * `Keypair` represents public (and secret) keys of the account.
@@ -82,7 +84,7 @@ export class Keypair {
 
   /**
    * Returns `Keypair` object representing network master key.
-   * @param {string} networkPassphrase passphrase of the target DigitalBits network (e.g. "LiveNet Global DigitalBits Network ; February 2021").
+   * @param {string} networkPassphrase passphrase of the target digitalbits network (e.g. "LiveNet Global DigitalBits Network ; February 2021").
    * @returns {Keypair}
    */
   static master(networkPassphrase) {
@@ -230,10 +232,47 @@ export class Keypair {
     return verify(data, signature, this._publicKey);
   }
 
+  /**
+   * Returns the decorated signature (hint+sig) for arbitrary data.
+   *
+   * @param  {Buffer} data  arbitrary data to sign
+   * @return {xdr.DecoratedSignature}   the raw signature structure which can be
+   *     added directly to a transaction envelope
+   *
+   * @see TransactionBase.addDecoratedSignature
+   */
   signDecorated(data) {
     const signature = this.sign(data);
     const hint = this.signatureHint();
 
     return new xdr.DecoratedSignature({ hint, signature });
+  }
+
+  /**
+   * Returns the raw decorated signature (hint+sig) for a signed payload signer.
+   *
+   *  The hint is defined as the last 4 bytes of the signer key XORed with last
+   *  4 bytes of the payload (zero-left-padded if necessary).
+   *
+   * @param  {Buffer} data    data to both sign and treat as the payload
+   * @return {xdr.DecoratedSignature}
+   *
+   * @see https://github.com/xdbfoundation/digitalbits-protocol/blob/master/core/cap-0040.md#signature-hint
+   * @see TransactionBase.addDecoratedSignature
+   */
+  signPayloadDecorated(data) {
+    const signature = this.sign(data);
+    const keyHint = this.signatureHint();
+
+    let hint = Buffer.from(data.slice(-4));
+    if (hint.length < 4) {
+      // append zeroes as needed
+      hint = Buffer.concat([hint, Buffer.alloc(4 - data.length, 0)]);
+    }
+
+    return new xdr.DecoratedSignature({
+      hint: hint.map((byte, i) => byte ^ keyHint[i]),
+      signature
+    });
   }
 }

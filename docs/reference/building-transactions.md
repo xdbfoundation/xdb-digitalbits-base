@@ -26,18 +26,18 @@ This will return a fully constructed [Transaction](https://github.com/xdbfoundat
 The returned transaction will contain the sequence number of the source account. This transaction is unsigned. You must sign it before it will be accepted by the DigitalBits network.
 
 
-```javascript
+```js
 // DigitalBitsBase.Network.usePublicNetwork(); if this transaction is for the public network
 // Create an Account object from an address and sequence number.
-var account=new DigitalBitsBase.Account("GDFOHLMYCXVZD2CDXZLMW6W6TMU4YO27XFF2IBAFAV66MSTPDDSK2LAY","4113023891406862");
+var account=new DigitalBitsBase.Account("GD6WU64OEP5C4LRBH6NK3MHYIA2ADN6K6II6EXPNVUR3ERBXT4AN4ACD","2319149195853854");
 
 var transaction = new DigitalBitsBase.TransactionBuilder(account, {
         fee: DigitalBitsBase.BASE_FEE,
-        networkPassphrase: Networks.TESTNET
+        networkPassphrase: DigitalBitsBase.Networks.TESTNET
     })
         // add a payment operation to the transaction
         .addOperation(DigitalBitsBase.Operation.payment({
-                destination: "GBIJCW2HLOHWES26FWTYWFIEMTOLXGC3JVYSZGL2IDVMJ5VCFKAV6DJM",
+                destination: "GASOCNHNNLYFNMDJYQ3XFMI7BYHIOCFW3GJEOWRPEGK2TDPGTG2E5EDW",
                 asset: DigitalBitsBase.Asset.native(),
                 amount: "100.50"  // 100.50 XDB
             }))
@@ -72,22 +72,21 @@ the correct value.  So, if you're submitting many transactions quickly, you will
 Transactions can contain a "memo" field you can use to attach additional information to the transaction. You can do this
 by passing a [memo](https://github.com/xdbfoundation/xdb-digitalbits-base/blob/master/src/memo.js) object when you construct the TransactionBuilder.
 There are 5 types of memos:
+* `Memo.none` - empty memo,
+* `Memo.text` - 28-byte ascii encoded string memo,
+* `Memo.id` - 64-bit number memo,
+* `Memo.hash` - 32-byte hash - ex. hash of an item in a content server,
+* `Memo.returnHash` - 32-byte hash used for returning payments - contains hash of the transaction being rejected.
 
-- `Memo.none` - empty memo,
-- `Memo.text` - 28-byte ascii encoded string memo,
-- `Memo.id` - 64-bit number memo,
-- `Memo.hash` - 32-byte hash - ex. hash of an item in a content server,
-- `Memo.returnHash` - 32-byte hash used for returning payments - contains hash of the transaction being rejected.
-
-```javascript
-var memo = Memo.text('Hello World!');
+```js
+var memo = Memo.text('Happy birthday!');
 var transaction = new DigitalBitsBase.TransactionBuilder(account, {
     memo: memo,
     fee: DigitalBitsBase.BASE_FEE,
-    networkPassphrase: Networks.TESTNET
+    networkPassphrase: DigitalBitsBase.Networks.TESTNET
 })
         .addOperation(DigitalBitsBase.Operation.payment({
-                destination: "GBIJCW2HLOHWES26FWTYWFIEMTOLXGC3JVYSZGL2IDVMJ5VCFKAV6DJM",
+                destination: "GASOCNHNNLYFNMDJYQ3XFMI7BYHIOCFW3GJEOWRPEGK2TDPGTG2E5EDW",
                 asset: DigitalBitsBase.Asset.native(),
                 amount: "2000"
             }))
@@ -101,7 +100,7 @@ var transaction = new DigitalBitsBase.TransactionBuilder(account, {
 You probably won't instantiate `Transaction` objects directly. Objects of this class are returned after `TransactionBuilder`
 builds a transaction. However, you can create a new `Transaction` object from a base64 representation of a transaction envelope.
 
-```javascript
+```js
 var transaction = new Transaction(envelope);
 ```
 
@@ -113,7 +112,7 @@ Most importantly, you can sign a transaction using `sign()` method. See below...
 ## Signing and Multi-sig
 Transactions require signatures for authorization, and generally they only require one.  However, you can exercise more
 control over authorization and set up complex schemes by increasing the number of signatures a transaction requires.  For
-more, please consult the [multi-sig documentation](https://developer.digitalbits.io/guides/docs/guides/concepts/multi-sig).
+more, please consult the [multi-sig documentation](https://developers.digitalbits.io/guides/concepts/multi-sig.html).
 
 You add signatures to a transaction with the `Transaction.sign()` function. You can chain multiple `sign()` calls together.
 
@@ -123,40 +122,39 @@ You add signatures to a transaction with the `Transaction.sign()` function. You 
 
 If `Keypair` object does not contain private key it can't be used to sign transactions. The most convenient method of creating new keypair is by passing the account's secret seed:
 
-```javascript
-var keypair = Keypair.fromSecret('SCCCQQFNTF3RRIQYWIWLJUN6HEANTHASMIU57B6EESA2IBFYZFTN6Z3C');
-var address = keypair.publicKey(); // GBIJCW2HLOHWES26FWTYWFIEMTOLXGC3JVYSZGL2IDVMJ5VCFKAV6DJM
+```js
+var keypair = Keypair.fromSecret('SBK2VIYYSVG76E7VC3QHYARNFLY2EAQXDHRC7BMXBBGIFG74ARPRMNQM');
+var address = keypair.publicKey(); // GDHMW6QZOL73SHKG2JA3YHXFDHM46SS5ZRWEYF5BCYHX2C5TVO6KZBYL
 var canSign = keypair.canSign(); // true
 ```
 
 You can create `Keypair` object from secret seed raw bytes:
 
 ```js
-var keypair = Keypair.fromRawSeed([0xdc, 0x9c, 0xaf, 0xbc, 0xa7, 0x42, 0x83, 0xaa, 0xbb, 0x76, 0x5d, 0xd8, 0xc4, 0xc4, 0x3e, 0x8a, 0xb7, 0x11, 0x85, 0xf1, 0x7b, 0x18, 0x0e, 0xab, 0x59, 0x5d, 0x62, 0x65, 0x52, 0xa8, 0xcb, 0xc2]);
-var address = keypair.publicKey(); // GBIJCW2HLOHWES26FWTYWFIEMTOLXGC3JVYSZGL2IDVMJ5VCFKAV6DJM
+var keypair = Keypair.fromRawSeed([0xdc, 0x9c, 0xbf, 0xb5, 0xd7, 0x12, 0x83, 0x6a, 0xbf, 0x7d, 0x5d, 0xd8, 0xc4, 0xc4, 0x3e, 0x9d, 0xc7, 0x81, 0x85, 0xf1, 0x4b, 0x12, 0x0e, 0x9b, 0x59, 0x5d, 0x62, 0x65, 0x52, 0xa8, 0xcb, 0xcc]);
+var address = keypair.publicKey(); // GADMPH2LB7VDK4UHNGKMJIJBXC5WTWTQMXYWSPVWPMNVVR4MGWLI2IXN
 var canSign = keypair.canSign(); // true
 ```
 
 You can also create a randomly generated keypair:
-
 ```js
 var keypair = Keypair.random();
 ```
 
 
 ```js
-var key1 = Keypair.fromSecret('SCCCQQFNTF3RRIQYWIWLJUN6HEANTHASMIU57B6EESA2IBFYZFTN6Z3C');
-var key2 = Keypair.fromSecret('SD3BAE2CI7YYYLE46PI2JTGLVVBLZQYGXKOMJ7RS4OWDKASTYVNY7HMT');
+var key1 = Keypair.fromSecret('SBK2VIYYSVG76E7VC3QHYARNFLY2EAQXDHRC7BMXBBGIFG74ARPRMNQM');
+var key2 = Keypair.fromSecret('SAMZUAAPLRUH62HH3XE7NVD6ZSMTWPWGM6DS4X47HLVRHEBKP4U2H5E7');
 
 // Create an Account object from an address and sequence number.
-var account=new DigitalBitsBase.Account("GDFOHLMYCXVZD2CDXZLMW6W6TMU4YO27XFF2IBAFAV66MSTPDDSK2LAY","4113023891406862");
+var account=new DigitalBitsBase.Account("GD6WU64OEP5C4LRBH6NK3MHYIA2ADN6K6II6EXPNVUR3ERBXT4AN4ACD","2319149195853854");
 
 var transaction = new DigitalBitsBase.TransactionBuilder(account, {
     fee: DigitalBitsBase.BASE_FEE,
-    networkPassphrase: Networks.TESTNET
+    networkPassphrase: DigitalBitsBase.Networks.TESTNET
 })
         .addOperation(DigitalBitsBase.Operation.payment({
-                destination: "GDPTTMKY7BQDV346TY34Q535SOBNBII6ROUIOOUX34LRJ3EBV5OTB3BZ",
+                destination: "GASOCNHNNLYFNMDJYQ3XFMI7BYHIOCFW3GJEOWRPEGK2TDPGTG2E5EDW",
                 asset: DigitalBitsBase.Asset.native(),
                 amount: "2000"  // 2000 XDB
             }))

@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - master
+      - beta/*
 
 jobs:
   Publish:
@@ -20,10 +21,10 @@ jobs:
           registry-url: https://registry.npmjs.org/
     
       - name: Install deps
-        run: yarn install
+        run: yarn
       
-      # - name: Version
-      #   run: npm version 
+      - name: Build
+        run: gulp
       
       - name: Publish
         run: npm publish --access public 

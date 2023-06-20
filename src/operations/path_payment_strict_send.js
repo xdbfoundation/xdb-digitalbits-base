@@ -1,4 +1,4 @@
-import xdr from '../generated/digitalbits-xdr_generated';
+import xdr from '../xdr';
 import { decodeAddressToMuxedAccount } from '../util/decode_encode_muxed_account';
 
 /**
@@ -11,6 +11,7 @@ import { decodeAddressToMuxedAccount } from '../util/decode_encode_muxed_account
  *
  * @function
  * @alias Operation.pathPaymentStrictSend
+ * @see https://developers.digitalbits.io/frontier/reference/endpoints/path-finding-strict-send.html
  *
  * @param {object}  opts - Options object
  * @param {Asset}   opts.sendAsset    - asset to pay with
@@ -19,9 +20,7 @@ import { decodeAddressToMuxedAccount } from '../util/decode_encode_muxed_account
  * @param {Asset}   opts.destAsset    - asset the destination will receive
  * @param {string}  opts.destMin      - minimum amount of destAsset to be receive
  * @param {Asset[]} opts.path         - array of Asset objects to use as the path
- * @param {bool}    [opts.withMuxing] - Indicates that opts.destination is an
- *     M... address and should be interpreted fully as a muxed account. By
- *     default, this option is disabled until muxed accounts are mature.
+ *
  * @param {string}  [opts.source]     - The source account for the payment.
  *     Defaults to the transaction's source account.
  *
@@ -46,10 +45,7 @@ export function pathPaymentStrictSend(opts) {
   attributes.sendAsset = opts.sendAsset.toXDRObject();
   attributes.sendAmount = this._toXDRAmount(opts.sendAmount);
   try {
-    attributes.destination = decodeAddressToMuxedAccount(
-      opts.destination,
-      opts.withMuxing
-    );
+    attributes.destination = decodeAddressToMuxedAccount(opts.destination);
   } catch (e) {
     throw new Error('destination is invalid');
   }
